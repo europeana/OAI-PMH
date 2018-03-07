@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import eu.europeana.oaipmh.model.GetRecord;
-import eu.europeana.oaipmh.model.Identify;
-import eu.europeana.oaipmh.model.OAIResponse;
+import eu.europeana.oaipmh.model.*;
+import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -32,7 +35,7 @@ public class OaiPmhService {
     private static final Logger LOG = LogManager.getLogger(OaiPmhService.class);
 
     // create a single XmlMapper for efficiency purposes (see https://github.com/FasterXML/jackson-docs/wiki/Presentation:-Jackson-Performance)
-    private static final XmlMapper xmlMapper = new XmlMapper();
+    private static final XmlMapper xmlMapper;
 
     @Value("${recordsPerPage}")
     private int recordsPerPage;
@@ -45,7 +48,16 @@ public class OaiPmhService {
 
     private RecordProvider recordProvider;
 
-    public OaiPmhService(RecordProvider recordProvider) {
+    private IdentifierProvider identifierProvider;
+
+    static {
+        JacksonXmlModule module = new JacksonXmlModule();
+        // to default to using "unwrapped" Lists:
+        module.setDefaultUseWrapper(false);
+        xmlMapper = new XmlMapper(module);
+    }
+
+    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider) {
         xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // not serialize fields with null value
         xmlMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY); // serialize also private fields
         // make sure dates are serialized in proper format
@@ -54,6 +66,7 @@ public class OaiPmhService {
         xmlMapper.registerModule(new JaxbAnnotationModule()); // so we can use JAX-B annotations instead of the Jackson ones
 
         this.recordProvider = recordProvider;
+        this.identifierProvider = identifierProvider;
     }
 
     @PostConstruct
@@ -74,7 +87,7 @@ public class OaiPmhService {
      * @throws OaiPmhException
      */
     public String getIdentify() throws OaiPmhException {
-        return serialize("Identify", new Identify());
+        return serialize(new Identify());
     }
 
     /**
@@ -86,16 +99,22 @@ public class OaiPmhService {
      */
     public String getRecord(String metadataPrefix, String id) throws OaiPmhException {
         // TODO check metadataprefix?
-        return serialize("GetRecord", new GetRecord(recordProvider.getRecord(id)));
+        return serialize(new GetRecord(recordProvider.getRecord(id)));
     }
 
-    private String serialize(String verb, Object object) throws SerializationException {
+
+    public String listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
+        return serialize(new ListIdentifiers(identifierProvider.listIdentifiers(metadataPrefix, from, until, set)));
+    }
+
+
+    private String serialize(OAIPMHVerb object) throws SerializationException {
         try {
             // TODO get base url from somewhere
             String baseUrl = "https://oai.europeana.eu/oai";
             return xmlMapper.
                     writerWithDefaultPrettyPrinter().
-                    writeValueAsString(new OAIResponse(verb, baseUrl, object));
+                    writeValueAsString(object.getResponse(baseUrl));
         }
         catch (IOException e) {
             throw new SerializationException("Error serializing data: "+e.getMessage(), e);

@@ -63,11 +63,11 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = "verb=ListIdentifiers", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListIdentifier(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
+    public String handleListIdentifiers(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
                                   @RequestParam(value = "from", required = false) String from,
                                   @RequestParam(value = "until", required = false) String until,
                                   @RequestParam(value = "set", required = false) String set) throws OaiPmhException {
-        return "Not implemented yet";
+        return ops.listIdentifiers(metadataPrefix, null, null, set);
     }
 
     /**
@@ -76,8 +76,8 @@ public class VerbController {
      * @return
      * @throws OaiPmhException
      */
-    @RequestMapping(params = {"verb=ListIdentifiers", "resumptionToken!="}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListIdentifierToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
+    @RequestMapping(params = {"verb=ListIdentifiers", "resumptionToken="}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
+    public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
         LOG.debug("ListIdentifier with token {}", resumptionToken);
         return "Not implemented yet";
     }

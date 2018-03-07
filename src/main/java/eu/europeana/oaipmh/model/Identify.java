@@ -1,5 +1,8 @@
 package eu.europeana.oaipmh.model;
 
+import eu.europeana.oaipmh.model.response.IdentifyResponse;
+import eu.europeana.oaipmh.model.response.OAIResponse;
+
 import java.io.Serializable;
 
 /**
@@ -7,7 +10,7 @@ import java.io.Serializable;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-public class Identify implements Serializable {
+public class Identify extends OAIPMHVerb implements Serializable {
 
     private static final long serialVersionUID = 203469625750930136L;
 
@@ -60,5 +63,10 @@ public class Identify implements Serializable {
 
     public String[] getDescription() {
         return description;
+    }
+
+    @Override
+    public OAIResponse getResponse(String baseUrl) {
+        return new IdentifyResponse(baseUrl, this);
     }
 }

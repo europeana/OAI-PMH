@@ -1,8 +1,6 @@
 package eu.europeana.oaipmh;
 
-import eu.europeana.oaipmh.service.OaiPmhService;
-import eu.europeana.oaipmh.service.RecordApi;
-import eu.europeana.oaipmh.service.RecordProvider;
+import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.web.VerbController;
 import eu.europeana.oaipmh.web.context.SocksProxyConfigInjector;
 import org.apache.logging.log4j.LogManager;
@@ -38,12 +36,21 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	}
 
 	/**
+	 * Identifiers provider that returns identifiers information
+	 * @return
+	 */
+	@Bean
+	public IdentifierProvider identifierProvider() {
+		return new SearchApi();
+	}
+
+	/**
 	 * OAI-PMH service that does the actual work
 	 * @return
 	 */
 	@Bean
 	public OaiPmhService oaiPmhService() {
-		return new OaiPmhService(recordProvider());
+		return new OaiPmhService(recordProvider(), identifierProvider());
 	}
 
 	/**
