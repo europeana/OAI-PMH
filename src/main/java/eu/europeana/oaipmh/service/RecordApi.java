@@ -18,12 +18,15 @@ import java.io.IOException;
  * @author Patrick Ehlert
  * Created on 28-02-2018
  */
-public class RecordApi extends CommonApi implements RecordProvider {
+public class RecordApi implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(RecordApi.class);
 
     @Value("${recordApiUrl}")
     private String recordApiUrl;
+
+    @Value("${wskey}")
+    private String wskey;
 
     /**
      * @see RecordProvider#getRecord(String)
@@ -59,6 +62,16 @@ public class RecordApi extends CommonApi implements RecordProvider {
 
     }
 
+    private String appendWskey() {
+        return String.format("wskey=%s", wskey);
+    }
+
+    /**
+     * @see RecordProvider#close()
+     */
+    public void close() {
+        // not needed in this case
+    }
 
     /**
      * Empty error handling to avoid the rest template throwing errors (we want to throw our own exceptions)

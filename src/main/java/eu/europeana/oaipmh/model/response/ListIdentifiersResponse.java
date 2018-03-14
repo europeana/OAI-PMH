@@ -1,13 +1,14 @@
 package eu.europeana.oaipmh.model.response;
 
 import eu.europeana.oaipmh.model.ListIdentifiers;
+import eu.europeana.oaipmh.model.request.OAIRequest;
 
 import javax.xml.bind.annotation.XmlElement;
 
 public class ListIdentifiersResponse extends OAIResponse {
 
-    public ListIdentifiersResponse(String baseUrl, ListIdentifiers listIdentifiers) {
-        super(baseUrl, listIdentifiers);
+    public ListIdentifiersResponse(String baseUrl, ListIdentifiers listIdentifiers, OAIRequest request) {
+        super(baseUrl, listIdentifiers, request);
     }
 
     @Override

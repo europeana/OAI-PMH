@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.model;
 
+import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.IdentifyResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 
@@ -66,7 +67,7 @@ public class Identify extends OAIPMHVerb implements Serializable {
     }
 
     @Override
-    public OAIResponse getResponse(String baseUrl) {
-        return new IdentifyResponse(baseUrl, this);
+    public OAIResponse getResponse(String baseUrl, OAIRequest request) {
+        return new IdentifyResponse(baseUrl, this, request);
     }
 }

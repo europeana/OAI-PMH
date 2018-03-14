@@ -1,4 +1,4 @@
-package eu.europeana.oaipmh.model;
+package eu.europeana.oaipmh.model.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 

@@ -1,0 +1,11 @@
+package eu.europeana.oaipmh.model.metadata;
+
+public interface MetadataFormatConverter {
+
+    /**
+     * Convert record to the specific format
+     * @param record record metadata
+     * @return record metadata converted to the output format
+     */
+    String convert(String record);
+}

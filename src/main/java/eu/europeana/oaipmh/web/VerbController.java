@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.web;
 import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.MediaType;
@@ -54,6 +55,18 @@ public class VerbController {
     }
 
     /**
+     * Handles all list identifier requests with a resumption token
+     * @param resumptionToken
+     * @return
+     * @throws OaiPmhException
+     */
+    @RequestMapping(params = {"verb=ListIdentifiers", "resumptionToken"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
+    public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
+        LOG.debug("ListIdentifiers with token {}", resumptionToken);
+        return ops.listIdentifiers(resumptionToken);
+    }
+
+    /**
      * Handles all list identifier requests
      * @param metadataPrefix
      * @param from
@@ -62,25 +75,14 @@ public class VerbController {
      * @return
      * @throws OaiPmhException
      */
-    @RequestMapping(params = "verb=ListIdentifiers", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
+    @RequestMapping(params = {"verb=ListIdentifiers", "metadataPrefix"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
     public String handleListIdentifiers(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
                                   @RequestParam(value = "from", required = false) String from,
                                   @RequestParam(value = "until", required = false) String until,
                                   @RequestParam(value = "set", required = false) String set) throws OaiPmhException {
-        return ops.listIdentifiers(metadataPrefix, null, null, set);
+        return ops.listIdentifiers(metadataPrefix, DateConverter.fromIsoDateTime(from), DateConverter.fromIsoDateTime(until), set);
     }
 
-    /**
-     * Handles all list identifier requests with a resumption token
-     * @param resumptionToken
-     * @return
-     * @throws OaiPmhException
-     */
-    @RequestMapping(params = {"verb=ListIdentifiers", "resumptionToken="}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
-        LOG.debug("ListIdentifier with token {}", resumptionToken);
-        return "Not implemented yet";
-    }
 
     /**
      * Handles all list records requests

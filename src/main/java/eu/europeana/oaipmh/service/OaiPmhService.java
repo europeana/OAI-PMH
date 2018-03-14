@@ -8,10 +8,17 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-import eu.europeana.oaipmh.model.*;
-import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
+import eu.europeana.oaipmh.model.GetRecord;
+import eu.europeana.oaipmh.model.Identify;
+import eu.europeana.oaipmh.model.ListIdentifiers;
+import eu.europeana.oaipmh.model.OAIPMHVerb;
+import eu.europeana.oaipmh.model.metadata.MetadataFormats;
+import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
+import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
+import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +26,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  *
@@ -46,18 +51,23 @@ public class OaiPmhService {
     @Value("${resumptionTokenTTL}")
     private int resumptionTokenTTL;
 
+    @Value("${baseUrl}")
+    private String baseUrl;
+
     private RecordProvider recordProvider;
 
     private IdentifierProvider identifierProvider;
 
+    private MetadataFormats metadataFormats;
+
     static {
         JacksonXmlModule module = new JacksonXmlModule();
-        // to default to using "unwrapped" Lists:
+        // using "unwrapped" Lists:
         module.setDefaultUseWrapper(false);
         xmlMapper = new XmlMapper(module);
     }
 
-    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider) {
+    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, MetadataFormats metadataFormats) {
         xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // not serialize fields with null value
         xmlMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY); // serialize also private fields
         // make sure dates are serialized in proper format
@@ -67,6 +77,7 @@ public class OaiPmhService {
 
         this.recordProvider = recordProvider;
         this.identifierProvider = identifierProvider;
+        this.metadataFormats = metadataFormats;
     }
 
     @PostConstruct
@@ -87,7 +98,9 @@ public class OaiPmhService {
      * @throws OaiPmhException
      */
     public String getIdentify() throws OaiPmhException {
-        return serialize(new Identify());
+        Identify responseObject = new Identify();
+        OAIRequest request = new OAIRequest(responseObject.getClass().getSimpleName(), baseUrl);
+        return serialize(responseObject, request);
     }
 
     /**
@@ -99,22 +112,32 @@ public class OaiPmhService {
      */
     public String getRecord(String metadataPrefix, String id) throws OaiPmhException {
         // TODO check metadataprefix?
-        return serialize(new GetRecord(recordProvider.getRecord(id)));
+        GetRecord responseObject = new GetRecord(recordProvider.getRecord(id));
+        return serialize(responseObject, new OAIRequest(responseObject.getClass().getSimpleName(), baseUrl));
     }
 
 
     public String listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
-        return serialize(new ListIdentifiers(identifierProvider.listIdentifiers(metadataPrefix, from, until, set)));
+        if (!metadataFormats.canDisseminate(metadataPrefix)) {
+            throw new CannotDisseminateFormatException(metadataPrefix);
+        }
+
+        ListIdentifiers responseObject = identifierProvider.listIdentifiers(metadataPrefix, from, until, set);
+        OAIRequest request = new ListIdentifiersRequest(responseObject.getClass().getSimpleName(), baseUrl, metadataPrefix, set, DateConverter.toIsoDate(from), DateConverter.toIsoDate(until));
+        return serialize(responseObject, request);
     }
 
+    public String listIdentifiers(String resumptionToken) throws OaiPmhException {
+        ListIdentifiers responseObject = identifierProvider.listIdentifiers(resumptionToken);
+        OAIRequest request = new ListIdentifiersRequest(responseObject.getClass().getSimpleName(), baseUrl, resumptionToken);
+        return serialize(responseObject, request);
+    }
 
-    private String serialize(OAIPMHVerb object) throws SerializationException {
+    private String serialize(OAIPMHVerb object, OAIRequest request) throws SerializationException {
         try {
-            // TODO get base url from somewhere
-            String baseUrl = "https://oai.europeana.eu/oai";
             return xmlMapper.
                     writerWithDefaultPrettyPrinter().
-                    writeValueAsString(object.getResponse(baseUrl));
+                    writeValueAsString(object.getResponse(baseUrl, request));
         }
         catch (IOException e) {
             throw new SerializationException("Error serializing data: "+e.getMessage(), e);

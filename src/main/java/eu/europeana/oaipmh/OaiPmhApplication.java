@@ -1,11 +1,13 @@
 package eu.europeana.oaipmh;
 
+import eu.europeana.oaipmh.model.metadata.MetadataFormats;
 import eu.europeana.oaipmh.service.*;
+import eu.europeana.oaipmh.util.SocksProxyHelper;
 import eu.europeana.oaipmh.web.VerbController;
-import eu.europeana.oaipmh.web.context.SocksProxyConfigInjector;
 import org.apache.logging.log4j.LogManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
@@ -23,6 +25,7 @@ import java.io.IOException;
 @SpringBootApplication
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
+@EnableConfigurationProperties(MetadataFormats.class)
 public class OaiPmhApplication extends SpringBootServletInitializer {
 
 	/**
@@ -44,13 +47,16 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 		return new SearchApi();
 	}
 
+	@Bean
+	public MetadataFormats metadataFormats() { return new MetadataFormats(); }
+
 	/**
 	 * OAI-PMH service that does the actual work
 	 * @return
 	 */
 	@Bean
 	public OaiPmhService oaiPmhService() {
-		return new OaiPmhService(recordProvider(), identifierProvider());
+		return new OaiPmhService(recordProvider(), identifierProvider(), metadataFormats());
 	}
 
 	/**
@@ -69,7 +75,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	@SuppressWarnings("squid:S2095") // to avoid sonarqube false positive (see https://stackoverflow.com/a/37073154/741249)
 	public static void main(String[] args)  {
 		try {
-			injectSocksProxySettings();
+			SocksProxyHelper.injectSocksProxySettings();
 			SpringApplication.run(OaiPmhApplication.class, args);
 		} catch (IOException e) {
 			LogManager.getLogger(OaiPmhApplication.class).fatal("Error reading properties file", e);
@@ -85,26 +91,11 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		try {
-			injectSocksProxySettings();
+			SocksProxyHelper.injectSocksProxySettings();
 			super.onStartup(servletContext);
 		} catch (IOException e) {
 			throw new ServletException("Error reading properties", e);
 		}
-	}
-
-	/**
-	 * Socks proxy settings have to be loaded before anything else, so we check the property files for its settings
-	 * @throws IOException
-	 */
-	private static void injectSocksProxySettings() throws IOException {
-		SocksProxyConfigInjector socksConfig = new SocksProxyConfigInjector("oai-pmh.properties");
-		try {
-			socksConfig.addProperties("oai-pmh.user.properties");
-		} catch (IOException e) {
-			// user.properties may not be available so only show warning
-			LogManager.getLogger(OaiPmhApplication.class).warn("Cannot read oai-pmh.user.properties file");
-		}
-		socksConfig.inject();
 	}
 
 }

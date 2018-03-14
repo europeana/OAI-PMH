@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.model;
 
+import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.GetRecordResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 
@@ -25,7 +26,7 @@ public class GetRecord extends OAIPMHVerb implements Serializable {
     }
 
     @Override
-    public OAIResponse getResponse(String baseUrl) {
-        return new GetRecordResponse(baseUrl, this);
+    public OAIResponse getResponse(String baseUrl, OAIRequest request) {
+        return new GetRecordResponse(baseUrl, this, request);
     }
 }

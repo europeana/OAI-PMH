@@ -1,7 +1,7 @@
 package eu.europeana.oaipmh.model.response;
 
 import eu.europeana.oaipmh.model.OAIPMHVerb;
-import eu.europeana.oaipmh.model.OAIRequest;
+import eu.europeana.oaipmh.model.request.OAIRequest;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -21,9 +21,10 @@ public class OAIResponse implements Serializable {
 
     private OAIPMHVerb responseObject;
 
-    OAIResponse(String baseUrl, OAIPMHVerb object) {
+    OAIResponse(String baseUrl, OAIPMHVerb object, OAIRequest request) {
         this.responseDate = new Date();
-        this.request = new OAIRequest(object.getClass().getSimpleName(), baseUrl);
+//        this.request = new OAIRequest(object.getClass().getSimpleName(), baseUrl);
+        this.request = request;
         this.responseObject = object;
     }
 
