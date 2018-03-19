@@ -16,7 +16,9 @@
             <groupId>eu.europeana</groupId>
             <artifactId>oai-pmh-server</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <type>war</type>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
