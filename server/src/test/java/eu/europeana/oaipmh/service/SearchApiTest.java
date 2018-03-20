@@ -145,9 +145,9 @@ public class SearchApiTest {
 
     private void assertResults(ListIdentifiers results, Date from, Date until, String set) {
         assertNotNull(results);
-        assertNotNull(results.getHeaders());
-        assertFalse(results.getHeaders().isEmpty());
-        for (Header header : results.getHeaders()) {
+        assertNotNull(results.getHeader());
+        assertFalse(results.getHeader().isEmpty());
+        for (Header header : results.getHeader()) {
             assertNotNull(header.getIdentifier());
             Date timestamp = header.getDatestamp();
             assertNotNull(timestamp);
