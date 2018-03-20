@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:edm="http://www.europeana.eu/schemas/edm/">
+    <edm:ProvidedCHO rdf:about="http://data.europeana.eu/item/90402/BK_1978_399"/>
+    <edm:WebResource
+            rdf:about="https://lh3.ggpht.com/V4jYDrlLI8WiHjv_t44wKSqXHRGWVEQojx0__oXyP-_3ZtvdbU_YE11LswS9h0At8JvPqNxBZ6n8atRYmqiVtEj4nQ=s0">
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/">image/jpeg</dc:format>
+        <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">Public Domain</dc:rights>
+        <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">Publiek Domein</dc:rights>
+        <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/">2013</dcterms:created>
+        <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+    </edm:WebResource>
+    <edm:WebResource rdf:about="http://hdl.handle.net/10934/RM0001.COLLECT.12801"/>
+    <edm:Place rdf:about="">
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Japan</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nl">Japan</skos:prefLabel>
+    </edm:Place>
+    <edm:Place rdf:about="http://data.europeana.eu/place/base/78">
+        <wgs84:lat xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">47.00016</wgs84:lat>
+        <wgs84:long xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">8.01427</wgs84:long>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Switzerland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hi">स्विटज़रलैंड</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hi">स्विस</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ps">سویس</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="pt">Suíça</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hr">Švicarska</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hu">Svájc</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hy">Շվեյցարիա</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="yo">Orílẹ́ède switiṣilandi
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ia">Suissa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="id">Swiss</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="af">Switserland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="is">Sviss</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ak">Swetzaland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="it">Confederazione Svizzera
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="it">Svizzera</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="am">ስዊዘርላንድ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="zh">瑞士</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ar">سويسرا</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ja">スイス</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ja">スイス連邦</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="az">isveçriya</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="rm">Svizra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="zu">i-Switzerland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="rn">Ubusuwisi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ro">Elveția</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ru">Швейцария</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="be">Швейцарыя</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bg">Швейцария</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bm">Suwisi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bn">সুইজর্লণ্ড</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bn">সুইজারল্যান্ড</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bo">ཧྲུད་ཧྲི།</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="br">Suis</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bs">Švajcarska</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="se">Šveica</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sg">Sûîsi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="si">ස්විස්ටර්ලන්තය</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ka">შვეიცარია</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sk">Švajčiarsko</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sl">Švica</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sn">Switzerland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="so">Swiiserlaand</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ca">Suïssa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ki">Uswisi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sq">Zvicër</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sr">Швајцарска</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="kk">Швейцария</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="kl">Schweizi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="km">ស្វីស</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sv">Schweiz</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="kn">ಸ್ವಿಡ್ಜರ್‌ಲ್ಯಾಂಡ್
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sw">Uswisi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ko">스위스</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ku">سویسرا</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ta">ஸ்விட்சர்லாந்து</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="cs">Švýcarsko</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="te">స్విట్జర్లేండ్</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="th">สวิตเซอร์แลนด์</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="la">Confoederatio Helvetica
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ti">ስዊዘርላንድ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="cy">Y Swistir</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="to">Suisilani</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lg">Switizirandi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="da">Schweiz</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="tr">İsviçre</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Schweiz</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Schweizerische
+            Eidgenossenschaft
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ln">Swisɛ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lo">ສະວິດເຊີແລນ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lt">Šveicarija</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lu">Swise</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lv">Šveice</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="uk">Швейцарія</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="dz">སུའིཊ་ཛར་ལེན</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="mg">Soisa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ur">سوئٹزر لینڈ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="mk">Швајцарија</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ml">സ്വിറ്റ്സര്‍ലാന്‍ഡ്
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ee">Switzerland nutome
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="mr">स्वित्झर्लंड</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ms">Switzerland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="mt">Svizzera</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="el">Ελβετία</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Switzerland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eo">Svisujo</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="my">ဆွစ်ဇလန်</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="es">Suiza</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="et">Ĩveits</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="et">Šveits</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eu">Suitza</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="vi">Thụy Sĩ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nb">Sveits</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nd">Switzerland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ne">स्विजरल्याण्ड</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fa">سوئیس</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nl">Zwitserland</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ff">Suwiis</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nn">Sveits</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fi">Sveitsi</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fo">Sveis</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">Confédération Suisse
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">Suisse</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="oc">Soïssa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ga">An Eilvéis</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="or">ସ୍ବିଜରଲ୍ୟାଣ୍ଡ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="gl">Suíza</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="gu">સ્વિટ્ઝર્લૅન્ડ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ha">Suwizalan</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="pl">Szwajcaria</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="he">שווייץ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="he">שוויץ</skos:prefLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">CH</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Confederatio Helvetica</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Helvetia</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Schweiz</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Schweizerische Eidgenossenschaft
+        </skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Schwiz</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Suisse</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Svizzera</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Swiss Confederation</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Switzerland</skos:altLabel>
+        <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" rdf:resource="http://sws.geonames.org/2658434/"/>
+    </edm:Place>
+    <edm:Place rdf:about="http://data.europeana.eu/place/base/214486">
+        <wgs84:lat xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">46.20576</wgs84:lat>
+        <wgs84:long xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">6.14161</wgs84:long>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ug">Jenwe</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">Genève</skos:prefLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://data.europeana.eu/place/base/78"></dcterms:isPartOf>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://data.europeana.eu/place/base/213564"></dcterms:isPartOf>
+        <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" rdf:resource="http://sws.geonames.org/7285902/"/>
+    </edm:Place>
+    <edm:Place rdf:about="http://data.europeana.eu/place/base/213439">
+        <wgs84:lat xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">46.19673</wgs84:lat>
+        <wgs84:long xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">6.11044</wgs84:long>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Kanton Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Republik und Kanton Genf
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hi">जनीवा कैन्टन</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ln">Kanton ya Shnɛ́f
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="pt">Genebra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lt">Ženevos kantonas
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hr">Kanton Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lv">Ženēvas kantons</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hu">Genf kanton</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hy">Ժնև</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="uk">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="id">Kanton Jenewa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ur">کینٹن جنیوا</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="mr">जिनिव्हा</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ms">Wilayah Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Canton of Geneva
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Republic and Canton of Geneva
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eo">Kantono Ĝenevo</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="it">Canton Ginevra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="it">Ginevra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="it">Repubblica e Cantone di
+            Ginevra
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="an">Cantón de Chinevra
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="es">Cantón de Ginebra
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="zh">日內瓦州</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="et">Genfi kanton</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eu">Geneva kantonamendua
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ar">كانتون جنيف</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ja">ジュネーヴ州</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="rm">Chantun Genevra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="rm">Genevra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="rm">Republica ed Chantun Genevra
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fa">کانتون ژنو</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ro">Cantonul Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nn">Kantonen Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fi">Geneve</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ru">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="be">Кантон Жэнева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bg">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">Canton de Genève
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">République et Canton de Genève
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="jv">Kanton Jenéwa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="br">Kanton Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bs">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="se">Geneve</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="oc">Canton de Genèva
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ka">ჟენევის კანტონი</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sk">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ca">Cantó de Ginebra
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sq">Kantoni Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sr">Кантон Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="kk">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sw">Jimbo la Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ko">제네바 주</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="gl">Cantón de Xenebra
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="cs">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="la">Genava</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="cy">Genefa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="pl">Genewa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="da">Kanton Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="he">זנבה</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="tr">Cenevre</skos:prefLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Canton de Genève</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genf</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genève</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Ginevra</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Kanton Genf</skos:altLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://data.europeana.eu/place/base/78"></dcterms:isPartOf>
+        <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" rdf:resource="http://sws.geonames.org/2660645/"/>
+    </edm:Place>
+    <edm:Place rdf:about="http://data.europeana.eu/place/base/213440">
+        <wgs84:lat xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">46.20222</wgs84:lat>
+        <wgs84:long xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">6.14569</wgs84:long>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hi">जिनेवा</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="pt">Genebra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lt">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hr">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="lv">Ženēva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hu">Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="hy">Ժնև</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ug">Jenwe</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="id">Jenewa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ur">جنیوا</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="qu">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="af">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="io">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="el">Γενέβη</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="el">Γενευη</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="el">Γενεύη</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="is">Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eo">Ĝenevo</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="it">Ginevra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="es">Ginebra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="et">Genf</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eu">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="eu">Ginebra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ar">جنيف</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="vi">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ja">ジュネーヴ</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="rm">Genevra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ro">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nl">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nn">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="no">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fi">Geneve</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="be">Горад Жэнева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ru">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bg">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="bs">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ka">ჟენევა</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sk">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ca">Ginebra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sr">Женева</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="sv">Genève</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ko">제네바</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="gl">Xenebra</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="cs">Ženeva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="la">Genava</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="pl">Genewa</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="da">Geneve</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="he">זנבה</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="tr">Cenevre</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="tr">Genève</skos:prefLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genf</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Genève</skos:altLabel>
+        <skos:altLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Ginevra</skos:altLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://data.europeana.eu/place/base/78"></dcterms:isPartOf>
+        <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" rdf:resource="http://sws.geonames.org/2660646/"/>
+    </edm:Place>
+    <edm:Place rdf:about="http://data.europeana.eu/place/base/213564">
+        <wgs84:lat xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">46.20804</wgs84:lat>
+        <wgs84:long xmlns:wgs84="http://www.w3.org/2003/01/geo/wgs84_pos#">6.12737</wgs84:long>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">Geneva</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="de">Genève</skos:prefLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://data.europeana.eu/place/base/78"></dcterms:isPartOf>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://data.europeana.eu/place/base/213439"></dcterms:isPartOf>
+        <owl:sameAs xmlns:owl="http://www.w3.org/2002/07/owl#" rdf:resource="http://sws.geonames.org/6458783/"/>
+    </edm:Place>
+    <edm:TimeSpan rdf:about="http://semium.org/time/18xx">
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ru">19й век</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">19..</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">19??</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">19e</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">19-th</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">19th</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">19th century</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">19e siècle</skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="nl">19de eeuw</skos:prefLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://semium.org/time/AD2xxx"></dcterms:isPartOf>
+        <edm:begin>Thu Jan 01 01:00:00 CET 1801</edm:begin>
+        <edm:end>Mon Dec 31 00:19:32 CET 1900</edm:end>
+    </edm:TimeSpan>
+    <edm:TimeSpan rdf:about="http://semium.org/time/1835">
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#">1835</skos:prefLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://semium.org/time/18xx_2_third"></dcterms:isPartOf>
+        <edm:begin>Thu Jan 01 01:00:00 CET 1835</edm:begin>
+        <edm:end>Thu Dec 31 01:00:00 CET 1835</edm:end>
+    </edm:TimeSpan>
+    <edm:TimeSpan rdf:about="http://semium.org/time/18xx_2_third">
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="ru">Середина 19-го века
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Mid 19th century
+        </skos:prefLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://semium.org/time/18xx"></dcterms:isPartOf>
+        <edm:begin>Wed Jan 01 01:00:00 CET 1834</edm:begin>
+        <edm:end>Mon Dec 31 01:00:00 CET 1866</edm:end>
+    </edm:TimeSpan>
+    <edm:TimeSpan rdf:about="http://semium.org/time/AD2xxx">
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Second millenium AD
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="en">Second millenium AD, years
+            1001-2000
+        </skos:prefLabel>
+        <skos:prefLabel xmlns:skos="http://www.w3.org/2004/02/skos/core#" xml:lang="fr">2e millénaire après J.-C.
+        </skos:prefLabel>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/"
+                          rdf:resource="http://semium.org/time/ChronologicalPeriod"></dcterms:isPartOf>
+    </edm:TimeSpan>
+    <ore:Aggregation xmlns:ore="http://www.openarchives.org/ore/terms/"
+                     rdf:about="http://data.europeana.eu/aggregation/provider/90402/BK_1978_399">
+        <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/90402/BK_1978_399"/>
+        <edm:dataProvider>Rijksmuseum</edm:dataProvider>
+        <edm:isShownAt rdf:resource="http://hdl.handle.net/10934/RM0001.COLLECT.12801"/>
+        <edm:isShownBy
+                rdf:resource="https://lh3.ggpht.com/V4jYDrlLI8WiHjv_t44wKSqXHRGWVEQojx0__oXyP-_3ZtvdbU_YE11LswS9h0At8JvPqNxBZ6n8atRYmqiVtEj4nQ=s0"/>
+        <edm:object
+                rdf:resource="https://lh3.ggpht.com/V4jYDrlLI8WiHjv_t44wKSqXHRGWVEQojx0__oXyP-_3ZtvdbU_YE11LswS9h0At8JvPqNxBZ6n8atRYmqiVtEj4nQ=s0"/>
+        <edm:provider>Rijksmuseum</edm:provider>
+        <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+    </ore:Aggregation>
+    <ore:Proxy xmlns:ore="http://www.openarchives.org/ore/terms/"
+               rdf:about="http://data.europeana.eu/proxy/provider/90402/BK_1978_399">
+        <dc:coverage xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">second quarter 19th century</dc:coverage>
+        <dc:coverage xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">tweede kwart 19e eeuw</dc:coverage>
+        <dc:description xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">Beursje van beschilderd creme-wit
+            fluweel, met gouden beugel. Lange en gladde zak met afgeronde onderkant, waaraan een goudkoordkwast. De
+            beugel is breed U-vormig, waarop drie verschillende reliëfornamenten: puntvormige bladeren, dubbele voluten
+            en, bovenop, een rechte steel met bladeren en sterren in lopend patroon. Op een zijde een schildering van
+            een vaas op voet gevuld met vijf violen rond een rode roos. Op de andere zijde een toef van rode rozen, een
+            theeroos en twee violen (viola tricolor). Gevoerd met ivoorkleurige zijde.
+        </dc:description>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/"
+                   rdf:resource="http://vocab.getty.edu/aat/300133711"></dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/"
+                   rdf:resource="http://vocab.getty.edu/aat/300015050"></dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/"
+                   rdf:resource="http://vocab.getty.edu/aat/300011021"></dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/"
+                   rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.977"></dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/"
+                   rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.192"></dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">velvet (fabric weave)</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">oil paint (paint)</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">gold (metal)</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="en">silk</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">fluweel</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">olieverf</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">goud</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">gouddraad</dc:format>
+        <dc:format xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">zijde</dc:format>
+        <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">http://hdl.handle.net/10934/RM0001.COLLECT.12801
+        </dc:identifier>
+        <dc:identifier xmlns:dc="http://purl.org/dc/elements/1.1/">BK-1978-399</dc:identifier>
+        <dc:publisher xmlns:dc="http://purl.org/dc/elements/1.1/">Rijksmuseum</dc:publisher>
+        <dc:language xmlns:dc="http://purl.org/dc/elements/1.1/">nl</dc:language>
+        <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Public Domain</dc:rights>
+        <dc:rights xmlns:dc="http://purl.org/dc/elements/1.1/">Publiek Domein</dc:rights>
+        <dc:title xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">Beurs van beschilderd creme-wit fluweel, met
+            gouden beugel
+        </dc:title>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.3294"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="http://vocab.getty.edu/aat/300053642"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.48359"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.42776"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.47896"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="http://vocab.getty.edu/aat/300053635"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/"
+                 rdf:resource="http://vocab.getty.edu/aat/300053642"></dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">beurs</dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">weven</dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">snijden</dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">schilderen</dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">smeden</dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">knopen</dc:type>
+        <dc:type xmlns:dc="http://purl.org/dc/elements/1.1/" xml:lang="nl">weven</dc:type>
+        <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/">1835</dcterms:created>
+        <dcterms:extent xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="en">length 14.5 cm</dcterms:extent>
+        <dcterms:extent xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="en">width 7.8 cm</dcterms:extent>
+        <dcterms:extent xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="en">height 3 cm</dcterms:extent>
+        <dcterms:extent xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="nl">geheel lengte 14,5 cm</dcterms:extent>
+        <dcterms:extent xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="nl">geheel breedte 7,8 cm</dcterms:extent>
+        <dcterms:extent xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="nl">geheel hoogte 3 cm</dcterms:extent>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/">collection: accessories</dcterms:isPartOf>
+        <dcterms:isPartOf xmlns:dcterms="http://purl.org/dc/terms/">collectie: accessoires</dcterms:isPartOf>
+        <dcterms:medium xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="en">Gift of Jonkvrouw C.I. Six,
+            's-Graveland
+        </dcterms:medium>
+        <dcterms:medium xmlns:dcterms="http://purl.org/dc/terms/" xml:lang="nl">Schenking van jkvr. C.I. Six,
+            's-Graveland
+        </dcterms:medium>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/">Genève</dcterms:spatial>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="urn:rijksmuseum:thesaurus:RM0001.THESAU.22403"></dcterms:spatial>
+        <edm:europeanaProxy>false</edm:europeanaProxy>
+        <ore:proxyFor rdf:resource="http://data.europeana.eu/item/90402/BK_1978_399"/>
+        <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/provider/90402/BK_1978_399"/>
+        <edm:type>IMAGE</edm:type>
+    </ore:Proxy>
+    <ore:Proxy xmlns:ore="http://www.openarchives.org/ore/terms/"
+               rdf:about="http://data.europeana.eu/proxy/europeana/90402/BK_1978_399">
+        <dc:date xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:resource="http://semium.org/time/18xx"></dc:date>
+        <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="http://semium.org/time/1835"></dcterms:created>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="http://data.europeana.eu/place/base/78"></dcterms:spatial>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="http://data.europeana.eu/place/base/214486"></dcterms:spatial>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="http://data.europeana.eu/place/base/213439"></dcterms:spatial>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="http://data.europeana.eu/place/base/213440"></dcterms:spatial>
+        <dcterms:spatial xmlns:dcterms="http://purl.org/dc/terms/"
+                         rdf:resource="http://data.europeana.eu/place/base/213564"></dcterms:spatial>
+        <edm:europeanaProxy>true</edm:europeanaProxy>
+        <edm:year>1835</edm:year>
+        <ore:proxyFor rdf:resource="http://data.europeana.eu/item/90402/BK_1978_399"/>
+        <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/europeana/90402/BK_1978_399"/>
+        <edm:type>IMAGE</edm:type>
+    </ore:Proxy>
+    <edm:EuropeanaAggregation rdf:about="http://data.europeana.eu/aggregation/europeana/90402/BK_1978_399">
+        <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/90402/BK_1978_399"/>
+        <edm:collectionName>90402_M_NL_Rijksmuseum</edm:collectionName>
+        <edm:country>Netherlands</edm:country>
+        <edm:landingPage rdf:resource="http://europeana.eu/portal/record/90402/BK_1978_399.html"/>
+        <edm:language>nl</edm:language>
+        <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+    </edm:EuropeanaAggregation>
+</rdf:RDF>
