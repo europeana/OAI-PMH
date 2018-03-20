@@ -75,7 +75,7 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
         ListIdentifiersResponse response = (ListIdentifiersResponse) oaipmhServer.makeRequest(request, ListIdentifiersResponse.class);
         ListIdentifiers responseObject = response.getListIdentifiers();
         if (responseObject != null) {
-            counter += responseObject.getHeaders().size();
+            counter += responseObject.getHeader().size();
 
             while (responseObject.getResumptionToken() != null) {
                 request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
@@ -84,7 +84,7 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
                 if (responseObject == null) {
                     break;
                 }
-                counter += responseObject.getHeaders().size();
+                counter += responseObject.getHeader().size();
             }
         }
 
