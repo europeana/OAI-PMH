@@ -1,8 +1,6 @@
 package eu.europeana.oaipmh.model.response;
 
-import eu.europeana.oaipmh.model.OAIPMHVerb;
 import eu.europeana.oaipmh.model.request.OAIRequest;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -20,22 +18,11 @@ public class OAIResponse implements Serializable {
 
     private OAIRequest request;
 
-    private OAIPMHVerb responseObject;
-
     public OAIResponse() {}
 
-    OAIResponse(OAIPMHVerb object, OAIRequest request) {
+    OAIResponse(OAIRequest request) {
         this.responseDate = new Date();
         this.request = request;
-        this.responseObject = object;
-    }
-
-    public void setResponseObject(OAIPMHVerb object) {
-        this.responseObject = object;
-    }
-
-    public OAIPMHVerb getResponseObject() {
-        return responseObject;
     }
 
     public Date getResponseDate() {

@@ -2,15 +2,10 @@ package eu.europeana.oaipmh.client;
 
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
-import eu.europeana.oaipmh.service.OaiPmhService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -78,12 +73,19 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), set);
         ListIdentifiersResponse response = (ListIdentifiersResponse) oaipmhServer.makeRequest(request, ListIdentifiersResponse.class);
-        counter += response.getResponseObject().getHeaders().size();
+        ListIdentifiers responseObject = response.getListIdentifiers();
+        if (responseObject != null) {
+            counter += responseObject.getHeaders().size();
 
-        while (response.getResponseObject().getResumptionToken() != null) {
-            request = getResumptionRequest(oaipmhServer.getOaipmhServer(), response.getResponseObject().getResumptionToken().getValue());
-            response = (ListIdentifiersResponse) oaipmhServer.makeRequest(request, ListIdentifiersResponse.class);
-            counter += response.getResponseObject().getHeaders().size();
+            while (responseObject.getResumptionToken() != null) {
+                request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
+                response = (ListIdentifiersResponse) oaipmhServer.makeRequest(request, ListIdentifiersResponse.class);
+                responseObject = response.getListIdentifiers();
+                if (responseObject == null) {
+                    break;
+                }
+                counter += responseObject.getHeaders().size();
+            }
         }
 
         LOG.info("ListIdentifiers for set " + set + " executed in " + String.valueOf(System.currentTimeMillis() - start) + " ms. Harvested " + counter + " identifiers.");

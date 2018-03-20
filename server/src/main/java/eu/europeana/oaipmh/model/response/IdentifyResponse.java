@@ -7,13 +7,21 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class IdentifyResponse extends OAIResponse {
 
+    @XmlElement(name="Identify")
+    private Identify responseObject;
+
+    public IdentifyResponse() {}
+
     public IdentifyResponse(Identify identify, OAIRequest request) {
-        super(identify, request);
+        super(request);
+        this.responseObject = identify;
     }
 
-    @Override
-    @XmlElement(name="Identify")
+    public void setResponseObject(Identify identify) {
+        this.responseObject = identify;
+    }
+
     public Identify getResponseObject() {
-        return (Identify) super.getResponseObject();
+        return responseObject;
     }
 }

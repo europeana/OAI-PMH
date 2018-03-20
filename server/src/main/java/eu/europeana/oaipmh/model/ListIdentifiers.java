@@ -1,8 +1,5 @@
 package eu.europeana.oaipmh.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;

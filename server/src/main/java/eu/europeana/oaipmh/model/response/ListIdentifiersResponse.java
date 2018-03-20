@@ -1,28 +1,29 @@
 package eu.europeana.oaipmh.model.response;
 
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.OAIPMHVerb;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 
 import javax.xml.bind.annotation.XmlElement;
 
 public class ListIdentifiersResponse extends OAIResponse {
 
+    private ListIdentifiers listIdentifiers;
+
     public ListIdentifiersResponse() {}
 
     public ListIdentifiersResponse(ListIdentifiers listIdentifiers, OAIRequest request) {
-        super(listIdentifiers, request);
+        super(request);
+        this.listIdentifiers = listIdentifiers;
     }
 
-    public void setListIdentifiers(ListIdentifiers verb) {
-        super.setResponseObject(verb);
+    public void setListIdentifiers(ListIdentifiers listIdentifiers) {
+        this.listIdentifiers = listIdentifiers;
     }
 
-    public ListIdentifiers getListIdentifiers() { return getResponseObject(); }
-
-    @Override
     @XmlElement(name="ListIdentifiers")
-    public ListIdentifiers getResponseObject() {
-        return (ListIdentifiers) super.getResponseObject();
+    @JacksonXmlProperty(localName = "ListIdentifiers")
+    public ListIdentifiers getListIdentifiers() {
+        return listIdentifiers;
     }
 }

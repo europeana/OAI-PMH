@@ -7,13 +7,21 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class GetRecordResponse extends OAIResponse {
 
+    @XmlElement(name="GetRecord")
+    private GetRecord responseObject;
+
+    public GetRecordResponse() {}
+
     public GetRecordResponse(GetRecord getRecord, OAIRequest request) {
-        super(getRecord, request);
+        super(request);
+        this.responseObject = getRecord;
     }
 
-    @Override
-    @XmlElement(name="GetRecord")
+    public void setResponseObject(GetRecord getRecord) {
+        this.responseObject = getRecord;
+    }
+
     public GetRecord getResponseObject() {
-        return (GetRecord) super.getResponseObject();
+        return responseObject;
     }
 }

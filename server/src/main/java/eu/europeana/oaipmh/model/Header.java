@@ -1,8 +1,5 @@
 package eu.europeana.oaipmh.model;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
-import com.sun.xml.internal.txw2.annotation.XmlElement;
-
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
