@@ -9,16 +9,14 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySources;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,10 +26,10 @@ import java.util.Date;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
-public class SearchApiTest {
+public class SearchApiTest extends BaseApiTest {
     private static final String METADATA_FORMAT = "edm";
 
     private static final String DATE_1 = "2017-08-03T15:16:21Z";
@@ -56,24 +54,12 @@ public class SearchApiTest {
 
     private static final String LIST_IDENTIFIERS_UNTIL = "listIdentifiersUntil";
 
-    private static final String LINUX_SEPARATOR = "/";
-
-    private static final String WINDOWS_SEPARATOR = "\\";
-
-    private static String resDir;
-
     @Mock
-    CloudSolrClient solrClient;
+    private CloudSolrClient solrClient;
 
-    @Autowired
     @InjectMocks
     private SearchApi searchApi;
 
-
-    @BeforeClass
-    public static void init() {
-        resDir = Paths.get(Paths.get(".").toAbsolutePath().normalize().toString(), "src/test/resources").toAbsolutePath().normalize().toString().replace(WINDOWS_SEPARATOR, LINUX_SEPARATOR);
-    }
 
     @Test
     public void listIdentifiersGeneral() throws OaiPmhException, IOException, SolrServerException {
