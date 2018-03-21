@@ -2,14 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<modules>
-		<module>client</module>
-		<module>server</module>
-	</modules>
-
-	<artifactId>oai-pmh2</artifactId>
-	<packaging>pom</packaging>
-	<name>Europeana OAI-PMH</name>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -17,4 +9,21 @@
 		<version>1.5.10.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
+	<groupId>eu.europeana</groupId>
+	<artifactId>oai-pmh2</artifactId>
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Europeana OAI-PMH2</name>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
+
+	<modules>
+		<module>server</module>
+		<module>client</module>
+	</modules>
 </project>
