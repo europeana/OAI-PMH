@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,18 +8,17 @@ import java.util.List;
 
 public class Header implements Serializable {
 
+    @XmlElement
     private String identifier;
 
+    @XmlElement
     private Date datestamp;
 
+    @XmlElement
     private List<String> setSpec;
 
     public Header() {
         // empty constructor to allow deserialization
-    }
-
-    public Header(String identifier) {
-        this.identifier = identifier;
     }
 
     public Header(String identifier, Date datestamp, String setSpec) {

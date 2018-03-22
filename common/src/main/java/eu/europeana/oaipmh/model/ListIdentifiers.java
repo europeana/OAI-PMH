@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name="ListIdentifiers")
-@XmlType(propOrder={"header", "resumptionToken"})
+@XmlType(propOrder={"headers", "resumptionToken"})
 public class ListIdentifiers extends OAIPMHVerb implements Serializable {
 
     private static final long serialVersionUID = -8111855326100870425L;
@@ -32,11 +32,11 @@ public class ListIdentifiers extends OAIPMHVerb implements Serializable {
         this.resumptionToken = resumptionToken;
     }
 
-    public List<Header> getHeader() {
+    public List<Header> getHeaders() {
         return headers;
     }
 
-    public void setHeader(List<Header> headers) {
+    public void setHeaders(List<Header> headers) {
         this.headers = headers;
     }
 
