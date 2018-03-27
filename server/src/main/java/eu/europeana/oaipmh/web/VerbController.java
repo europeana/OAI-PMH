@@ -158,5 +158,4 @@ public class VerbController {
     public String handleIllegalVerbs(@RequestParam(value = "verb", required = false) String verb) throws OaiPmhException {
         throw new BadVerbException(verb);
     }
-
 }

@@ -44,6 +44,7 @@ public class OAIPMHServiceClient {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ListIdentifiersResponse.class, new ListIdentifiersResponseDeserializer());
         mapper.registerModule(module);
+        LOG.info("Using OAI-PMH server at " + oaipmhServer);
     }
 
     public String getOaipmhServer() {

@@ -1,5 +1,8 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.corelib.definitions.jibx.RDF;
+import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
@@ -12,13 +15,14 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Retrieve record xml information from the Europeana Record API
  * @author Patrick Ehlert
  * Created on 28-02-2018
  */
-public class RecordApi implements RecordProvider {
+public class RecordApi extends BaseRecordProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(RecordApi.class);
 
@@ -32,21 +36,20 @@ public class RecordApi implements RecordProvider {
      * @see RecordProvider#getRecord(String)
      */
     @Override
-    public String getRecord(String id) throws OaiPmhException {
+    public Record getRecord(String id) throws OaiPmhException {
         if (id == null) {
             throw new IdDoesNotExistException(id);
         }
+
+        String recordId = prepareId(id);
+
         // construct url
-        StringBuilder url = new StringBuilder(recordApiUrl);
-        url.append(id);
-        url.append(".rdf?");
-        url.append(appendWskey());
-        String requestUrl = url.toString();
+        String requestUrl = constructRequestUrl(recordId.substring(1));
 
         LOG.debug("Request is " + requestUrl);
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new ApiResponseErrorHandler());
-        ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);
+        ResponseEntity<RDF> response = restTemplate.getForEntity(requestUrl, RDF.class);
         LOG.debug("Response = {}", response);
 
         HttpStatus responseCode = response.getStatusCode();
@@ -57,9 +60,20 @@ public class RecordApi implements RecordProvider {
         } else if (!HttpStatus.OK.equals(responseCode)) {
             throw new OaiPmhException("Error retrieving record. Status = "+response.getStatusCodeValue());
         }
+        RDF rdfMetadata = response.getBody();
 
-        return response.getBody();
+        Header header = new Header();
+        header.setIdentifier(id);
+        header.setDatestamp(new Date());
+        return new Record(header, rdfMetadata);
+    }
 
+    private String constructRequestUrl(String id) {
+        StringBuilder url = new StringBuilder(recordApiUrl);
+        url.append(id);
+        url.append(".rdf?");
+        url.append(appendWskey());
+        return url.toString();
     }
 
     private String appendWskey() {
