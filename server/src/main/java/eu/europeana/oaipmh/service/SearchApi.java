@@ -32,7 +32,7 @@ import static eu.europeana.oaipmh.util.SolrConstants.*;
 /**
  * Retrieve information from Search API
  */
-public class SearchApi implements IdentifierProvider {
+public class SearchApi extends BaseProvider implements IdentifierProvider {
 
     private static final Logger LOG = LogManager.getLogger(SearchApi.class);
 
@@ -154,7 +154,7 @@ public class SearchApi implements IdentifierProvider {
         for (Object value : document.getFieldValues(DATASET_NAME)) {
             sets.add((String) value);
         }
-        return new Header((String) document.getFieldValue(EUROPEANA_ID), (Date) document.getFieldValue(TIMESTAMP), sets);
+        return new Header(prepareFullId((String) document.getFieldValue(EUROPEANA_ID)), (Date) document.getFieldValue(TIMESTAMP), sets);
     }
 
     @Override

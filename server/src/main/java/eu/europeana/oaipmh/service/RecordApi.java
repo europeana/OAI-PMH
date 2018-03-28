@@ -22,7 +22,7 @@ import java.util.Date;
  * @author Patrick Ehlert
  * Created on 28-02-2018
  */
-public class RecordApi extends BaseRecordProvider implements RecordProvider {
+public class RecordApi extends BaseProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(RecordApi.class);
 
@@ -41,7 +41,7 @@ public class RecordApi extends BaseRecordProvider implements RecordProvider {
             throw new IdDoesNotExistException(id);
         }
 
-        String recordId = prepareId(id);
+        String recordId = prepareRecordId(id);
 
         // construct url
         String requestUrl = constructRequestUrl(recordId.substring(1));
