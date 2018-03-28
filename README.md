@@ -1,2 +1,2 @@
 # OAI-PMH2
-Europeana OAI-PMH server (based on Spring-Boot)
+Europeana OAI-PMH client and server applications (based on Spring-Boot)
