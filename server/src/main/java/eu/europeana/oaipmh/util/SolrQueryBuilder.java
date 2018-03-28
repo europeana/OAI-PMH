@@ -33,7 +33,7 @@ public class SolrQueryBuilder {
             String fromString = from == null ? ANY_DATE : DateConverter.toIsoDate(from);
             String untilString = until == null ? ANY_DATE : DateConverter.toIsoDate(until);
 
-            query.addFilterQuery(String.format(DATE_RANGE_TEMPLATE, TIMESTAMP, fromString, untilString));
+            query.addFilterQuery(String.format(DATE_RANGE_TEMPLATE, TIMESTAMP_UPDATE, fromString, untilString));
         }
     }
 
@@ -53,11 +53,13 @@ public class SolrQueryBuilder {
         SolrQuery query = new SolrQuery("*:*");
         query.setRows(rows);
         query.addField(TIMESTAMP);
+        query.addField(TIMESTAMP_UPDATE);
         query.addField(EUROPEANA_ID);
         query.addField(DATASET_NAME);
-        query.addSort(TIMESTAMP, SolrQuery.ORDER.asc);
+        query.addSort(TIMESTAMP_UPDATE, SolrQuery.ORDER.asc);
         query.addSort(EUROPEANA_ID, SolrQuery.ORDER.asc);
         query.set(CURSOR_MARK_PARAM, cursorMark);
+        query.setParam(WT_PARAM, WT_JSON);
         return query;
     }
 }

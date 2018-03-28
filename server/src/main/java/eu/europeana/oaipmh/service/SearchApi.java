@@ -117,6 +117,11 @@ public class SearchApi implements IdentifierProvider {
             headers.add(documentToHeader(document));
         }
 
+        ResumptionToken resumptionToken = prepareResumptionToken(response, cursor, previousCursorMark, docs);
+        return new ListIdentifiers(headers, resumptionToken);
+    }
+
+    private ResumptionToken prepareResumptionToken(QueryResponse response, long cursor, String previousCursorMark, SolrDocumentList docs) {
         ResumptionToken resumptionToken;
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             resumptionToken = ResumptionTokenHelper.createResumptionToken(response.getNextCursorMark(),
@@ -124,7 +129,7 @@ public class SearchApi implements IdentifierProvider {
         } else {
             resumptionToken = null;
         }
-        return new ListIdentifiers(headers, resumptionToken);
+        return resumptionToken;
     }
 
     private boolean shouldCreateResumptionToken(QueryResponse response, long cursor, String previousCursorMark) {
@@ -154,7 +159,11 @@ public class SearchApi implements IdentifierProvider {
         for (Object value : document.getFieldValues(DATASET_NAME)) {
             sets.add((String) value);
         }
-        return new Header((String) document.getFieldValue(EUROPEANA_ID), (Date) document.getFieldValue(TIMESTAMP), sets);
+        Date timestamp = (Date) document.getFieldValue(TIMESTAMP_UPDATE);
+        if (timestamp == null) {
+            timestamp = (Date) document.getFieldValue(TIMESTAMP);
+        }
+        return new Header((String) document.getFieldValue(EUROPEANA_ID), timestamp, sets);
     }
 
     @Override
