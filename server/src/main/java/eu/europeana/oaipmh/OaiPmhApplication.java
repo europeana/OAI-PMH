@@ -25,6 +25,7 @@ import java.io.IOException;
 @SpringBootApplication
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
 @EnableConfigurationProperties(MetadataFormats.class)
 public class OaiPmhApplication extends SpringBootServletInitializer {
 
