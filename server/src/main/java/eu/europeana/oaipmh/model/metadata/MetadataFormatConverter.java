@@ -1,5 +1,8 @@
 package eu.europeana.oaipmh.model.metadata;
 
+/**
+ * General interface for metadata format converters
+ */
 public interface MetadataFormatConverter {
 
     /**

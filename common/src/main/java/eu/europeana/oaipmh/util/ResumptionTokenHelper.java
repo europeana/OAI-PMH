@@ -7,6 +7,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Helper class for managing resumption tokens. It is used to encode and decode information into base64 string that is returned to the client.
+ */
 public class ResumptionTokenHelper {
     private static final String TOKEN_SEPARATOR = "___";
 

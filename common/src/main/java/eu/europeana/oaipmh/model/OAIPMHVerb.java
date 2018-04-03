@@ -5,6 +5,9 @@ import eu.europeana.oaipmh.model.response.OAIResponse;
 
 import javax.xml.bind.annotation.XmlSeeAlso;
 
+/**
+ * Abstract class for a tag representing response for a verb
+ */
 @XmlSeeAlso({ListIdentifiers.class, GetRecord.class, Identify.class})
 public abstract class OAIPMHVerb {
 

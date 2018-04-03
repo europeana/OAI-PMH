@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class represents header tag in the ListIdentifiers response XML
+ */
 public class Header implements Serializable {
 
     @XmlElement

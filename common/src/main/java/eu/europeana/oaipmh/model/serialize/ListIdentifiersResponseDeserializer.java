@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class is a custom deserializer to support deserializing unwrapped lists
+ */
 public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIdentifiersResponse> {
 
     public ListIdentifiersResponseDeserializer() {

@@ -6,6 +6,9 @@ import eu.europeana.oaipmh.model.request.OAIRequest;
 
 import javax.xml.bind.annotation.XmlElement;
 
+/**
+ * The class represents the response for the ListIdentifiers verb request
+ */
 public class ListIdentifiersResponse extends OAIResponse {
 
     private ListIdentifiers listIdentifiers;

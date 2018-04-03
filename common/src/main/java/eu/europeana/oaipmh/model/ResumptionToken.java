@@ -9,6 +9,9 @@ import javax.xml.bind.annotation.XmlValue;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class represents resumption token tag in the ListIdentifiers verb response XML
+ */
 @XmlType(propOrder = {"completeListSize", "expirationDate", "cursor"})
 public class ResumptionToken {
 
