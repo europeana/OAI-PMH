@@ -17,6 +17,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class ResumptionTokenHelperTest {
+    private static final String INCORRECT_TOKEN = "AHGVHFGYDUSJKSBDSBHSVDJSVDYUASAHJISAKBB767873213HVHGVGH";
+
     private static final String NEXT_CURSOR_MARK = "ABC";
 
     private static final long COMPLETE_LIST_SIZE = 1234L;
@@ -26,6 +28,11 @@ public class ResumptionTokenHelperTest {
     private static final long TTL = 84600L;
 
     private static final List<String> FILTER = Arrays.asList(new String[] {"a:\"b\"", "x:[y TO z]"});
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDecodeIncorrectToken() {
+        ResumptionTokenHelper.decodeResumptionToken(INCORRECT_TOKEN);
+    }
 
     @Test
     public void testEncodeDecode() {

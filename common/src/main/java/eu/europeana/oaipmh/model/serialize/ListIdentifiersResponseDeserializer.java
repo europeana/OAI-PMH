@@ -25,6 +25,15 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         super(vc);
     }
 
+    /**
+     * This method is a custom deserializer for nodes corresponding to the ListIdentifiers response. It's purpose is to correctly
+     * deserialize header lists which are unwprapped.
+     *
+     * @param jp parser
+     * @param ctxt context
+     * @return correctly deserialized ListIdentifiersResponse object
+     * @throws IOException
+     */
     @Override
     public ListIdentifiersResponse deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
@@ -51,6 +60,12 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         return listIdentifiersResponse;
     }
 
+    /**
+     * Deserialize Header entries into the list.
+     *
+     * @param header header json node
+     * @return list of header objects
+     */
     private List<Header> getHeaders(JsonNode header) {
         List<Header> headers = new ArrayList<>();
 
@@ -75,6 +90,12 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         return headers;
     }
 
+    /**
+     * Deserialize resumption token node.
+     *
+     * @param resumptionTokenNode resumption token json node
+     * @return resumption token object deserialized from the json node
+     */
     private ResumptionToken getResumptionToken(JsonNode resumptionTokenNode) {
         if (resumptionTokenNode != null) {
             ResumptionToken token = new ResumptionToken();
@@ -87,6 +108,12 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         return null;
     }
 
+    /**
+     * Prepare ListIdentifiersRequest object from the json node.
+     *
+     * @param request request json node
+     * @return ListIdentifiersRequest object desrialized from the json node
+     */
     private ListIdentifiersRequest getListIdentifiersRequest(JsonNode request) {
         ListIdentifiersRequest listIdentifiersRequest = new ListIdentifiersRequest(request.get("verb").asText(), request.get("content").asText());
         if (request.get("from") != null) {
