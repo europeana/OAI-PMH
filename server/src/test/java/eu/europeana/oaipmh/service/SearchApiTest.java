@@ -11,7 +11,6 @@ import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -63,7 +62,6 @@ public class SearchApiTest extends BaseApiTest {
     @InjectMocks
     private SearchApi searchApi;
 
-    @Ignore
     @Test
     public void listIdentifiersGeneral() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS);
@@ -80,7 +78,6 @@ public class SearchApiTest extends BaseApiTest {
         return response;
     }
 
-    @Ignore
     @Test
     public void listIdentifiersSet() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_SET);
@@ -90,7 +87,6 @@ public class SearchApiTest extends BaseApiTest {
         assertResults(result, null, null, SET_1);
     }
 
-    @Ignore
     @Test
     public void listIdentifiersFrom() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM);
@@ -101,7 +97,6 @@ public class SearchApiTest extends BaseApiTest {
         assertResults(result, from, null, null);
     }
 
-    @Ignore
     @Test
     public void listIdentifiersUntil() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_UNTIL);
@@ -112,7 +107,6 @@ public class SearchApiTest extends BaseApiTest {
         assertResults(result, null, until, null);
     }
 
-    @Ignore
     @Test
     public void listIdentifiersFromUntil() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM_UNTIL);
@@ -124,7 +118,6 @@ public class SearchApiTest extends BaseApiTest {
         assertResults(result, from, until, null);
     }
 
-    @Ignore
     @Test(expected = NoRecordsMatchException.class)
     public void listIdentifiersWithEmptyResult() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = Mockito.mock(QueryResponse.class);
@@ -136,7 +129,6 @@ public class SearchApiTest extends BaseApiTest {
         searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2);
     }
 
-    @Ignore
     @Test
     public void listIdentifiersFromUntilSet() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM_UNTIL_SET);
