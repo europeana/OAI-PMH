@@ -52,7 +52,6 @@ public class SolrQueryBuilder {
     private static SolrQuery getDefaultListIdentifiersSolrQuery(int rows, String cursorMark) {
         SolrQuery query = new SolrQuery("*:*");
         query.setRows(rows);
-        query.addField(TIMESTAMP);
         query.addField(TIMESTAMP_UPDATE);
         query.addField(EUROPEANA_ID);
         query.addField(DATASET_NAME);

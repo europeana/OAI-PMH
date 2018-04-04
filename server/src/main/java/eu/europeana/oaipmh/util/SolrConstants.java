@@ -1,8 +1,6 @@
 package eu.europeana.oaipmh.util;
 
 public interface SolrConstants {
-    public static final String TIMESTAMP = "timestamp";
-
     public static final String TIMESTAMP_UPDATE = "timestamp_update";
 
     public static final String EUROPEANA_ID = "europeana_id";

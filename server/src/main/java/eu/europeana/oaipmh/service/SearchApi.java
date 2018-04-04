@@ -57,6 +57,9 @@ public class SearchApi implements IdentifierProvider {
     @Value("${solr.password}")
     private String password;
 
+    @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
+    private Date defaultIdentifierTimestamp;
+
     private CloudSolrClient client;
 
     @PostConstruct
@@ -161,7 +164,7 @@ public class SearchApi implements IdentifierProvider {
         }
         Date timestamp = (Date) document.getFieldValue(TIMESTAMP_UPDATE);
         if (timestamp == null) {
-            timestamp = (Date) document.getFieldValue(TIMESTAMP);
+            timestamp = defaultIdentifierTimestamp;
         }
         return new Header((String) document.getFieldValue(EUROPEANA_ID), timestamp, sets);
     }
