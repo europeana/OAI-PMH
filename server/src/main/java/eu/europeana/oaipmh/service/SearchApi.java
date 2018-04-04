@@ -57,6 +57,9 @@ public class SearchApi implements IdentifierProvider {
     @Value("${solr.password}")
     private String password;
 
+    @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
+    private Date defaultIdentifierTimestamp;
+
     private CloudSolrClient client;
 
     /**
@@ -154,6 +157,11 @@ public class SearchApi implements IdentifierProvider {
             headers.add(documentToHeader(document));
         }
 
+        ResumptionToken resumptionToken = prepareResumptionToken(response, cursor, previousCursorMark, docs);
+        return new ListIdentifiers(headers, resumptionToken);
+    }
+
+    private ResumptionToken prepareResumptionToken(QueryResponse response, long cursor, String previousCursorMark, SolrDocumentList docs) {
         ResumptionToken resumptionToken;
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             resumptionToken = ResumptionTokenHelper.createResumptionToken(response.getNextCursorMark(),
@@ -161,7 +169,7 @@ public class SearchApi implements IdentifierProvider {
         } else {
             resumptionToken = null;
         }
-        return new ListIdentifiers(headers, resumptionToken);
+        return resumptionToken;
     }
 
     /**
@@ -215,7 +223,11 @@ public class SearchApi implements IdentifierProvider {
         for (Object value : document.getFieldValues(DATASET_NAME)) {
             sets.add((String) value);
         }
-        return new Header((String) document.getFieldValue(EUROPEANA_ID), (Date) document.getFieldValue(TIMESTAMP), sets);
+        Date timestamp = (Date) document.getFieldValue(TIMESTAMP_UPDATE);
+        if (timestamp == null) {
+            timestamp = defaultIdentifierTimestamp;
+        }
+        return new Header((String) document.getFieldValue(EUROPEANA_ID), timestamp, sets);
     }
 
     @Override
