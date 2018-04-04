@@ -5,6 +5,7 @@ import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import eu.europeana.oaipmh.util.SolrQueryBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -35,6 +36,8 @@ import static eu.europeana.oaipmh.util.SolrConstants.*;
 public class SearchApi implements IdentifierProvider {
 
     private static final Logger LOG = LogManager.getLogger(SearchApi.class);
+
+    private static final Date DEFAULT_IDENTIFIER_TIMESTAMP = DateConverter.fromIsoDateTime("1970-01-01T00:00:00Z");
 
     @Value("${identifiersPerPage}")
     private int identifiersPerPage;
@@ -79,6 +82,10 @@ public class SearchApi implements IdentifierProvider {
         client.setDefaultCollection(solrCore);
         client.connect();
         LOG.info("Connected to Solr {}", solrHosts);
+
+        if (defaultIdentifierTimestamp == null) {
+            defaultIdentifierTimestamp = DEFAULT_IDENTIFIER_TIMESTAMP;
+        }
     }
 
     /**
