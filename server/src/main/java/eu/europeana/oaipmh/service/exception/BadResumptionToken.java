@@ -11,4 +11,8 @@ public class BadResumptionToken extends OaiPmhException {
     public BadResumptionToken(String msg) {
         super(msg, ErrorCode.BAD_RESUMPTION_TOKEN);
     }
+
+    public boolean doLog() {
+        return false;
+    }
 }

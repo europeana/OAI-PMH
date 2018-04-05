@@ -8,7 +8,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class NoRecordsMatchException extends OaiPmhException {
+
     public NoRecordsMatchException(String msg) {
         super(msg, ErrorCode.NO_RECORDS_MATCH);
+    }
+
+    public boolean doLog() {
+        return false;
     }
 }
