@@ -227,12 +227,17 @@ public class SearchApi implements IdentifierProvider {
      */
     private Header documentToHeader(SolrDocument document) {
         List<String> sets = new ArrayList<>();
-        for (Object value : document.getFieldValues(DATASET_NAME)) {
-            sets.add((String) value);
+        Object setNames = document.getFieldValues(DATASET_NAME);
+        if (setNames != null) {
+            for (Object value : document.getFieldValues(DATASET_NAME)) {
+                sets.add((String) value);
+            }
         }
-        Date timestamp = (Date) document.getFieldValue(TIMESTAMP_UPDATE);
-        if (timestamp == null) {
-            timestamp = defaultIdentifierTimestamp;
+
+        Date timestamp = defaultIdentifierTimestamp;
+        Object timestampUpdate = document.getFieldValue(TIMESTAMP_UPDATE);
+        if (timestampUpdate != null) {
+            timestamp = (Date) timestampUpdate;
         }
         return new Header((String) document.getFieldValue(EUROPEANA_ID), timestamp, sets);
     }
