@@ -10,6 +10,7 @@ import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
 import eu.europeana.oaipmh.util.DateConverter;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -76,16 +77,30 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
             for (int i = 0; i < header.size(); i++) {
                 JsonNode identifierNode = header.get(i);
                 Header headerObject = new Header();
-                headerObject.setDatestamp(DateConverter.fromIsoDateTime(identifierNode.get("datestamp").asText()));
-                headerObject.setIdentifier(identifierNode.get("identifier").asText());
-                JsonNode setSpecNode = identifierNode.get("setSpec");
-                if (setSpecNode.isArray()) {
-                    for (int s = 0; s < setSpecNode.size(); s++) {
-                        JsonNode setSpecEntry = setSpecNode.get(s);
-                        headerObject.setSetSpec(setSpecEntry.get(0).asText());
-                    }
+
+                // identifier should never be null, but better safe than sorry
+                JsonNode id = identifierNode.get("identifier");
+                if (id == null) {
+                    LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! "+header.textValue());
                 } else {
-                    headerObject.setSetSpec(setSpecNode.asText());
+                    headerObject.setIdentifier(identifierNode.get("identifier").asText());
+                }
+
+                JsonNode dateNode = identifierNode.get("datestamp");
+                if (dateNode != null) {
+                    headerObject.setDatestamp(DateConverter.fromIsoDateTime(identifierNode.get("datestamp").asText()));
+                }
+
+                JsonNode setSpecNode = identifierNode.get("setSpec");
+                if (setSpecNode != null) {
+                    if (setSpecNode.isArray()) {
+                        for (int s = 0; s < setSpecNode.size(); s++) {
+                            JsonNode setSpecEntry = setSpecNode.get(s);
+                            headerObject.setSetSpec(setSpecEntry.get(0).asText());
+                        }
+                    } else {
+                        headerObject.setSetSpec(setSpecNode.asText());
+                    }
                 }
                 headers.add(headerObject);
             }

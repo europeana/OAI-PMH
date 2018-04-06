@@ -25,6 +25,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<spring-boot.version>1.5.10.RELEASE</spring-boot.version>
 		<jackson.version>2.9.4</jackson.version>
+		<log4j2.version>2.9.1</log4j2.version>
 	</properties>
 
 	<modules>
