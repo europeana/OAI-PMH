@@ -1,11 +1,10 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.corelib.definitions.jibx.RDF;
+import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,7 +39,6 @@ public class RecordApiTest extends BaseApiTest {
      * @throws OaiPmhException
      */
     @Test
-    @Ignore
     public void getRecord() throws OaiPmhException, IOException {
         Record record = new Record(null, loadRecord());
         given(recordApi.getRecord(TEST_RECORD_ID)).willReturn(record);
@@ -49,13 +47,13 @@ public class RecordApiTest extends BaseApiTest {
         Assert.assertNotNull(xml);
 
         // note that this check only works for records that do not redirect to a new record Id under water
-        //Assert.assertTrue(xml.getMetadata().contains("about=\"http://data.europeana.eu/item/"+TEST_RECORD_ID));
+        Assert.assertTrue(xml.getMetadata().getMetadata().contains("about=\"http://data.europeana.eu/item/"+TEST_RECORD_ID));
     }
 
-    private RDF loadRecord() throws IOException {
+    private RDFMetadata loadRecord() throws IOException {
         Path path = Paths.get(resDir + "/" + TEST_RECORD_FILENAME);
         String content = new String(Files.readAllBytes(path));
-        return new RDF();
+        return new RDFMetadata(content);
     }
 
     /**

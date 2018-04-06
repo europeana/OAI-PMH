@@ -8,6 +8,7 @@ import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
@@ -53,6 +54,7 @@ public class DBRecordProvider extends BaseRecordProvider implements RecordProvid
         }
     }
 
+
     @Override
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareId(id);
@@ -61,13 +63,22 @@ public class DBRecordProvider extends BaseRecordProvider implements RecordProvid
             FullBean bean = mongoServer.getFullBean(recordId);
             if (bean != null) {
                 Header header = getHeader(id, bean);
-                return new Record(header, EdmUtils.toRDF((FullBeanImpl) bean));
+                String edm = EdmUtils.toEDM((FullBeanImpl) bean, false);
+                return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
             }
         } catch (MongoDBException | MongoRuntimeException e) {
             LOG.error("Record with id " + id + " could not be retrieved.", e);
             throw new OaiPmhException(e.getMessage());
         }
         return null;
+    }
+
+    private String removeXMLHeader(String xml) {
+        String[] split = xml.split("\\?>");
+        if (split.length == 2) {
+            return split[1];
+        }
+        return xml;
     }
 
     private Header getHeader(String id, FullBean bean) {
