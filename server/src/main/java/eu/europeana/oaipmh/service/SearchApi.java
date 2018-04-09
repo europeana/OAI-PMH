@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -227,19 +228,18 @@ public class SearchApi implements IdentifierProvider {
      */
     private Header documentToHeader(SolrDocument document) {
         List<String> sets = new ArrayList<>();
-        Object setNames = document.getFieldValues(DATASET_NAME);
+        Collection<Object> setNames = document.getFieldValues(DATASET_NAME);
         if (setNames != null) {
-            for (Object value : document.getFieldValues(DATASET_NAME)) {
+            for (Object value : setNames) {
                 sets.add((String) value);
             }
         }
 
-        Date timestamp = defaultIdentifierTimestamp;
-        Object timestampUpdate = document.getFieldValue(TIMESTAMP_UPDATE);
-        if (timestampUpdate != null) {
-            timestamp = (Date) timestampUpdate;
+        Date timestampUpdate = (Date) document.getFieldValue(TIMESTAMP_UPDATE);
+        if (timestampUpdate == null) {
+            timestampUpdate = defaultIdentifierTimestamp;
         }
-        return new Header((String) document.getFieldValue(EUROPEANA_ID), timestamp, sets);
+        return new Header((String) document.getFieldValue(EUROPEANA_ID), timestampUpdate, sets);
     }
 
     @Override
