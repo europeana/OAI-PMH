@@ -56,6 +56,13 @@ public class DBRecordProvider extends BaseRecordProvider implements RecordProvid
     }
 
 
+    /**
+     * Retrieves record from MongoDB and prepares EDM metadata.
+     *
+     * @param id identifier of the record (prefixed with ${identifierPrefix}
+     * @return object of Record class which contains header (with identifier, creation date and sets) and metadata with EDM metadata
+     * @throws OaiPmhException
+     */
     @Override
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareId(id);
@@ -92,6 +99,8 @@ public class DBRecordProvider extends BaseRecordProvider implements RecordProvid
 
     @Override
     public void close() {
-
+        if (mongoServer != null) {
+            mongoServer.close();
+        }
     }
 }
