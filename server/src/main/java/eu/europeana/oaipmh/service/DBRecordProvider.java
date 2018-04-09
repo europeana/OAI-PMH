@@ -10,6 +10,7 @@ import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -68,9 +69,9 @@ public class DBRecordProvider extends BaseRecordProvider implements RecordProvid
             }
         } catch (MongoDBException | MongoRuntimeException e) {
             LOG.error("Record with id " + id + " could not be retrieved.", e);
-            throw new OaiPmhException(e.getMessage());
+            throw new IdDoesNotExistException(id);
         }
-        return null;
+        throw new IdDoesNotExistException(id);
     }
 
     private String removeXMLHeader(String xml) {

@@ -60,11 +60,11 @@ public class RecordApiTest extends BaseApiTest {
      * Test if the proper error is thrown if we provide an incorrect id
      * @throws OaiPmhException
      */
-    @Test(expected= IdDoesNotExistException.class)
+    @Test(expected=IdDoesNotExistException.class)
     public void getRecordNotExists() throws OaiPmhException {
         given(recordApi.getRecord("INCORRECT/ID")).willThrow(new IdDoesNotExistException("INCORRECT/ID"));
 
-        Record xml = recordApi.getRecord("INCORRECT/ID");
-        Assert.assertNull(xml);
+        recordApi.getRecord("INCORRECT/ID");
+        Assert.assertTrue(false);
     }
 }
