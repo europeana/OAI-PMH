@@ -44,7 +44,8 @@ public class ProgressLogger {
         Duration d = new Duration(lastLogTime, System.currentTimeMillis());
         if (logAfterSeconds > 0 && d.getMillis() / 1000 > logAfterSeconds) {
             if (totalItems > 0) {
-                Period period = new Period(Math.round((totalItems - itemsDone) * (Double.valueOf(itemsDone) / (System.currentTimeMillis() - startTime))));
+                Double itemsPerMS = itemsDone * 1d / (System.currentTimeMillis() - startTime);
+                Period period = new Period(Math.round((totalItems - itemsDone) / itemsPerMS));
                 String time;
                 if (period.getDays() >= 1) {
                     time = String.format("%d days, %d hours and %d minutes", period.getDays(), period.getHours(), period.getMinutes());
@@ -53,7 +54,7 @@ public class ProgressLogger {
                 } else {
                     time = String.format("%d minutes and %d seconds", period.getMinutes(), period.getSeconds());
                 }
-                LOG.info("Retrieved {} items of {}. Expected time remaining is {}", itemsDone, totalItems, time);
+                LOG.info("Retrieved {} items of {} ({} records/sec). Expected time remaining is {}", itemsDone, totalItems, Math.round(itemsPerMS * 1000), time);
             } else {
                 LOG.info("Retrieved {} items");
             }
