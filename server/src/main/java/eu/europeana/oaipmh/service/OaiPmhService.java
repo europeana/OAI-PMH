@@ -13,6 +13,7 @@ import eu.europeana.oaipmh.model.metadata.MetadataFormats;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
