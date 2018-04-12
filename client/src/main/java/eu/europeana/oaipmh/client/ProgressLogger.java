@@ -68,7 +68,6 @@ public class ProgressLogger {
         } else if (period.getMinutes() >= 1){
             result = String.format("%d minutes and %d seconds", period.getMinutes(), period.getSeconds());
         } else {
-            LOG.error("durationInMs = "+durationInMs);
             result = String.format("%d.%d seconds", period.getSeconds(), period.getMillis());
         }
         return result;
