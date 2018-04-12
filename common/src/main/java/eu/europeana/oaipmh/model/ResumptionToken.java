@@ -73,10 +73,12 @@ public class ResumptionToken {
         this.cursor = cursor;
     }
 
+    @XmlTransient
     public List<String> getFilterQuery() {
         return filterQuery;
     }
 
+    @XmlTransient
     public void setFilterQuery(List<String> filterQuery) {
         this.filterQuery = filterQuery;
     }

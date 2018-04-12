@@ -1,5 +1,8 @@
 package eu.europeana.oaipmh.web;
 
+import eu.europeana.oaipmh.model.request.IdentifyRequest;
+import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
+import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import org.junit.Before;
@@ -19,6 +22,7 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 
 /**
  * Test the application's controller
@@ -59,7 +63,7 @@ public class VerbControllerTest {
 
     @Test
     public void testIdentify() throws Exception {
-        given(ops.getIdentify()).willReturn(IDENTIFY_RESPONSE);
+        given(ops.getIdentify(any(IdentifyRequest.class))).willReturn(IDENTIFY_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -75,7 +79,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiersWithResumptionToken() throws Exception {
-        given(ops.listIdentifiers(Mockito.anyString())).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
+        given(ops.listIdentifiersWithToken(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -83,7 +87,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiersWithCorruptedResumptionToken() throws Exception {
-        given(ops.listIdentifiers(Mockito.anyString())).willCallRealMethod();
+        given(ops.listIdentifiersWithToken(any(ListIdentifiersRequest.class))).willCallRealMethod();
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_CORRUPTED_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -91,7 +95,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiers() throws Exception {
-        given(ops.listIdentifiers(Mockito.anyString(), Mockito.any(Date.class), Mockito.any(Date.class), Mockito.anyString())).willReturn(LIST_IDENTIFIERS_RESPONSE);
+        given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011_Ag_EU_DCA_Kultura.hr&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
