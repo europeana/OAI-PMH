@@ -1,6 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.ListIdentifiers;
+import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 
 import java.util.Date;
@@ -23,11 +24,11 @@ public interface IdentifierProvider extends ClosableProvider {
     ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException;
 
     /**
-     * Returns next page of list identifiers. ResumptionToken must be a valid string retrieved by calling 4 argument version of listIdentifiers.
+     * Returns next page of list identifiers. ResumptionToken is an object which is decoded from a valid string retrieved by calling 4 argument version of listIdentifiers.
      *
-     * @param resumptionToken token string used to retrieve next page of results
+     * @param resumptionToken decoded resumption token used to retrieve next page of results
      * @return object with a list of header objects from the next page
      * @throws OaiPmhException
      */
-    ListIdentifiers listIdentifiers(String resumptionToken) throws OaiPmhException;
+    ListIdentifiers listIdentifiers(ResumptionToken resumptionToken) throws OaiPmhException;
 }

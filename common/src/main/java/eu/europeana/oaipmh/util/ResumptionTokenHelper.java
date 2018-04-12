@@ -7,6 +7,9 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Helper class for managing resumption tokens. It is used to encode and decode information into base64 string that is returned to the client.
+ */
 public class ResumptionTokenHelper {
     private static final String TOKEN_SEPARATOR = "___";
 
@@ -54,13 +57,21 @@ public class ResumptionTokenHelper {
      * @return temporary resumption token object with decoded next cursor mark (that can be used by Solr directly), expiration date and cursor
      * but invalid complete list size.
      */
-    public static ResumptionToken decodeResumptionToken(String base64EncodedToken) {
-        String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken));
-        String[] parts = decoded.split(TOKEN_SEPARATOR);
-        String[] filterQuery = parts[0].split(FILTER_SEPARATOR);
-        Date expirationDate = new Date(Long.valueOf(parts[1]));
-        long cursor = Long.valueOf(parts[2]);
-        String cursorMark = parts[3];
-        return new ResumptionToken(cursorMark, -1, expirationDate, cursor, Arrays.asList(filterQuery));
+    public static ResumptionToken decodeResumptionToken(String base64EncodedToken) throws IllegalArgumentException {
+        try {
+            String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken));
+            String[] parts = decoded.split(TOKEN_SEPARATOR);
+            if (parts.length == 4) {
+                String[] filterQuery = parts[0].split(FILTER_SEPARATOR);
+                Date expirationDate = new Date(Long.valueOf(parts[1]));
+                long cursor = Long.valueOf(parts[2]);
+                String cursorMark = parts[3];
+                return new ResumptionToken(cursorMark, -1, expirationDate, cursor, Arrays.asList(filterQuery));
+            }
+        } catch (Exception e) {
+            // in case of any exception we assume there is something wrong with the resumption token being decoded
+            throw new IllegalArgumentException();
+        }
+        throw new IllegalArgumentException();
     }
 }

@@ -18,12 +18,14 @@ import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
 import eu.europeana.oaipmh.util.DateConverter;
+import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.Date;
 
@@ -123,6 +125,17 @@ public class OaiPmhService {
         return serialize(responseObject, request);
     }
 
+    /**
+     * Retrieve list of identifiers that match given filter parameters: metadata format, date between from and until and set.
+     * When no identifiers were found then NoRecordsMatch error is returned.
+     *
+     * @param metadataPrefix metadata format
+     * @param from starting date
+     * @param until ending date
+     * @param set set
+     * @return list of identifiers matching the given filter parameters
+     * @throws OaiPmhException
+     */
     public String listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
         if (!metadataFormats.canDisseminate(metadataPrefix)) {
             throw new CannotDisseminateFormatException(metadataPrefix);
@@ -133,12 +146,49 @@ public class OaiPmhService {
         return serialize(responseObject, request);
     }
 
+    /**
+     * Retrieve another page of results for ListIdentifiers verb starting from the point encoded in resumption token.
+     *
+     * @param resumptionToken token used to continue retrieving list of identifiers
+     * @return another page of list of identifiers
+     * @throws OaiPmhException
+     */
     public String listIdentifiers(String resumptionToken) throws OaiPmhException {
-        ListIdentifiers responseObject = identifierProvider.listIdentifiers(resumptionToken);
+        ResumptionToken validated = validateResumptionToken(resumptionToken);
+        ListIdentifiers responseObject = identifierProvider.listIdentifiers(validated);
         OAIRequest request = new ListIdentifiersRequest(responseObject.getClass().getSimpleName(), baseUrl, resumptionToken);
         return serialize(responseObject, request);
     }
 
+    /**
+     * Validate resumption token passed by the client. The base64 string is decoded and is checked against the expiration date.
+     * When resumption token is incorrect then BadResumptionToken error is returned.
+     *
+     * @param resumptionToken resumption token
+     * @return decoded resumption token ready to be used by the internal request to IdentifierProvider
+     * @throws BadResumptionToken
+     */
+    private ResumptionToken validateResumptionToken(String resumptionToken) throws BadResumptionToken {
+        ResumptionToken temporaryToken;
+        try {
+            temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
+        } catch (IllegalArgumentException e) {
+            throw new BadResumptionToken("Resumption token " + resumptionToken + " is not correct.");
+        }
+        if (new Date().after(temporaryToken.getExpirationDate())) {
+            throw new BadResumptionToken("Resumption token expired ad " + temporaryToken.getExpirationDate());
+        }
+        return temporaryToken;
+    }
+
+    /**
+     * Serialize response object to XML.
+     *
+     * @param object response object
+     * @param request request that is injected in the response
+     * @return XML response as string
+     * @throws SerializationException
+     */
     private String serialize(OAIPMHVerb object, OAIRequest request) throws SerializationException {
         try {
             return xmlMapper.
@@ -148,5 +198,13 @@ public class OaiPmhService {
         catch (IOException e) {
             throw new SerializationException("Error serializing data: "+e.getMessage(), e);
         }
+    }
+
+    @PreDestroy
+    private void close() {
+        LOG.info("Closing OAI-PMH service...");
+        identifierProvider.close();
+        recordProvider.close();
+        LOG.info("OAI-PMH service closed.");
     }
 }

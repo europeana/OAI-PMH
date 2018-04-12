@@ -33,4 +33,7 @@ public class OaiPmhException extends Exception {
         return true; // default we log all exceptions
     }
 
+    public ErrorCode getErrorCode() {
+        return errorCode;
+    }
 }
