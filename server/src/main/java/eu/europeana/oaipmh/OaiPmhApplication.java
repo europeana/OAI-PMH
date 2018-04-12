@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
@@ -33,7 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
 @EnableConfigurationProperties(MetadataFormats.class)
-@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class, MongoAutoConfiguration.class})
 public class OaiPmhApplication extends SpringBootServletInitializer {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
