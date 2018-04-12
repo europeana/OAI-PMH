@@ -45,20 +45,32 @@ public class ProgressLogger {
         if (logAfterSeconds > 0 && d.getMillis() / 1000 > logAfterSeconds) {
             if (totalItems > 0) {
                 Double itemsPerMS = itemsDone * 1d / (System.currentTimeMillis() - startTime);
-                Period period = new Period(Math.round((totalItems - itemsDone) / itemsPerMS));
-                String time;
-                if (period.getDays() >= 1) {
-                    time = String.format("%d days, %d hours and %d minutes", period.getDays(), period.getHours(), period.getMinutes());
-                } else if (period.getHours() >= 1) {
-                    time = String.format("%d hours and %d minutes", period.getHours(), period.getMinutes());
-                } else {
-                    time = String.format("%d minutes and %d seconds", period.getMinutes(), period.getSeconds());
-                }
-                LOG.info("Retrieved {} items of {} ({} records/sec). Expected time remaining is {}", itemsDone, totalItems, Math.round(itemsPerMS * 1000), time);
+                LOG.info("Retrieved {} items of {} ({} records/sec). Expected time remaining is {}", itemsDone, totalItems,
+                        Math.round(itemsPerMS * 1000), getDurationText(Math.round((totalItems - itemsDone) / itemsPerMS)));
             } else {
                 LOG.info("Retrieved {} items");
             }
             lastLogTime = System.currentTimeMillis();
         }
+    }
+
+    /**
+     * @param durationInMs
+     * @return string containing duration in easy readable format
+     */
+    public static String getDurationText(long durationInMs) {
+        String result;
+        Period period = new Period(durationInMs);
+        if (period.getDays() >= 1) {
+            result = String.format("%d days, %d hours and %d minutes", period.getDays(), period.getHours(), period.getMinutes());
+        } else if (period.getHours() >= 1) {
+            result = String.format("%d hours and %d minutes", period.getHours(), period.getMinutes());
+        } else if (period.getMinutes() >= 1){
+            result = String.format("%d minutes and %d seconds", period.getMinutes(), period.getSeconds());
+        } else {
+            LOG.error("durationInMs = "+durationInMs);
+            result = String.format("%d.%d seconds", period.getSeconds(), period.getMillis());
+        }
+        return result;
     }
 }
