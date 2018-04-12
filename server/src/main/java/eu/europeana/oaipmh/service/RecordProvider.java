@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 
 /**
@@ -15,6 +16,6 @@ public interface RecordProvider extends ClosableProvider {
      * @return String with record information (in xml)
      * @throws OaiPmhException when there is a problem retrieving the information (e.g. IdDoesNotExistException)
      */
-    String getRecord(String id) throws OaiPmhException;
+    Record getRecord(String id) throws OaiPmhException;
 
 }

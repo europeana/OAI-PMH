@@ -5,8 +5,12 @@ import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.SocksProxyHelper;
 import eu.europeana.oaipmh.web.VerbController;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +19,8 @@ import org.springframework.context.annotation.PropertySource;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Main application and configuration.
@@ -27,7 +33,13 @@ import java.io.IOException;
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
 @EnableConfigurationProperties(MetadataFormats.class)
+@EnableAutoConfiguration(exclude={MongoAutoConfiguration.class})
 public class OaiPmhApplication extends SpringBootServletInitializer {
+
+    private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
+
+	@Value("${recordProviderClass}")
+	private String recordProviderClass;
 
 	/**
 	 * Record provider that returns record information
@@ -35,7 +47,20 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 */
 	@Bean
 	public RecordProvider recordProvider() {
-		// for now we use the Europeana Record API, but if we include other options we should probably make this configurable
+        try {
+            Class providerClass = Class.forName(recordProviderClass);
+            if (providerClass != null) {
+                Constructor constructor = providerClass.getConstructor();
+                if (constructor != null) {
+                    return (RecordProvider) constructor.newInstance();
+                }
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            LOG.error("Problem with instantiating record provider.", e);
+            throw new RuntimeException(e);
+        }
+
+        // return RecordApi when there are problems with the specified class
 		return new RecordApi();
 	}
 
