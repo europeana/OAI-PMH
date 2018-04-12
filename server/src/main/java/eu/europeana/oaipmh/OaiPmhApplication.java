@@ -60,6 +60,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 		return new OaiPmhService(recordProvider(), identifierProvider(), metadataFormats());
 	}
 
+
 	/**
 	 * Rest controller that handles all requests
 	 * @return

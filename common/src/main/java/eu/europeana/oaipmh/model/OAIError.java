@@ -1,14 +1,17 @@
 package eu.europeana.oaipmh.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
+import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.model.response.ErrorResponse;
+import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.service.exception.ErrorCode;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
-public class OAIError {
+public class OAIError extends OAIPMHVerb {
     @XmlAttribute
-    private ErrorCode code;
+    private String code;
 
     @JacksonXmlText
     @XmlValue
@@ -17,16 +20,16 @@ public class OAIError {
     public OAIError() {}
 
     public OAIError(ErrorCode code, String message) {
-        this.code = code;
+        this.code = code.toString();
         this.value = message;
     }
 
-    public ErrorCode getCode() {
+    public String getCode() {
         return code;
     }
 
     public void setCode(ErrorCode code) {
-        this.code = code;
+        this.code = code.toString();
     }
 
     public String getValue() {
@@ -35,5 +38,10 @@ public class OAIError {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public OAIResponse getResponse(OAIRequest request) {
+        return new ErrorResponse(this, request);
     }
 }

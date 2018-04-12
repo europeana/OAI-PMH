@@ -12,9 +12,9 @@ public class ErrorResponse extends OAIResponse {
 
     public ErrorResponse() {}
 
-    public ErrorResponse(OaiPmhException exception, OAIRequest request) {
+    public ErrorResponse(OAIError error, OAIRequest request) {
         super(request);
-        this.error = new OAIError(exception.getErrorCode(), exception.getMessage());
+        this.error = error;
     }
 
     public OAIError getError() {
