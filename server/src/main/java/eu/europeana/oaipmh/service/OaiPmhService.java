@@ -51,6 +51,9 @@ public class OaiPmhService extends BaseService {
     @Value("${resumptionTokenTTL}")
     private int resumptionTokenTTL;
 
+    @Value("${baseUrl}")
+    private String baseUrl;
+
     private RecordProvider recordProvider;
 
     private IdentifierProvider identifierProvider;
