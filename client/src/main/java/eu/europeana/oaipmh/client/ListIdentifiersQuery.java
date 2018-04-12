@@ -95,7 +95,8 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
             }
         }
 
-        LOG.info("ListIdentifiers for set " + set + " executed in " + String.valueOf(System.currentTimeMillis() - start) + " ms. Harvested " + counter + " identifiers.");
+        LOG.info("ListIdentifiers for set " + set + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
+                ". Harvested " + counter + " identifiers.");
     }
 
     private String getResumptionRequest(String oaipmhServer, String resumptionToken) {
