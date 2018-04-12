@@ -145,6 +145,10 @@
                     <artifactId>corelib-media-storage</artifactId>
                     <groupId>eu.europeana.corelib</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jackson-xc</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
