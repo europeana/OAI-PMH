@@ -2,17 +2,42 @@ package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.model.ListIdentifiers;
+import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.util.DateConverter;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class OaiPmhRequestFactory {
+    private static final Map<String, List<OaiParameterName>> validVerbParameters;
+
+    static {
+        validVerbParameters = new HashMap<>();
+        List<OaiParameterName> validParameters = new ArrayList<>();
+        validVerbParameters.put(Identify.class.getSimpleName(), validParameters);
+        validParameters = new ArrayList<>();
+        validParameters.add(OaiParameterName.METADATA_PREFIX);
+        validParameters.add(OaiParameterName.FROM);
+        validParameters.add(OaiParameterName.UNTIL);
+        validParameters.add(OaiParameterName.SET);
+        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validVerbParameters.put(ListIdentifiers.class.getSimpleName(), validParameters);
+        validParameters = new ArrayList<>();
+        validParameters.add(OaiParameterName.METADATA_PREFIX);
+        validParameters.add(OaiParameterName.IDENTIFIER);
+        validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
+    }
+
+    private static void validateVerbParameter(String verb, OaiParameterName parameterName) throws BadArgumentException {
+        List<OaiParameterName> valid = validVerbParameters.get(verb);
+        if (valid != null && !valid.contains(parameterName)) {
+            throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" is illegal for verb \"" + verb + "\"");
+        }
+    }
+
     /**
      * Validates all the parameter names that are present in the request.
      * Request must have format: param1=value1&param2=value2&...&paramN=valueN
@@ -58,9 +83,13 @@ public class OaiPmhRequestFactory {
      * @param value parameter value
      * @throws BadArgumentException
      */
-    private static void validateParameter(String name, String value) throws BadArgumentException {
+    private static void validateParameter(String verb, String name, String value) throws BadArgumentException {
         if (!OaiParameterName.contains(name)) {
             throw new BadArgumentException("Parameter name \"" + name + "\" is not supported!");
+        }
+
+        if (verb != null) {
+            validateVerbParameter(verb, OaiParameterName.fromString(name));
         }
 
         // empty
@@ -93,7 +122,7 @@ public class OaiPmhRequestFactory {
             String[] paramValue = argument.split("=");
             if (paramValue.length == 2) {
                 try {
-                    validateParameter(paramValue[0], paramValue[1]);
+                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], paramValue[1]);
                     validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
                 } catch (BadArgumentException e) {
                     if (!ignoreErrors) {
@@ -107,7 +136,7 @@ public class OaiPmhRequestFactory {
                 }
             } else if (paramValue.length == 1) {
                 try {
-                    validateParameter(paramValue[0], null);
+                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], null);
                 } catch (BadArgumentException e) {
                     if (!ignoreErrors) {
                         throw e;
@@ -121,7 +150,7 @@ public class OaiPmhRequestFactory {
             } else {
                 String value = argument.substring(argument.indexOf("=") + 1);
                 try {
-                    validateParameter(paramValue[0], value);
+                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], value);
                     validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
                 } catch (BadArgumentException e) {
                     if (!ignoreErrors) {
