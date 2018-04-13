@@ -33,4 +33,8 @@ public enum OaiParameterName {
         }
         throw new IllegalArgumentException("No OaiParameterName enum value found for \"" + parameterName + "\"");
     }
+
+    public String toString() {
+        return parameterName;
+    }
 }

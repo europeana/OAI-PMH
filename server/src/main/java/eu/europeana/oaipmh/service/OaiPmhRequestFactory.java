@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.model.GetRecord;
 import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
@@ -212,6 +213,10 @@ public class OaiPmhRequestFactory {
             return createListIdentifiersRequest(baseUrl, parameters);
         }
 
+        if (GetRecord.class.getSimpleName().equals(verb)) {
+            return createGetRecordRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX), parameters.get(OaiParameterName.IDENTIFIER));
+        }
+
         if (!ignoreErrors) {
             throw new BadArgumentException("Unsupported verb.");
         }
@@ -245,4 +250,7 @@ public class OaiPmhRequestFactory {
         return new IdentifyRequest(Identify.class.getSimpleName(), baseUrl);
     }
 
+    public static GetRecordRequest createGetRecordRequest(String baseUrl, String metadataPrefix, String identifier) {
+        return new GetRecordRequest(GetRecord.class.getSimpleName(), baseUrl, metadataPrefix, identifier);
+    }
 }
