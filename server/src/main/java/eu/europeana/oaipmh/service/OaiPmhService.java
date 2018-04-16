@@ -98,7 +98,7 @@ public class OaiPmhService extends BaseService {
             throw new IdDoesNotExistException(id);
         }
         GetRecord responseObject = new GetRecord(record);
-        OAIRequest request = new GetRecordRequest(responseObject.getClass().getSimpleName(), baseUrl, metadataPrefix, id);
+        OAIRequest request = new GetRecordRequest(responseObject.getClass().getSimpleName(), "", metadataPrefix, id);
         return serialize(responseObject, request);
     }
 
