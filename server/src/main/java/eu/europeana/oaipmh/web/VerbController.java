@@ -67,7 +67,7 @@ public class VerbController {
                                   @RequestParam(value = "identifier", required = true) String identifier,
                                   HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return ops.getRecord(metadataPrefix, identifier);
+        return ops.getRecord(OaiPmhRequestFactory.createGetRecordRequest(baseUrl, metadataPrefix, identifier));
     }
 
     /**

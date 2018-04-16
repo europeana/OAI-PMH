@@ -51,9 +51,6 @@ public class OaiPmhService extends BaseService {
     @Value("${resumptionTokenTTL}")
     private int resumptionTokenTTL;
 
-    @Value("${baseUrl}")
-    private String baseUrl;
-
     private RecordProvider recordProvider;
 
     private IdentifierProvider identifierProvider;
@@ -87,21 +84,19 @@ public class OaiPmhService extends BaseService {
 
     /**
      * Retrieve record information according to OAI-PMH protocol (see https://www.openarchives.org/OAI/openarchivesprotocol.html#GetRecord)
-     * @param metadataPrefix
-     * @param id
+     * @param request GetRecord request containing all necessary parameters
      * @return record information in OAI-PMH (xml)
      * @throws OaiPmhException
      */
-    public String getRecord(String metadataPrefix, String id) throws OaiPmhException {
-        if (!metadataFormats.canDisseminate(metadataPrefix)) {
-            throw new CannotDisseminateFormatException(metadataPrefix);
+    public String getRecord(GetRecordRequest request) throws OaiPmhException {
+        if (!metadataFormats.canDisseminate(request.getMetadataPrefix())) {
+            throw new CannotDisseminateFormatException(request.getMetadataPrefix());
         }
-        Record record = recordProvider.getRecord(id);
+        Record record = recordProvider.getRecord(request.getIdentifier());
         if (record == null) {
-            throw new IdDoesNotExistException(id);
+            throw new IdDoesNotExistException(request.getIdentifier());
         }
         GetRecord responseObject = new GetRecord(record);
-        OAIRequest request = new GetRecordRequest(responseObject.getClass().getSimpleName(), baseUrl, metadataPrefix, id);
         return serialize(responseObject, request);
     }
 
