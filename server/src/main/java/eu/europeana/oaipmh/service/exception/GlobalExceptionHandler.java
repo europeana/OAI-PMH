@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -73,6 +74,12 @@ public class GlobalExceptionHandler extends BaseService {
             LOG.error(e.getMessage(), e);
         }
         return handleException(e, request);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException {
+        return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request);
     }
 
     private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException {

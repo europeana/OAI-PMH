@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.web;
 
+import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
@@ -71,7 +72,7 @@ public class VerbControllerTest {
 
     @Test
     public void testGetRecord() throws Exception {
-        given(ops.getRecord(Mockito.anyString(), Mockito.anyString())).willReturn(RECORD_RESPONSE);
+        given(ops.getRecord(any(GetRecordRequest.class))).willReturn(RECORD_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
