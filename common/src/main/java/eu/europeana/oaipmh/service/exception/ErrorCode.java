@@ -19,4 +19,13 @@ public enum ErrorCode {
     public String toString() {
         return this.code;
     }
+
+    public static ErrorCode fromString(String code) {
+        for (ErrorCode errorCode : values()) {
+            if (errorCode.code.equals(code)) {
+                return errorCode;
+            }
+        }
+        throw new IllegalArgumentException("No ErrorCode enum found for \"" + code + "\"");
+    }
 }

@@ -1,16 +1,26 @@
 package eu.europeana.oaipmh.web;
 
+import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.service.OaiPmhRequestFactory;
 import eu.europeana.oaipmh.service.OaiPmhService;
+import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.PreDestroy;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -25,6 +35,9 @@ public class VerbController {
 
     private static final Logger LOG = LogManager.getLogger(VerbController.class);
 
+    @Value("${baseUrl}")
+    private String baseUrl;
+
     private OaiPmhService ops;
 
     public VerbController(OaiPmhService oaiPmhService) {
@@ -37,8 +50,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = "verb=Identify", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public Object handleIdentify() throws OaiPmhException {
-        return ops.getIdentify();
+    public Object handleIdentify(HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
+        return ops.getIdentify(OaiPmhRequestFactory.createIdentifyRequest(baseUrl));
     }
 
     /**
@@ -50,7 +64,9 @@ public class VerbController {
      */
     @RequestMapping(params = "verb=GetRecord", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
     public String handleGetRecord(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
-                                  @RequestParam(value = "identifier", required = true) String identifier) throws OaiPmhException {
+                                  @RequestParam(value = "identifier", required = true) String identifier,
+                                  HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         return ops.getRecord(metadataPrefix, identifier);
     }
 
@@ -61,9 +77,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = {"verb=ListIdentifiers", "resumptionToken"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
-        LOG.debug("ListIdentifiers with token {}", resumptionToken);
-        return ops.listIdentifiers(resumptionToken);
+    public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken") String resumptionToken, HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
+        return ops.listIdentifiersWithToken(OaiPmhRequestFactory.createListIdentifiersRequest(baseUrl, resumptionToken));
     }
 
     /**
@@ -76,13 +92,14 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = {"verb=ListIdentifiers", "metadataPrefix"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListIdentifiers(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
-                                  @RequestParam(value = "from", required = false) String from,
-                                  @RequestParam(value = "until", required = false) String until,
-                                  @RequestParam(value = "set", required = false) String set) throws OaiPmhException {
-        return ops.listIdentifiers(metadataPrefix, DateConverter.fromIsoDateTime(from), DateConverter.fromIsoDateTime(until), set);
+    public String handleListIdentifiers(@RequestParam(value = "metadataPrefix") String metadataPrefix,
+                                        @RequestParam(value = "from", required = false) String from,
+                                        @RequestParam(value = "until", required = false) String until,
+                                        @RequestParam(value = "set", required = false) String set,
+                                        HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
+        return ops.listIdentifiers(OaiPmhRequestFactory.createListIdentifiersRequest(baseUrl, metadataPrefix, set, from, until));
     }
-
 
     /**
      * Handles all list records requests
@@ -97,8 +114,9 @@ public class VerbController {
     public String handleListRecords(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
                                     @RequestParam(value = "from", required = false) String from,
                                     @RequestParam(value = "until", required = false) String until,
-                                    @RequestParam(value = "set", required = false) String set) throws OaiPmhException {
-        LOG.debug("ListRecords with metadataPrefix {}, from {}, until {}, set {}", metadataPrefix, from, until, set);
+                                    @RequestParam(value = "set", required = false) String set,
+                                    HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         return "Not implemented yet";
     }
 
@@ -109,8 +127,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = {"verb=ListRecords", "resumptionToken!="}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListRecordsToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
-        LOG.debug("ListRecords with resumptionToken {}", resumptionToken);
+    public String handleListRecordsToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken,
+                                         HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         return "Not implemented yet";
     }
 
@@ -121,8 +140,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = "verb=ListMetadataFormats", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListMetadataFormats(@RequestParam(value = "identifier", required = false) String identifier) throws OaiPmhException {
-        LOG.debug("ListMetadataFormat with identifier {}", identifier);
+    public String handleListMetadataFormats(@RequestParam(value = "identifier", required = false) String identifier,
+                                            HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         return "Not implemented yet";
     }
 
@@ -133,7 +153,6 @@ public class VerbController {
      */
     @RequestMapping(params = "verb=ListSets", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
     public String handleListSets() throws OaiPmhException {
-        LOG.debug("ListSets");
         return "Not implemented yet";
     }
 
@@ -144,8 +163,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = {"verb=ListSets", "resumptionToken!="}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListSetsToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken) throws OaiPmhException {
-        LOG.debug("ListSets with resumptionToken {}", resumptionToken);
+    public String handleListSetsToken(@RequestParam(value = "resumptionToken", required = true) String resumptionToken,
+                                      HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         return "Not implemented yet";
     }
 
@@ -154,7 +174,7 @@ public class VerbController {
      * Note that we do not check for repeating verbs, spring-boot will act on the first verb that is found
      * @return IllegalVerbException
      */
-    @RequestMapping()
+    @RequestMapping(produces = MediaType.TEXT_XML_VALUE)
     public String handleIllegalVerbs(@RequestParam(value = "verb", required = false) String verb) throws OaiPmhException {
         throw new BadVerbException(verb);
     }

@@ -1,7 +1,7 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.corelib.definitions.jibx.RDF;
 import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -49,7 +49,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         LOG.debug("Request is " + requestUrl);
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new ApiResponseErrorHandler());
-        ResponseEntity<RDF> response = restTemplate.getForEntity(requestUrl, RDF.class);
+        ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);
         LOG.debug("Response = {}", response);
 
         HttpStatus responseCode = response.getStatusCode();
@@ -60,12 +60,12 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         } else if (!HttpStatus.OK.equals(responseCode)) {
             throw new OaiPmhException("Error retrieving record. Status = "+response.getStatusCodeValue());
         }
-        RDF rdfMetadata = response.getBody();
+        RDFMetadata rdf = new RDFMetadata(response.getBody());
 
         Header header = new Header();
         header.setIdentifier(id);
         header.setDatestamp(new Date());
-        return new Record(header, rdfMetadata);
+        return new Record(header, rdf);
     }
 
     private String constructRequestUrl(String id) {

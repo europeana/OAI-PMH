@@ -11,6 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents the ListIdentifiers tag in the ListIdentifiers verb XML response
+ */
 @XmlRootElement(name="ListIdentifiers")
 @XmlType(propOrder={"headers", "resumptionToken"})
 public class ListIdentifiers extends OAIPMHVerb implements Serializable {

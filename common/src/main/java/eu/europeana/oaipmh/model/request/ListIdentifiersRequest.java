@@ -2,6 +2,9 @@ package eu.europeana.oaipmh.model.request;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+/**
+ * This class represents the ListIdentifiers verb request.
+ */
 public class ListIdentifiersRequest extends OAIRequest {
     @XmlAttribute
     private String metadataPrefix;

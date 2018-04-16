@@ -6,6 +6,9 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.Date;
 
+/**
+ * Helper class for converting UTC time from date to string and the opposite
+ */
 public class DateConverter {
     private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
     private static final DateTimeFormatter fmt2 = ISODateTimeFormat.dateTime().withZoneUTC();

@@ -10,20 +10,24 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.metadata.MetadataFormats;
+import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
 import eu.europeana.oaipmh.util.DateConverter;
+import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.Date;
 
@@ -34,12 +38,9 @@ import java.util.Date;
  * Created on 27-02-2018
  */
 @Service
-public class OaiPmhService {
+public class OaiPmhService extends BaseService {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhService.class);
-
-    // create a single XmlMapper for efficiency purposes (see https://github.com/FasterXML/jackson-docs/wiki/Presentation:-Jackson-Performance)
-    private static final XmlMapper xmlMapper;
 
     @Value("${recordsPerPage}")
     private int recordsPerPage;
@@ -59,22 +60,8 @@ public class OaiPmhService {
 
     private MetadataFormats metadataFormats;
 
-    static {
-        JacksonXmlModule module = new JacksonXmlModule();
-        // using "unwrapped" Lists:
-        module.setDefaultUseWrapper(false);
-        xmlMapper = new XmlMapper(module);
-    }
-
     public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, MetadataFormats metadataFormats) {
-        xmlMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // not serialize fields with null value
-        xmlMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY); // serialize also private fields
-        // make sure dates are serialized in proper format
-        xmlMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        xmlMapper.disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS);
-        xmlMapper.setDateFormat(new ISO8601DateFormat()); // we set this to abbreviate the timezone (not sure how to use non-deprecated method for this)
-        xmlMapper.registerModule(new JaxbAnnotationModule()); // so we can use JAX-B annotations instead of the Jackson ones
-
+        super();
         this.recordProvider = recordProvider;
         this.identifierProvider = identifierProvider;
         this.metadataFormats = metadataFormats;
@@ -88,18 +75,13 @@ public class OaiPmhService {
         LOG.info("Resumption token TTL: {}", resumptionTokenTTL);
     }
 
-    protected XmlMapper getXmlMapper() {
-        return xmlMapper;
-    }
-
     /**
      * Return repository information according to OAI-PMH-protocol (see https://www.openarchives.org/OAI/openarchivesprotocol.html#Identify)
      * @return
      * @throws OaiPmhException
      */
-    public String getIdentify() throws OaiPmhException {
+    public String getIdentify(IdentifyRequest request) throws OaiPmhException {
         Identify responseObject = new Identify();
-        OAIRequest request = new OAIRequest(responseObject.getClass().getSimpleName(), baseUrl);
         return serialize(responseObject, request);
     }
 
@@ -123,30 +105,81 @@ public class OaiPmhService {
         return serialize(responseObject, request);
     }
 
-    public String listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
-        if (!metadataFormats.canDisseminate(metadataPrefix)) {
-            throw new CannotDisseminateFormatException(metadataPrefix);
+    /**
+     * Retrieve list of identifiers that match given filter parameters: metadata format, date between from and until and set.
+     * When no identifiers were found then NoRecordsMatch error is returned.
+     *
+     * @param request request containing all necessary parameters
+     * @return list of identifiers matching the given filter parameters
+     * @throws OaiPmhException
+     */
+    public String listIdentifiers(ListIdentifiersRequest request) throws OaiPmhException {
+        if (!metadataFormats.canDisseminate(request.getMetadataPrefix())) {
+            throw new CannotDisseminateFormatException(request.getMetadataPrefix());
         }
 
-        ListIdentifiers responseObject = identifierProvider.listIdentifiers(metadataPrefix, from, until, set);
-        OAIRequest request = new ListIdentifiersRequest(responseObject.getClass().getSimpleName(), baseUrl, metadataPrefix, set, DateConverter.toIsoDate(from), DateConverter.toIsoDate(until));
+        ListIdentifiers responseObject = identifierProvider.listIdentifiers(request.getMetadataPrefix(), DateConverter.fromIsoDateTime(request.getFrom()), DateConverter.fromIsoDateTime(request.getUntil()), request.getSet());
         return serialize(responseObject, request);
     }
 
-    public String listIdentifiers(String resumptionToken) throws OaiPmhException {
-        ListIdentifiers responseObject = identifierProvider.listIdentifiers(resumptionToken);
-        OAIRequest request = new ListIdentifiersRequest(responseObject.getClass().getSimpleName(), baseUrl, resumptionToken);
+    /**
+     * Retrieve another page of results for ListIdentifiers verb starting from the point encoded in resumption token.
+     *
+     * @param request request containing token used to continue retrieving list of identifiers
+     * @return another page of list of identifiers
+     * @throws OaiPmhException
+     */
+    public String listIdentifiersWithToken(ListIdentifiersRequest request) throws OaiPmhException {
+        ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
+        ListIdentifiers responseObject = identifierProvider.listIdentifiers(validated);
         return serialize(responseObject, request);
     }
 
+    /**
+     * Validate resumption token passed by the client. The base64 string is decoded and is checked against the expiration date.
+     * When resumption token is incorrect then BadResumptionToken error is returned.
+     *
+     * @param resumptionToken resumption token
+     * @return decoded resumption token ready to be used by the internal request to IdentifierProvider
+     * @throws BadResumptionToken
+     */
+    private ResumptionToken validateResumptionToken(String resumptionToken) throws BadResumptionToken {
+        ResumptionToken temporaryToken;
+        try {
+            temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
+        } catch (IllegalArgumentException e) {
+            throw new BadResumptionToken("Resumption token " + resumptionToken + " is not correct.");
+        }
+        if (new Date().after(temporaryToken.getExpirationDate())) {
+            throw new BadResumptionToken("Resumption token expired ad " + temporaryToken.getExpirationDate());
+        }
+        return temporaryToken;
+    }
+
+    /**
+     * Serialize response object to XML.
+     *
+     * @param object response object
+     * @param request request that is injected in the response
+     * @return XML response as string
+     * @throws SerializationException
+     */
     private String serialize(OAIPMHVerb object, OAIRequest request) throws SerializationException {
         try {
-            return xmlMapper.
+            return getXmlMapper().
                     writerWithDefaultPrettyPrinter().
                     writeValueAsString(object.getResponse(request));
         }
         catch (IOException e) {
             throw new SerializationException("Error serializing data: "+e.getMessage(), e);
         }
+    }
+
+    @PreDestroy
+    private void close() {
+        LOG.info("Closing OAI-PMH service...");
+        identifierProvider.close();
+        recordProvider.close();
+        LOG.info("OAI-PMH service closed.");
     }
 }

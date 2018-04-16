@@ -39,6 +39,9 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
     @Value("${ListIdentifiers.set}")
     private String set;
 
+    @Value("${LogProgress.interval}")
+    private Integer logProgressInterval;
+
     private List<String> sets = new ArrayList<>();
 
     public ListIdentifiersQuery() {
@@ -70,6 +73,7 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
     private void execute(OAIPMHServiceClient oaipmhServer, String set) {
         long counter = 0;
         long start = System.currentTimeMillis();
+        ProgressLogger logger = new ProgressLogger(-1, logProgressInterval);
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), set);
 
@@ -77,6 +81,7 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
         ListIdentifiers responseObject = response.getListIdentifiers();
         if (responseObject != null) {
             counter += responseObject.getHeaders().size();
+            logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
 
             while (responseObject.getResumptionToken() != null) {
                 request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
@@ -86,10 +91,12 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
                     break;
                 }
                 counter += responseObject.getHeaders().size();
+                logger.logProgress(counter);
             }
         }
 
-        LOG.info("ListIdentifiers for set " + set + " executed in " + String.valueOf(System.currentTimeMillis() - start) + " ms. Harvested " + counter + " identifiers.");
+        LOG.info("ListIdentifiers for set " + set + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
+                ". Harvested " + counter + " identifiers.");
     }
 
     private String getResumptionRequest(String oaipmhServer, String resumptionToken) {

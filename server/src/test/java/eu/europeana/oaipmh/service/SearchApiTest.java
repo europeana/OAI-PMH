@@ -3,11 +3,13 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
+import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -60,7 +62,6 @@ public class SearchApiTest extends BaseApiTest {
     @InjectMocks
     private SearchApi searchApi;
 
-
     @Test
     public void listIdentifiersGeneral() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS);
@@ -96,7 +97,6 @@ public class SearchApiTest extends BaseApiTest {
         assertResults(result, from, null, null);
     }
 
-
     @Test
     public void listIdentifiersUntil() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_UNTIL);
@@ -116,6 +116,17 @@ public class SearchApiTest extends BaseApiTest {
 
         ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, null);
         assertResults(result, from, until, null);
+    }
+
+    @Test(expected = NoRecordsMatchException.class)
+    public void listIdentifiersWithEmptyResult() throws OaiPmhException, IOException, SolrServerException {
+        QueryResponse response = Mockito.mock(QueryResponse.class);
+        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
+        Mockito.when(response.getResults()).thenReturn(new SolrDocumentList());
+        Date from = DateConverter.fromIsoDateTime(DATE_1);
+        Date until = DateConverter.fromIsoDateTime(DATE_3);
+
+        searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2);
     }
 
     @Test

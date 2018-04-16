@@ -7,6 +7,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Configuration class keeping the metadata converters defined in the configuration file. For each entry from the file
+ * the converter of the specified class is created.
+ */
 @ConfigurationProperties(prefix="metadata.formats")
 public class MetadataFormats implements MetadataFormatProvider {
 
