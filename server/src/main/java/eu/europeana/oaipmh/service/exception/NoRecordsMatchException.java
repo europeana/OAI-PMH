@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Exception used when noRecordsMatch error should be returned.
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.OK)
 public class NoRecordsMatchException extends OaiPmhException {
 
     public NoRecordsMatchException(String msg) {

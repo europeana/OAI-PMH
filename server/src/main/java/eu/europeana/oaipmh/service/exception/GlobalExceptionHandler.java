@@ -53,7 +53,7 @@ public class GlobalExceptionHandler extends BaseService {
      * @param e
      * @throws OaiPmhException
      */
-    @ExceptionHandler({IdDoesNotExistException.class, NoRecordsMatchException.class})
+    @ExceptionHandler({IdDoesNotExistException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
         if (e.doLog()) {
@@ -87,5 +87,19 @@ public class GlobalExceptionHandler extends BaseService {
         OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
         return getXmlMapper().writerWithDefaultPrettyPrinter().
                 writeValueAsString(error.getResponse(originalRequest));
+    }
+
+    /**
+     * Checks if we should log an error and serializes the error response
+     * @param e
+     * @throws OaiPmhException
+     */
+    @ExceptionHandler(NoRecordsMatchException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+        if (e.doLog()) {
+            LOG.error(e.getMessage(), e);
+        }
+        return handleException(e, request);
     }
 }
