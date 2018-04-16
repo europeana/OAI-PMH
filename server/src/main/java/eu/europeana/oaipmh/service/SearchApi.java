@@ -34,7 +34,7 @@ import static eu.europeana.oaipmh.util.SolrConstants.*;
 /**
  * Retrieve information from Search API
  */
-public class SearchApi implements IdentifierProvider {
+public class SearchApi extends BaseProvider implements IdentifierProvider {
 
     private static final Logger LOG = LogManager.getLogger(SearchApi.class);
 
@@ -234,12 +234,11 @@ public class SearchApi implements IdentifierProvider {
                 sets.add((String) value);
             }
         }
-
         Date timestampUpdate = (Date) document.getFieldValue(TIMESTAMP_UPDATE);
         if (timestampUpdate == null) {
             timestampUpdate = defaultIdentifierTimestamp;
         }
-        return new Header((String) document.getFieldValue(EUROPEANA_ID), timestampUpdate, sets);
+        return new Header(prepareFullId((String) document.getFieldValue(EUROPEANA_ID)), timestampUpdate, sets);
     }
 
     @Override

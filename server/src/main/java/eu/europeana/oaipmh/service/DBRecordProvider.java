@@ -21,7 +21,7 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 @ConfigurationProperties
-public class DBRecordProvider extends BaseRecordProvider implements RecordProvider {
+public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(DBRecordProvider.class);
 
@@ -65,7 +65,7 @@ public class DBRecordProvider extends BaseRecordProvider implements RecordProvid
      */
     @Override
     public Record getRecord(String id) throws OaiPmhException {
-        String recordId = prepareId(id);
+        String recordId = prepareRecordId(id);
 
         try {
             FullBean bean = mongoServer.getFullBean(recordId);
