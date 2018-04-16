@@ -11,8 +11,10 @@ import eu.europeana.oaipmh.service.OaiPmhRequestFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +40,23 @@ public class GlobalExceptionHandler extends BaseService {
      */
     @ExceptionHandler(OaiPmhException.class)
     public String handleOaiPmhException(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+        if (e.doLog()) {
+            LOG.error(e.getMessage(), e);
+        }
+        OAIRequest originalRequest = OaiPmhRequestFactory.createRequest(baseUrl, request.getQueryString(), true);
+        OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
+        return getXmlMapper().writerWithDefaultPrettyPrinter().
+                writeValueAsString(error.getResponse(originalRequest));
+    }
+
+    /**
+     * Checks if we should log an error and serializes the error response
+     * @param e
+     * @throws OaiPmhException
+     */
+    @ExceptionHandler(NoRecordsMatchException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
         if (e.doLog()) {
             LOG.error(e.getMessage(), e);
         }

@@ -8,6 +8,8 @@ import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.util.DateConverter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,9 +103,11 @@ public class OaiPmhRequestFactory {
                     }
                 }
                 try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), paramValue[1]);
+                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(paramValue[1], "UTF-8"));
                 } catch (IllegalArgumentException e) {
                     // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
+                } catch (UnsupportedEncodingException e) {
+                    throw new BadArgumentException("The value of the parameter \"" + paramValue[0] + "\" has wrong syntax: \"" + paramValue[1]);
                 }
             } else if (paramValue.length == 1) {
                 try {
@@ -129,9 +133,11 @@ public class OaiPmhRequestFactory {
                     }
                 }
                 try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), value);
+                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(value, "UTF-8"));
                 } catch (IllegalArgumentException e) {
                     // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
+                } catch (UnsupportedEncodingException e) {
+                    throw new BadArgumentException("The value of the parameter \"" + paramValue[0] + "\" has wrong syntax: \"" + value);
                 }
             }
         }
