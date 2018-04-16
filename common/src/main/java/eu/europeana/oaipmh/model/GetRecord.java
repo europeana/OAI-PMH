@@ -4,6 +4,7 @@ import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.GetRecordResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 
 /**
@@ -15,14 +16,21 @@ public class GetRecord extends OAIPMHVerb implements Serializable {
 
     private static final long serialVersionUID = -8111845326100870425L;
 
-    private String xmlData;
+    @XmlElement
+    private Record record;
 
-    public GetRecord() {
-        this.xmlData = "";
+    public GetRecord() { this.record = null; }
+
+    public GetRecord(Record record) {
+        this.record = record;
     }
 
-    public GetRecord(String xmlData) {
-        this.xmlData = xmlData;
+    public Record getRecord() {
+        return record;
+    }
+
+    public void setRecord(Record record) {
+        this.record = record;
     }
 
     @Override

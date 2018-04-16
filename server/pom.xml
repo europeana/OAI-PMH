@@ -123,6 +123,53 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>eu.europeana.corelib</groupId>
+            <artifactId>corelib-storage</artifactId>
+            <version>2.6.7</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>harvester-client</artifactId>
+                    <groupId>eu.europeana</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>harvester-persistence</artifactId>
+                    <groupId>eu.europeana</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>crf-fake-tags</artifactId>
+                    <groupId>eu.europeana</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>corelib-media-storage</artifactId>
+                    <groupId>eu.europeana.corelib</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-xc</artifactId>
+                    <groupId>org.codehaus.jackson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.7.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.7.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

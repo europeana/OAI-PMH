@@ -11,9 +11,14 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.metadata.MetadataFormats;
 import eu.europeana.oaipmh.model.request.IdentifyRequest;
+import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.service.exception.*;
+import eu.europeana.oaipmh.service.exception.BadResumptionToken;
+import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
+import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
+import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.service.exception.SerializationException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
@@ -85,11 +90,17 @@ public class OaiPmhService extends BaseService {
      * @throws OaiPmhException
      */
     public String getRecord(String metadataPrefix, String id) throws OaiPmhException {
-        // TODO check metadataprefix?
-        GetRecord responseObject = new GetRecord(recordProvider.getRecord(id));
-        return serialize(responseObject, new OAIRequest(responseObject.getClass().getSimpleName(), ""));
+        if (!metadataFormats.canDisseminate(metadataPrefix)) {
+            throw new CannotDisseminateFormatException(metadataPrefix);
+        }
+        Record record = recordProvider.getRecord(id);
+        if (record == null) {
+            throw new IdDoesNotExistException(id);
+        }
+        GetRecord responseObject = new GetRecord(record);
+        OAIRequest request = new GetRecordRequest(responseObject.getClass().getSimpleName(), baseUrl, metadataPrefix, id);
+        return serialize(responseObject, request);
     }
-
 
     /**
      * Retrieve list of identifiers that match given filter parameters: metadata format, date between from and until and set.
