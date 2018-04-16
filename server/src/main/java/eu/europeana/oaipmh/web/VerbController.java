@@ -1,12 +1,10 @@
 package eu.europeana.oaipmh.web;
 
-import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.OaiPmhRequestFactory;
 import eu.europeana.oaipmh.service.OaiPmhService;
-import eu.europeana.oaipmh.service.exception.BadArgumentException;
+import eu.europeana.oaipmh.service.exception.BadMethodException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
-import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,11 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -174,8 +168,19 @@ public class VerbController {
      * Note that we do not check for repeating verbs, spring-boot will act on the first verb that is found
      * @return IllegalVerbException
      */
-    @RequestMapping(produces = MediaType.TEXT_XML_VALUE)
+    @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
     public String handleIllegalVerbs(@RequestParam(value = "verb", required = false) String verb) throws OaiPmhException {
         throw new BadVerbException(verb);
+    }
+
+    /**
+     * Return a badMethod exception when no GET or POST is used
+     * @param verb
+     * @return
+     * @throws OaiPmhException
+     */
+    @RequestMapping(produces = MediaType.TEXT_XML_VALUE)
+    public String handleIllegalMethods(@RequestParam(value = "verb", required = false) String verb) throws OaiPmhException {
+        throw new BadMethodException(verb);
     }
 }

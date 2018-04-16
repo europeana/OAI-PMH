@@ -49,7 +49,7 @@ public class GlobalExceptionHandler extends BaseService {
     }
 
     /**
-     * Checks if we should log an error and serializes the error response
+     * Handles record-not-found (404) exceptions
      * @param e
      * @throws OaiPmhException
      */
@@ -63,7 +63,18 @@ public class GlobalExceptionHandler extends BaseService {
     }
 
     /**
-     * Checks if we should log an error and serializes the error response
+     * Handle badMethod exceptions
+     * @param e
+     * @throws OaiPmhException
+     */
+    @ExceptionHandler({BadMethodException.class})
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
+    public String handleBadMethod(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+        return handleException(e, request);
+    }
+
+    /**
+     * Handle all other 'internal server' problems
      * @param e
      * @throws OaiPmhException
      */
