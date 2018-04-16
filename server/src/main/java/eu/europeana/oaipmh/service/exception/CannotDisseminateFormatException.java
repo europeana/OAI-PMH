@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Exception used when cannotDisseminateFormat error should be returned.
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 public class CannotDisseminateFormatException extends OaiPmhException {
 
     public CannotDisseminateFormatException(String metadataPrefix) {

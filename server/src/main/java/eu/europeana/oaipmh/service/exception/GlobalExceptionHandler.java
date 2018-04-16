@@ -39,7 +39,7 @@ public class GlobalExceptionHandler extends BaseService {
      * @param e
      * @throws OaiPmhException
      */
-    @ExceptionHandler({BadArgumentException.class, BadResumptionToken.class})
+    @ExceptionHandler({BadArgumentException.class, BadResumptionToken.class, BadVerbException.class, CannotDisseminateFormatException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBadRequest(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
         if (e.doLog()) {
@@ -53,7 +53,7 @@ public class GlobalExceptionHandler extends BaseService {
      * @param e
      * @throws OaiPmhException
      */
-    @ExceptionHandler({BadVerbException.class, CannotDisseminateFormatException.class, IdDoesNotExistException.class, NoRecordsMatchException.class})
+    @ExceptionHandler({IdDoesNotExistException.class, NoRecordsMatchException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
         if (e.doLog()) {
