@@ -10,6 +10,7 @@ import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.util.DateConverter;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -136,7 +137,7 @@ public class OaiPmhRequestFactory {
                     }
                 }
                 try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(paramValue[1], "UTF-8"));
+                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(paramValue[1], StandardCharsets.UTF_8.name()));
                 } catch (IllegalArgumentException e) {
                     // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
                 } catch (UnsupportedEncodingException e) {
@@ -166,7 +167,7 @@ public class OaiPmhRequestFactory {
                     }
                 }
                 try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(value, "UTF-8"));
+                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(value, StandardCharsets.UTF_8.name()));
                 } catch (IllegalArgumentException e) {
                     // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
                 } catch (UnsupportedEncodingException e) {

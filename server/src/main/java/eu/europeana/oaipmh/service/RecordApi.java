@@ -53,11 +53,11 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         LOG.debug("Response = {}", response);
 
         HttpStatus responseCode = response.getStatusCode();
-        if (HttpStatus.UNAUTHORIZED.equals(responseCode)) {
+        if (HttpStatus.UNAUTHORIZED == responseCode) {
             throw new OaiPmhException("API key is not valid");
-        } else if (HttpStatus.NOT_FOUND.equals(responseCode)) {
+        } else if (HttpStatus.NOT_FOUND == responseCode) {
             throw new IdDoesNotExistException("Record with id '"+id+"' not found");
-        } else if (!HttpStatus.OK.equals(responseCode)) {
+        } else if (HttpStatus.OK != responseCode) {
             throw new OaiPmhException("Error retrieving record. Status = "+response.getStatusCodeValue());
         }
         RDFMetadata rdf = new RDFMetadata(response.getBody());

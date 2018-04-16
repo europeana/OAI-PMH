@@ -1,6 +1,5 @@
 package eu.europeana.oaipmh.util;
 
-import eu.europeana.oaipmh.OaiPmhApplication;
 import eu.europeana.oaipmh.web.context.SocksProxyConfigInjector;
 import org.apache.logging.log4j.LogManager;
 
@@ -18,7 +17,7 @@ public class SocksProxyHelper {
             socksConfig.addProperties("oai-pmh.user.properties");
         } catch (IOException e) {
             // user.properties may not be available so only show warning
-            LogManager.getLogger(OaiPmhApplication.class).warn("Cannot read oai-pmh.user.properties file");
+            LogManager.getLogger(SocksProxyHelper.class).warn("Cannot read oai-pmh.user.properties file");
         }
         socksConfig.inject();
     }

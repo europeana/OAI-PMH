@@ -2,6 +2,7 @@ package eu.europeana.oaipmh.util;
 
 import eu.europeana.oaipmh.model.ResumptionToken;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -46,7 +47,8 @@ public class ResumptionTokenHelper {
                 filter.append(FILTER_SEPARATOR);
             }
         }
-        return Base64.getUrlEncoder().encodeToString(String.valueOf(filter + TOKEN_SEPARATOR + expirationDate.getTime() + TOKEN_SEPARATOR + cursor + TOKEN_SEPARATOR + nextCursorMark).getBytes());
+        return Base64.getUrlEncoder().encodeToString(String.valueOf(filter + TOKEN_SEPARATOR + expirationDate.getTime() +
+                TOKEN_SEPARATOR + cursor + TOKEN_SEPARATOR + nextCursorMark).getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -59,7 +61,7 @@ public class ResumptionTokenHelper {
      */
     public static ResumptionToken decodeResumptionToken(String base64EncodedToken) throws IllegalArgumentException {
         try {
-            String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken));
+            String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken), StandardCharsets.UTF_8);
             String[] parts = decoded.split(TOKEN_SEPARATOR);
             if (parts.length == 4) {
                 String[] filterQuery = parts[0].split(FILTER_SEPARATOR);
