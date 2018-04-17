@@ -39,9 +39,6 @@ public class GlobalExceptionHandler extends BaseService {
     @ExceptionHandler({BadArgumentException.class, BadResumptionToken.class, BadVerbException.class, CannotDisseminateFormatException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public String handleBadRequest(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
-        if (e.doLog()) {
-            LOG.error(e.getMessage(), e);
-        }
         return handleException(e, request);
     }
 
@@ -53,9 +50,6 @@ public class GlobalExceptionHandler extends BaseService {
     @ExceptionHandler({IdDoesNotExistException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleNotFound(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
-        if (e.doLog()) {
-            LOG.error(e.getMessage(), e);
-        }
         return handleException(e, request);
     }
 
@@ -67,9 +61,6 @@ public class GlobalExceptionHandler extends BaseService {
     @ExceptionHandler(OaiPmhException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public String handleOther(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
-        if (e.doLog()) {
-            LOG.error(e.getMessage(), e);
-        }
         return handleException(e, request);
     }
 
@@ -80,6 +71,9 @@ public class GlobalExceptionHandler extends BaseService {
     }
 
     private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException, SerializationException {
+        if (e.doLog()) {
+            LOG.error(e.getMessage(), e);
+        }
         OAIRequest originalRequest = OaiPmhRequestFactory.createRequest(baseUrl, request.getQueryString(), true);
         OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
         return serialize(error.getResponse(originalRequest));
@@ -93,9 +87,6 @@ public class GlobalExceptionHandler extends BaseService {
     @ExceptionHandler(NoRecordsMatchException.class)
     @ResponseStatus(HttpStatus.OK)
     public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
-        if (e.doLog()) {
-            LOG.error(e.getMessage(), e);
-        }
         return handleException(e, request);
     }
 }
