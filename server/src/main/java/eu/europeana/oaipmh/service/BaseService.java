@@ -8,8 +8,14 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
+import eu.europeana.oaipmh.model.response.OAIResponse;
+import eu.europeana.oaipmh.service.exception.SerializationException;
+
+import java.io.IOException;
 
 public class BaseService {
+
+    private static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 
     // create a single XmlMapper for efficiency purposes (see https://github.com/FasterXML/jackson-docs/wiki/Presentation:-Jackson-Performance)
     private static final XmlMapper xmlMapper;
@@ -33,5 +39,16 @@ public class BaseService {
 
     protected XmlMapper getXmlMapper() {
         return xmlMapper;
+    }
+
+    protected String serialize(OAIResponse response) throws SerializationException {
+        try {
+            return XML_DECLARATION + xmlMapper.
+                    writerWithDefaultPrettyPrinter().
+                    writeValueAsString(response);
+        }
+        catch (IOException e) {
+            throw new SerializationException("Error serializing data: " + e.getMessage(), e);
+        }
     }
 }

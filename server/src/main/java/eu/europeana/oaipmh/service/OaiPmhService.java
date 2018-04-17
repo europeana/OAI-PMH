@@ -79,7 +79,7 @@ public class OaiPmhService extends BaseService {
      */
     public String getIdentify(IdentifyRequest request) throws OaiPmhException {
         Identify responseObject = new Identify();
-        return serialize(responseObject, request);
+        return serialize(responseObject.getResponse(request));
     }
 
     /**
@@ -97,7 +97,7 @@ public class OaiPmhService extends BaseService {
             throw new IdDoesNotExistException(request.getIdentifier());
         }
         GetRecord responseObject = new GetRecord(record);
-        return serialize(responseObject, request);
+        return serialize(responseObject.getResponse(request));
     }
 
     /**
@@ -114,7 +114,7 @@ public class OaiPmhService extends BaseService {
         }
 
         ListIdentifiers responseObject = identifierProvider.listIdentifiers(request.getMetadataPrefix(), DateConverter.fromIsoDateTime(request.getFrom()), DateConverter.fromIsoDateTime(request.getUntil()), request.getSet());
-        return serialize(responseObject, request);
+        return serialize(responseObject.getResponse(request));
     }
 
     /**
@@ -127,7 +127,7 @@ public class OaiPmhService extends BaseService {
     public String listIdentifiersWithToken(ListIdentifiersRequest request) throws OaiPmhException {
         ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
         ListIdentifiers responseObject = identifierProvider.listIdentifiers(validated);
-        return serialize(responseObject, request);
+        return serialize(responseObject.getResponse(request));
     }
 
     /**
@@ -149,25 +149,6 @@ public class OaiPmhService extends BaseService {
             throw new BadResumptionToken("Resumption token expired ad " + temporaryToken.getExpirationDate());
         }
         return temporaryToken;
-    }
-
-    /**
-     * Serialize response object to XML.
-     *
-     * @param object response object
-     * @param request request that is injected in the response
-     * @return XML response as string
-     * @throws SerializationException
-     */
-    private String serialize(OAIPMHVerb object, OAIRequest request) throws SerializationException {
-        try {
-            return getXmlMapper().
-                    writerWithDefaultPrettyPrinter().
-                    writeValueAsString(object.getResponse(request));
-        }
-        catch (IOException e) {
-            throw new SerializationException("Error serializing data: "+e.getMessage(), e);
-        }
     }
 
     @PreDestroy
