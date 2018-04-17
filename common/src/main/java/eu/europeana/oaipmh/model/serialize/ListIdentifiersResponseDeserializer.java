@@ -46,23 +46,23 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         JsonNode mainNode = node.get("OAI-PMH");
         JsonNode requestNode = mainNode.get("request");
         JsonNode responseDateNode = mainNode.get("responseDate");
-        JsonNode errorNode = null;
-        JsonNode listIdentifiersNode = null;
-        JsonNode headerNode = null;
-        if (mainNode.has("error")) {
-            errorNode = mainNode.get("error");
-            // return empty response so harvest can continue (in case there are other sets to harvest)
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("Error message: {}", errorNode);
-            return new ListIdentifiersResponse();
-        }
-
-        listIdentifiersNode = mainNode.get("ListIdentifiers");
-        headerNode = listIdentifiersNode.get("header");
+        // create basic response
         ListIdentifiersRequest listIdentifiersRequest = getListIdentifiersRequest(requestNode);
-
         ListIdentifiersResponse listIdentifiersResponse = new ListIdentifiersResponse();
         listIdentifiersResponse.setResponseDate(DateConverter.fromIsoDateTime(responseDateNode.asText()));
         listIdentifiersResponse.setRequest(listIdentifiersRequest);
+
+        // check if we got error or content
+        JsonNode errorNode = mainNode.get("error");
+        if (errorNode != null) {
+            // return basic response so harvest can continue (in case there are other sets to harvest)
+            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("Error message: {}", errorNode);
+            return listIdentifiersResponse;
+        }
+
+        //return full response
+        JsonNode listIdentifiersNode = mainNode.get("ListIdentifiers");
+        JsonNode headerNode = listIdentifiersNode.get("header");
 
         ListIdentifiers listIdentifiers = new ListIdentifiers();
         listIdentifiers.setResumptionToken(getResumptionToken(listIdentifiersNode.get("resumptionToken")));
