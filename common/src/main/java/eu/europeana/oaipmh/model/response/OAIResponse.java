@@ -2,6 +2,7 @@ package eu.europeana.oaipmh.model.response;
 
 import eu.europeana.oaipmh.model.request.OAIRequest;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Date;
@@ -13,6 +14,15 @@ import java.util.Date;
  */
 @XmlRootElement(name = "OAI-PMH")
 public class OAIResponse implements Serializable {
+
+    @XmlAttribute
+    private String xmlns="http://www.openarchives.org/OAI/2.0/";
+
+    @XmlAttribute(name = "xmlns:xsi")
+    private String xmlnsxsi="http://www.w3.org/2001/XMLSchema-instance";
+
+    @XmlAttribute(name = "xsi:schemaLocation")
+    private String xsischemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
 
     private Date responseDate;
 

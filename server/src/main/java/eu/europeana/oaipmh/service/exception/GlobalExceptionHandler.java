@@ -1,10 +1,7 @@
 package eu.europeana.oaipmh.service.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.OAIError;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.BaseService;
 import eu.europeana.oaipmh.service.OaiPmhRequestFactory;
@@ -78,15 +75,14 @@ public class GlobalExceptionHandler extends BaseService {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException {
+    public String handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException, SerializationException {
         return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request);
     }
 
-    private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException {
+    private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException, SerializationException {
         OAIRequest originalRequest = OaiPmhRequestFactory.createRequest(baseUrl, request.getQueryString(), true);
         OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
-        return getXmlMapper().writerWithDefaultPrettyPrinter().
-                writeValueAsString(error.getResponse(originalRequest));
+        return serialize(error.getResponse(originalRequest));
     }
 
     /**
