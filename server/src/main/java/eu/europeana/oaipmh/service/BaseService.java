@@ -44,7 +44,7 @@ public class BaseService {
     protected String serialize(OAIResponse response) throws SerializationException {
         try {
             return XML_DECLARATION + xmlMapper.
-                    writerWithDefaultPrettyPrinter().
+                    //writerWithDefaultPrettyPrinter().
                     writeValueAsString(response);
         }
         catch (IOException e) {
