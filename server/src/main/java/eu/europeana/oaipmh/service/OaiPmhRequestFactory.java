@@ -8,6 +8,7 @@ import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
+import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.util.DateConverter;
 
 import java.nio.charset.StandardCharsets;
@@ -19,27 +20,95 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OaiPmhRequestFactory {
-    private static final Map<String, List<OaiParameterName>> validVerbParameters;
+    private static final Set<String> validVerbs;
+
+    private static final Map<String, Set<OaiParameterName>> validVerbParameters;
+
+    private static final Map<String, Set<OaiParameterName>> mandatoryVerbParameters;
+
+    private static final Map<OaiParameterName, Set<OaiParameterName>> exclusiveParameters;
 
     static {
+        validVerbs = new HashSet<>();
+        validVerbs.add(Identify.class.getSimpleName());
+        validVerbs.add(ListIdentifiers.class.getSimpleName());
+        validVerbs.add(GetRecord.class.getSimpleName());
+
+        mandatoryVerbParameters = new HashMap<>();
+        // ListIdentifiers
+        Set<OaiParameterName> mandatoryParameters = new HashSet<>();
+        mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
+        mandatoryVerbParameters.put(ListIdentifiers.class.getSimpleName(), mandatoryParameters);
+        // GetRecord
+        mandatoryParameters = new HashSet<>();
+        mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
+        mandatoryParameters.add(OaiParameterName.IDENTIFIER);
+        mandatoryVerbParameters.put(GetRecord.class.getSimpleName(), mandatoryParameters);
+
         validVerbParameters = new HashMap<>();
-        List<OaiParameterName> validParameters = new ArrayList<>();
+        // Identify
+        Set<OaiParameterName> validParameters = new HashSet<>();
         validVerbParameters.put(Identify.class.getSimpleName(), validParameters);
-        validParameters = new ArrayList<>();
+        // ListIdentifiers
+        validParameters = new HashSet<>();
         validParameters.add(OaiParameterName.METADATA_PREFIX);
         validParameters.add(OaiParameterName.FROM);
         validParameters.add(OaiParameterName.UNTIL);
         validParameters.add(OaiParameterName.SET);
         validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
         validVerbParameters.put(ListIdentifiers.class.getSimpleName(), validParameters);
-        validParameters = new ArrayList<>();
+        // GetRecord
+        validParameters = new HashSet<>();
         validParameters.add(OaiParameterName.METADATA_PREFIX);
         validParameters.add(OaiParameterName.IDENTIFIER);
         validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
+
+        exclusiveParameters = new HashMap<>();
+        // metadataPrefix
+        Set<OaiParameterName> exclusiveForParam = new HashSet<>();
+        exclusiveForParam.add(OaiParameterName.RESUMPTION_TOKEN);
+        exclusiveParameters.put(OaiParameterName.METADATA_PREFIX, exclusiveForParam);
+        // resumptionToken
+        exclusiveForParam = new HashSet<>();
+        exclusiveForParam.add(OaiParameterName.METADATA_PREFIX);
+        exclusiveForParam.add(OaiParameterName.FROM);
+        exclusiveForParam.add(OaiParameterName.IDENTIFIER);
+        exclusiveForParam.add(OaiParameterName.SET);
+        exclusiveForParam.add(OaiParameterName.UNTIL);
+        exclusiveParameters.put(OaiParameterName.RESUMPTION_TOKEN, exclusiveForParam);
+        // from
+        exclusiveForParam = new HashSet<>();
+        exclusiveForParam.add(OaiParameterName.RESUMPTION_TOKEN);
+        exclusiveForParam.add(OaiParameterName.IDENTIFIER);
+        exclusiveParameters.put(OaiParameterName.FROM, exclusiveForParam);
+        // until
+        exclusiveParameters.put(OaiParameterName.UNTIL, exclusiveForParam);
+        // set
+        exclusiveParameters.put(OaiParameterName.SET, exclusiveForParam);
+    }
+
+
+    public static void validateVerb(String verb) throws BadVerbException {
+        if (verb == null || !validVerbs.contains(verb)) {
+            throw new BadVerbException("Verb \"" + verb + "\" is invalid!");
+        }
+    }
+
+    private static void validateExclusiveParameters(OaiParameterName parameterName, Set<OaiParameterName> currentParameters) throws BadArgumentException {
+        Set<OaiParameterName> exclusive = exclusiveParameters.get(parameterName);
+        if (exclusive == null || currentParameters == null) {
+            // there are no exclusive parameters for the parameter being validated
+            return;
+        }
+        for (OaiParameterName exclusiveParameter : exclusive) {
+            if (currentParameters.contains(exclusiveParameter)) {
+                throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" cannot be used with parameter \"" + exclusiveParameter.toString() + "\"");
+            }
+        }
     }
 
     private static void validateVerbParameter(String verb, OaiParameterName parameterName) throws BadArgumentException {
-        List<OaiParameterName> valid = validVerbParameters.get(verb);
+        Set<OaiParameterName> valid = validVerbParameters.get(verb);
         if (valid != null && !valid.contains(parameterName)) {
             throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" is illegal for verb \"" + verb + "\"");
         }
@@ -54,10 +123,41 @@ public class OaiPmhRequestFactory {
      * @param request request string from HttpRequest
      * @throws BadArgumentException
      */
-    public static void validateParameterNames(String request) throws BadArgumentException {
+    public static void validateParameterNames(String request) throws BadArgumentException, BadVerbException {
         Map<OaiParameterName, String> parameters = prepareParameters(request, false);
-
+        validateMandatoryParameters(parameters);
         validateDateParameters(parameters.get(OaiParameterName.FROM), parameters.get(OaiParameterName.UNTIL));
+    }
+
+    private static void validateMandatoryParameters(Map<OaiParameterName, String> parameters) throws BadVerbException, BadArgumentException {
+        if (parameters == null || parameters.isEmpty()) {
+            throw new BadVerbException("Verb is missing.");
+        }
+        String verb = parameters.get(OaiParameterName.VERB);
+        if (verb == null || verb.isEmpty()) {
+            throw new BadVerbException("Verb is missing.");
+        }
+        Set<OaiParameterName> mandatoryParameters = mandatoryVerbParameters.get(verb);
+        if (mandatoryParameters != null && !mandatoryParameters.isEmpty()) {
+            for (OaiParameterName parameterName : mandatoryParameters) {
+                if (!parameters.containsKey(parameterName)) {
+                    // when this parameter is missing maybe it is one from the exclusive
+                    Set<OaiParameterName> exclusive = exclusiveParameters.get(parameterName);
+                    boolean found = false;
+                    if (exclusive != null) {
+                        for (OaiParameterName exclusiveParameterName : exclusive) {
+                            if (parameters.containsKey(exclusiveParameterName)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!found) {
+                        throw new BadArgumentException("Required parameter \"" + parameterName + "\" is missing.");
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -131,6 +231,7 @@ public class OaiPmhRequestFactory {
                 try {
                     validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], paramValue[1]);
                     validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
+                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
                 } catch (BadArgumentException e) {
                     if (!ignoreErrors) {
                         throw e;
@@ -146,6 +247,7 @@ public class OaiPmhRequestFactory {
             } else if (paramValue.length == 1) {
                 try {
                     validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], null);
+                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
                 } catch (BadArgumentException e) {
                     if (!ignoreErrors) {
                         throw e;
@@ -161,6 +263,7 @@ public class OaiPmhRequestFactory {
                 try {
                     validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], value);
                     validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
+                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
                 } catch (BadArgumentException e) {
                     if (!ignoreErrors) {
                         throw e;
