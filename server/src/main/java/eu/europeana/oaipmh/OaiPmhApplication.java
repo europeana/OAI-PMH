@@ -67,15 +67,28 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 
 	/**
 	 * Identifiers provider that returns identifiers information
-	 * @return
+	 * @return object implementing IdentifierProvider interface
 	 */
 	@Bean
 	public IdentifierProvider identifierProvider() {
 		return new SearchApi();
 	}
 
+	/**
+	 * Handles metadata formats for identifiers and records.
+	 *
+	 * @return object implementing MetadataFormats interface
+	 */
 	@Bean
 	public MetadataFormats metadataFormats() { return new MetadataFormats(); }
+
+	/**
+	 * Handles providing information for Identify verb.
+	 *
+	 * @return object implementing IdentifyProvider interface
+	 */
+	@Bean
+	public IdentifyProvider identifyProvider() { return new DefaultIdentifyProvider(); }
 
 	/**
 	 * OAI-PMH service that does the actual work
@@ -83,7 +96,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 */
 	@Bean
 	public OaiPmhService oaiPmhService() {
-		return new OaiPmhService(recordProvider(), identifierProvider(), metadataFormats());
+		return new OaiPmhService(recordProvider(), identifierProvider(), identifyProvider(), metadataFormats());
 	}
 
 

@@ -1,24 +1,14 @@
 package eu.europeana.oaipmh.service;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
-import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.metadata.MetadataFormats;
-import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
+import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
-import eu.europeana.oaipmh.service.exception.SerializationException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
@@ -28,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -55,12 +44,15 @@ public class OaiPmhService extends BaseService {
 
     private IdentifierProvider identifierProvider;
 
+    private IdentifyProvider identifyProvider;
+
     private MetadataFormats metadataFormats;
 
-    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, MetadataFormats metadataFormats) {
+    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, IdentifyProvider identifyProvider, MetadataFormats metadataFormats) {
         super();
         this.recordProvider = recordProvider;
         this.identifierProvider = identifierProvider;
+        this.identifyProvider = identifyProvider;
         this.metadataFormats = metadataFormats;
     }
 
@@ -78,7 +70,7 @@ public class OaiPmhService extends BaseService {
      * @throws OaiPmhException
      */
     public String getIdentify(IdentifyRequest request) throws OaiPmhException {
-        Identify responseObject = new Identify();
+        Identify responseObject = identifyProvider.provideIdentify();
         return serialize(responseObject.getResponse(request));
     }
 
