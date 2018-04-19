@@ -6,6 +6,7 @@ import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
+import eu.europeana.corelib.search.impl.WebMetaInfo;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.RDFMetadata;
@@ -44,6 +45,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${mongo.registry.dbname}")
     private String registryDBName;
 
+    @Value("${enhanceWithTechnicalMetadata}")
+    private boolean enhanceWithTechnicalMetadata;
+
     private EdmMongoServer mongoServer;
 
     @PostConstruct
@@ -71,6 +75,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         try {
             FullBean bean = mongoServer.getFullBean(recordId);
             if (bean != null) {
+                enhanceWithTechnicalMetadata(bean);
                 Header header = getHeader(id, bean);
                 String edm = EdmUtils.toEDM((FullBeanImpl) bean, false);
                 return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
@@ -80,6 +85,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             throw new InternalServerErrorException("Record with id " + id + " could not be retrieved due to database problems.");
         }
         throw new IdDoesNotExistException(id);
+    }
+
+    private void enhanceWithTechnicalMetadata(FullBean bean) {
+        if (enhanceWithTechnicalMetadata && bean != null) {
+            WebMetaInfo.injectWebMetaInfo(bean, mongoServer);
+        }
     }
 
     private String removeXMLHeader(String xml) {
