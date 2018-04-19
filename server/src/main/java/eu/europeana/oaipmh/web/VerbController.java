@@ -29,7 +29,7 @@ public class VerbController {
 
     private static final Logger LOG = LogManager.getLogger(VerbController.class);
 
-    @Value("${baseUrl}")
+    @Value("${baseURL}")
     private String baseUrl;
 
     private OaiPmhService ops;

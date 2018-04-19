@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class GlobalExceptionHandler extends BaseService {
 
-    @Value("${baseUrl}")
+    @Value("${baseURL}")
     private String baseUrl;
 
     private static final Logger LOG = LogManager.getLogger(GlobalExceptionHandler.class);
