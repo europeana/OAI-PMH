@@ -4,6 +4,7 @@ import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.IdentifyResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 /**
@@ -11,55 +12,99 @@ import java.io.Serializable;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
+@XmlType(propOrder = {"repositoryName", "baseUrl", "protocolVersion", "adminEmail", "earliestDatestamp", "deletedRecord", "granularity", "compression", "description"})
 public class Identify extends OAIPMHVerb implements Serializable {
 
     private static final long serialVersionUID = 203469625750930136L;
 
-    // TODO implement rest of the fields
-
     // required fields
-    private String repositoryName = "Europeana Repository";
+    private String repositoryName;
+
     private String baseUrl;
+
     private String protocolVersion;
-    private String earliestDateStamp = "2013-02-15T13:04:50Z"; // TODO check if this is the case, right now it's copied from the old project settings
-    private String deletedRecord = "no";
+
+    private String earliestDatestamp;
+
+    private String deletedRecord;
+
     private String granularity;
-    private String adminEmail = "api@europeana.eu";
+
+    private String[] adminEmail;
 
     // optional fields
     private String[] compression;
+
     private String[] description;
+
+    public Identify() {}
+
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
+    }
 
     public String getRepositoryName() {
         return repositoryName;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 
     public String getBaseUrl() {
         return baseUrl;
     }
 
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
     public String getProtocolVersion() {
         return protocolVersion;
     }
 
-    public String getEarliestDateStamp() {
-        return earliestDateStamp;
+    public void setEarliestDatestamp(String earliestDatestamp) {
+        this.earliestDatestamp = earliestDatestamp;
+    }
+
+    public String getEarliestDatestamp() {
+        return earliestDatestamp;
+    }
+
+    public void setDeletedRecord(String deletedRecord) {
+        this.deletedRecord = deletedRecord;
     }
 
     public String getDeletedRecord() {
         return deletedRecord;
     }
 
+    public void setGranularity(String granularity) {
+        this.granularity = granularity;
+    }
+
     public String getGranularity() {
         return granularity;
     }
 
-    public String getAdminEmail() {
+    public void setAdminEmail(String[] adminEmail) {
+        this.adminEmail = adminEmail;
+    }
+
+    public String[] getAdminEmail() {
         return adminEmail;
+    }
+
+    public void setCompression(String[] compression) {
+        this.compression = compression;
     }
 
     public String[] getCompression() {
         return compression;
+    }
+
+    public void setDescription(String[] description) {
+        this.description = description;
     }
 
     public String[] getDescription() {
