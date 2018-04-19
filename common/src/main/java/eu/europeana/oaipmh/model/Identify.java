@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-@XmlType(propOrder = {"repositoryName", "baseUrl", "protocolVersion", "adminEmail", "earliestDatestamp", "deletedRecord", "granularity", "compression", "description"})
+@XmlType(propOrder = {"repositoryName", "baseURL", "protocolVersion", "adminEmail", "earliestDatestamp", "deletedRecord", "granularity", "compression", "description"})
 public class Identify extends OAIPMHVerb implements Serializable {
 
     private static final long serialVersionUID = 203469625750930136L;
@@ -20,7 +20,7 @@ public class Identify extends OAIPMHVerb implements Serializable {
     // required fields
     private String repositoryName;
 
-    private String baseUrl;
+    private String baseURL;
 
     private String protocolVersion;
 
@@ -47,12 +47,12 @@ public class Identify extends OAIPMHVerb implements Serializable {
         return repositoryName;
     }
 
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setBaseURL(String baseUrl) {
+        this.baseURL = baseUrl;
     }
 
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getBaseURL() {
+        return baseURL;
     }
 
     public void setProtocolVersion(String protocolVersion) {

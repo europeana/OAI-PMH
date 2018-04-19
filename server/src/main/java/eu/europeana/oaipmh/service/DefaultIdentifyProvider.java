@@ -8,8 +8,8 @@ public class DefaultIdentifyProvider implements IdentifyProvider {
     @Value("${repositoryName}")
     private String repositoryName;
 
-    @Value("${baseUrl}")
-    private String baseUrl;
+    @Value("${baseURL}")
+    private String baseURL;
 
     @Value("${protocolVersion}")
     private String protocolVersion;
@@ -33,7 +33,7 @@ public class DefaultIdentifyProvider implements IdentifyProvider {
     @Override
     public Identify provideIdentify() {
         Identify identify = new Identify();
-        identify.setBaseUrl(baseUrl);
+        identify.setBaseURL(baseURL);
         identify.setAdminEmail(adminEmail);
         identify.setCompression(compression);
         identify.setDeletedRecord(deletedRecord);

@@ -34,7 +34,7 @@ public class DefaultIdentifyProviderTest {
     @Before
     public void init() {
         ReflectionTestUtils.setField(defaultIdentifyProvider, "repositoryName", REPOSITORY_NAME);
-        ReflectionTestUtils.setField(defaultIdentifyProvider, "baseUrl", BASE_URL);
+        ReflectionTestUtils.setField(defaultIdentifyProvider, "baseURL", BASE_URL);
         ReflectionTestUtils.setField(defaultIdentifyProvider, "protocolVersion", PROTOCOL_VERSION);
         ReflectionTestUtils.setField(defaultIdentifyProvider, "earliestDatestamp", EARLIEST_DATESTAMP);
         ReflectionTestUtils.setField(defaultIdentifyProvider, "deletedRecord", DELETED_RECORD);
@@ -47,7 +47,7 @@ public class DefaultIdentifyProviderTest {
     public void provideIdentify() {
         Identify identify = defaultIdentifyProvider.provideIdentify();
         assertEquals(identify.getRepositoryName(), REPOSITORY_NAME);
-        assertEquals(identify.getBaseUrl(), BASE_URL);
+        assertEquals(identify.getBaseURL(), BASE_URL);
         assertEquals(identify.getProtocolVersion(), PROTOCOL_VERSION);
         assertEquals(identify.getEarliestDatestamp(), EARLIEST_DATESTAMP);
         assertEquals(identify.getDeletedRecord(), DELETED_RECORD);
