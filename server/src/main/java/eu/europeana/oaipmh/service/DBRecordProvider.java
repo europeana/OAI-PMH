@@ -55,10 +55,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${mongo.registry.dbname}")
     private String registryDBName;
 
-    @Value("${enhanceWithTechnicalMetadata}")
+    @Value("${enhanceWithTechnicalMetadata:true}")
     private boolean enhanceWithTechnicalMetadata;
 
-    @Value("${expandWithFullText}")
+    @Value("${expandWithFullText:false}")
     private boolean expandWithFullText;
 
     private EdmMongoServer mongoServer;
