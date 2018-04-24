@@ -127,6 +127,18 @@ public class VerbControllerTest {
     }
 
     @Test
+    public void testListIdentifiersWithExclusiveParameters() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&resumptionToken=ABBB").accept(MediaType.parseMediaType("text/xml")))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testListIdentifiersWithExclusiveParametersForToken() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=ABBB&set=NBN").accept(MediaType.parseMediaType("text/xml")))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
     public void testListIdentifiersWithMultipleFroms() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017-02-02T01:03:00Z&from=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
