@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.corelib.definitions.jibx.RDF;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
 import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
@@ -68,7 +69,7 @@ public class DBRecordProviderTest extends BaseApiTest {
         FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
         PowerMockito.mockStatic(EdmUtils.class);
-        given(EdmUtils.toEDM(any(FullBeanImpl.class), anyBoolean())).willReturn(record);
+        given(EdmUtils.toEDM(any(RDF.class))).willReturn(record);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
 
