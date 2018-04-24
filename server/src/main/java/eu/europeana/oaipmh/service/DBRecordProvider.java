@@ -1,11 +1,17 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
+import eu.europeana.corelib.definitions.edm.entity.WebResource;
+import eu.europeana.corelib.definitions.edm.entity.Aggregation;
+import eu.europeana.corelib.definitions.jibx.RDF;
+import eu.europeana.corelib.definitions.jibx.Type1;
+import eu.europeana.corelib.definitions.jibx.WebResourceType;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
 import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
+import eu.europeana.corelib.search.impl.WebMetaInfo;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.RDFMetadata;
@@ -19,7 +25,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -44,7 +55,15 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${mongo.registry.dbname}")
     private String registryDBName;
 
+    @Value("${enhanceWithTechnicalMetadata:true}")
+    private boolean enhanceWithTechnicalMetadata;
+
+    @Value("${expandWithFullText:false}")
+    private boolean expandWithFullText;
+
     private EdmMongoServer mongoServer;
+
+    private Set<String> fullTextIds = new HashSet<>();
 
     @PostConstruct
     private void init() {
@@ -53,6 +72,18 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         } catch (MongoDBException e) {
             LOG.error("Could not connect to Mongo DB.", e);
             throw new RuntimeException(e);
+        }
+        loadFullTextIds();
+    }
+
+    private void loadFullTextIds() {
+        if (expandWithFullText) {
+            try {
+                Path path = Paths.get(getClass().getClassLoader().getResource("is_fulltext.csv").toURI());
+                fullTextIds.addAll(Files.readAllLines(path));
+            } catch (IOException | URISyntaxException e) {
+                LOG.error("Problem with loading is_fulltext.csv file.", e);
+            }
         }
     }
 
@@ -71,8 +102,11 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         try {
             FullBean bean = mongoServer.getFullBean(recordId);
             if (bean != null) {
+                enhanceWithTechnicalMetadata(bean);
+                RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
+                expandWithFullText(rdf, recordId);
                 Header header = getHeader(id, bean);
-                String edm = EdmUtils.toEDM((FullBeanImpl) bean, false);
+                String edm = EdmUtils.toEDM(rdf);
                 return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
             }
         } catch (MongoDBException | MongoRuntimeException e) {
@@ -80,6 +114,31 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             throw new InternalServerErrorException("Record with id " + id + " could not be retrieved due to database problems.");
         }
         throw new IdDoesNotExistException(id);
+    }
+
+    private void enhanceWithTechnicalMetadata(FullBean bean) {
+        if (enhanceWithTechnicalMetadata && bean != null) {
+            WebMetaInfo.injectWebMetaInfo(bean, mongoServer);
+        }
+    }
+
+    /**
+     * This functionality will be removed in the next version. It was introduced only for migration.
+     * @param rdf rdf to expand
+     */
+    @Deprecated
+    private void expandWithFullText(RDF rdf, String id) {
+        if (expandWithFullText && fullTextIds.contains(id)) {
+            // expand with full text only when this option is turned on in the configuration
+            for (WebResourceType resourceType : rdf.getWebResourceList()) {
+                if (resourceType.getHasMimeType() != null && resourceType.getHasMimeType().getHasMimeType().equals("application/pdf")) {
+                    Type1 type = new Type1();
+                    type.setResource("http://www.europeana.eu/schemas/edm/FullTextResource");
+                    resourceType.setType(type);
+                    break;
+                }
+            }
+        }
     }
 
     private String removeXMLHeader(String xml) {
