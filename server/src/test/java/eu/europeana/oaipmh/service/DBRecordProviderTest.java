@@ -67,9 +67,11 @@ public class DBRecordProviderTest extends BaseApiTest {
         String record = loadRecord();
 
         FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
+        RDF rdf = PowerMockito.mock(RDF.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
         PowerMockito.mockStatic(EdmUtils.class);
         given(EdmUtils.toEDM(any(RDF.class))).willReturn(record);
+        given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
 
