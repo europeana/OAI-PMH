@@ -1,11 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.definitions.edm.entity.WebResource;
-import eu.europeana.corelib.definitions.edm.entity.Aggregation;
-import eu.europeana.corelib.definitions.jibx.RDF;
-import eu.europeana.corelib.definitions.jibx.Type1;
-import eu.europeana.corelib.definitions.jibx.WebResourceType;
+import eu.europeana.corelib.definitions.jibx.*;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
 import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
@@ -30,7 +26,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -106,6 +104,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                 RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
                 expandWithFullText(rdf, recordId);
                 Header header = getHeader(id, bean);
+                updateDatasetName(rdf);
                 String edm = EdmUtils.toEDM(rdf);
                 return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
             }
@@ -114,6 +113,14 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             throw new InternalServerErrorException("Record with id " + id + " could not be retrieved due to database problems.");
         }
         throw new IdDoesNotExistException(id);
+    }
+
+    private void updateDatasetName(RDF rdf) {
+        EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
+        DatasetName dsName = new DatasetName();
+        dsName.setString(aggregationType.getCollectionName().getString());
+        aggregationType.setDatasetName(dsName);
+        aggregationType.setCollectionName(null);
     }
 
     private void enhanceWithTechnicalMetadata(FullBean bean) {
