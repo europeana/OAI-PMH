@@ -67,9 +67,11 @@ public class DBRecordProviderTest extends BaseApiTest {
         String record = loadRecord();
 
         FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
+        RDF rdf = PowerMockito.mock(RDF.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
         PowerMockito.mockStatic(EdmUtils.class);
         given(EdmUtils.toEDM(any(RDF.class))).willReturn(record);
+        given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
 
@@ -93,7 +95,12 @@ public class DBRecordProviderTest extends BaseApiTest {
         Assert.assertEquals(retrievedHeader.getIdentifier(), preparedHeader.getIdentifier());
         Assert.assertEquals(retrievedHeader.getSetSpec(), preparedHeader.getSetSpec());
 
-        Assert.assertEquals(retrievedRecord.getMetadata().getMetadata(), preparedRecord.getMetadata().getMetadata());
+        String metadata = retrievedRecord.getMetadata().getMetadata();
+        int index = metadata.indexOf("<edm:completeness>0</edm:completeness>");
+        if (index != -1) {
+            metadata = metadata.substring(0, index) + metadata.substring(index + "<edm:completeness>0</edm:completeness>".length());
+        }
+        Assert.assertEquals(metadata, preparedRecord.getMetadata().getMetadata());
     }
 
     private Record prepareRecord(String record) {

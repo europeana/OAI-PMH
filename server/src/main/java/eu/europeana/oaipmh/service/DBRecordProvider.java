@@ -1,11 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.definitions.edm.entity.WebResource;
-import eu.europeana.corelib.definitions.edm.entity.Aggregation;
-import eu.europeana.corelib.definitions.jibx.RDF;
-import eu.europeana.corelib.definitions.jibx.Type1;
-import eu.europeana.corelib.definitions.jibx.WebResourceType;
+import eu.europeana.corelib.definitions.jibx.*;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
 import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
@@ -30,7 +26,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -104,9 +102,14 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             if (bean != null) {
                 enhanceWithTechnicalMetadata(bean);
                 RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
+                if (rdf == null) {
+                    throw new InternalServerErrorException("Record with id " + id + " could not be converted to EDM.");
+                }
                 expandWithFullText(rdf, recordId);
+                updatePreview(rdf);
                 Header header = getHeader(id, bean);
                 String edm = EdmUtils.toEDM(rdf);
+                edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
                 return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
             }
         } catch (MongoDBException | MongoRuntimeException e) {
@@ -114,6 +117,53 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             throw new InternalServerErrorException("Record with id " + id + " could not be retrieved due to database problems.");
         }
         throw new IdDoesNotExistException(id);
+    }
+
+    /**
+     * This method is deprecated. It was temporarily created to include europeana completeness
+     * to the resulting record metadata but without including it to EDM schema. It just searches the
+     * EDM string (with RDF xml) to locate the end tag for edm:EuropeanaAggregation. After finding it it
+     * injects the edm:completeness tag with the proper value just before the edm:EuropeanaAggregation closing
+     * tag. This may cause that deserialization RDF from this xml will not be possible without removing
+     * the edm:completeness tag first.
+     *
+     * @param edm edm string created from RDF object
+     * @param completeness completeness value to be used inside edm:completeness tag
+     * @return the changed edm string
+     */
+    @Deprecated
+    private String injectEuropeanaCompleteness(String edm, int completeness) {
+        int index = edm.indexOf("</edm:EuropeanaAggregation>");
+        if (index != -1) {
+            return edm.substring(0, index) + "<edm:completeness>" + completeness + "</edm:completeness>" + edm.substring(index);
+        }
+        return edm;
+    }
+
+    private void updatePreview(RDF rdf) {
+        String resource = null;
+
+        for (Aggregation aggregation : rdf.getAggregationList()) {
+            if (aggregation.getObject() != null) {
+                resource = aggregation.getObject().getResource();
+            } else if (aggregation.getIsShownBy() != null) {
+                resource = aggregation.getIsShownBy().getResource();
+            }
+            if (resource != null) {
+                break;
+            }
+        }
+        if (resource != null) {
+            if (!rdf.getEuropeanaAggregationList().isEmpty()) {
+                EuropeanaAggregationType europeanaAggregationType = rdf.getEuropeanaAggregationList().get(0);
+                Preview preview = europeanaAggregationType.getPreview();
+                if (preview == null) {
+                    preview = new Preview();
+                    europeanaAggregationType.setPreview(preview);
+                }
+                preview.setResource(resource);
+            }
+        }
     }
 
     private void enhanceWithTechnicalMetadata(FullBean bean) {
