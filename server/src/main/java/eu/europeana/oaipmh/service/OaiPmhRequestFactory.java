@@ -3,10 +3,8 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.GetRecord;
 import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.request.GetRecordRequest;
-import eu.europeana.oaipmh.model.request.IdentifyRequest;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.model.ListSets;
+import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.util.DateConverter;
@@ -33,6 +31,7 @@ public class OaiPmhRequestFactory {
         validVerbs.add(Identify.class.getSimpleName());
         validVerbs.add(ListIdentifiers.class.getSimpleName());
         validVerbs.add(GetRecord.class.getSimpleName());
+        validVerbs.add(ListSets.class.getSimpleName());
 
         mandatoryVerbParameters = new HashMap<>();
         // ListIdentifiers
@@ -62,6 +61,10 @@ public class OaiPmhRequestFactory {
         validParameters.add(OaiParameterName.METADATA_PREFIX);
         validParameters.add(OaiParameterName.IDENTIFIER);
         validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
+        // ListSets
+        validParameters = new HashSet<>();
+        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validVerbParameters.put(ListSets.class.getSimpleName(), validParameters);
 
         exclusiveParameters = new HashMap<>();
         // metadataPrefix
@@ -330,11 +333,22 @@ public class OaiPmhRequestFactory {
             return createGetRecordRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX), parameters.get(OaiParameterName.IDENTIFIER));
         }
 
+        if (ListSets.class.getSimpleName().equals(verb)) {
+            return createListSetsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+        }
+
         if (!ignoreErrors) {
             throw new BadArgumentException("Unsupported verb.");
         }
         // in this case just create a general request object with verb and url only.
         return new OAIRequest(verb, baseUrl);
+    }
+
+    public static ListSetsRequest createListSetsRequest(String baseUrl, String resumptionToken) {
+        if (resumptionToken != null) {
+            return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, resumptionToken);
+        }
+        return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl);
     }
 
     private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) throws BadArgumentException {

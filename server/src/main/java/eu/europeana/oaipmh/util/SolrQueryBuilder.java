@@ -7,6 +7,10 @@ import java.util.List;
 
 import static eu.europeana.oaipmh.util.SolrConstants.*;
 import static org.apache.solr.common.params.CursorMarkParams.CURSOR_MARK_PARAM;
+import static org.apache.solr.common.params.FacetParams.FACET_OFFSET;
+import static org.apache.solr.common.params.StatsParams.STATS;
+import static org.apache.solr.common.params.StatsParams.STATS_CALC_DISTINCT;
+import static org.apache.solr.common.params.StatsParams.STATS_FACET;
 
 /**
  * The helper class used to build Solr queries based on the given filter parameters.
@@ -101,6 +105,24 @@ public class SolrQueryBuilder {
         query.addSort(EUROPEANA_ID, SolrQuery.ORDER.asc);
         query.set(CURSOR_MARK_PARAM, cursorMark);
         query.setParam(WT_PARAM, WT_JSON);
+        return query;
+    }
+
+    public static SolrQuery listSets(int limit, long offset) {
+        SolrQuery query = new SolrQuery("*:*");
+        query.setRows(0);
+        query.setFields(DATASET_NAME);
+        query.addFacetField(DATASET_NAME);
+        query.setFacet(true);
+        query.setFacetLimit(limit);
+        query.setFacetMinCount(1);
+        if (offset > 0) {
+            query.setParam(FACET_OFFSET, String.valueOf(offset));
+        } else {
+            query.set(STATS, true);
+            query.setGetFieldStatistics(DATASET_NAME);
+            query.set(STATS_CALC_DISTINCT, true);
+        }
         return query;
     }
 }
