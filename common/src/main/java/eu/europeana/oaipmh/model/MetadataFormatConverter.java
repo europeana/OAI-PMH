@@ -1,4 +1,4 @@
-package eu.europeana.oaipmh.model.metadata;
+package eu.europeana.oaipmh.model;
 
 /**
  * General interface for metadata format converters

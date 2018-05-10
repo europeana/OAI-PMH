@@ -5,6 +5,7 @@ import eu.europeana.oaipmh.model.metadata.MetadataFormats;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
+import eu.europeana.oaipmh.model.request.ListMetadataFormatsRequest;
 import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
@@ -149,5 +150,10 @@ public class OaiPmhService extends BaseService {
         identifierProvider.close();
         recordProvider.close();
         LOG.info("OAI-PMH service closed.");
+    }
+
+    public String listMetadataFormats(ListMetadataFormatsRequest request) throws OaiPmhException {
+        ListMetadataFormats responseObject = metadataFormats.listMetadataFormats();
+        return serialize(responseObject.getResponse(request));
     }
 }

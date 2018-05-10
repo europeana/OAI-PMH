@@ -1,11 +1,15 @@
 package eu.europeana.oaipmh.model.metadata;
 
+import eu.europeana.oaipmh.model.ListMetadataFormats;
+import eu.europeana.oaipmh.model.MetadataFormat;
+import eu.europeana.oaipmh.model.MetadataFormatConverter;
+import eu.europeana.oaipmh.service.exception.NoMetadataFormatsException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Configuration class keeping the metadata converters defined in the configuration file. For each entry from the file
@@ -14,20 +18,39 @@ import java.util.Map;
 @ConfigurationProperties(prefix="metadata.formats")
 public class MetadataFormats implements MetadataFormatProvider {
 
+    @Value("#{'${metadata.formats.prefixes}'.split(',')}")
+    private final List<String> prefixes = new ArrayList<>();
+
     private final Map<String, String> converters = new HashMap<>();
 
-    private Map<String, MetadataFormatConverter> metadataConverters = new HashMap<>();
+    private final Map<String, String> schemas = new HashMap<>();
+
+    private final Map<String, String> namespaces = new HashMap<>();
+
+    private Map<String, MetadataFormat> metadataFormats = new HashMap<>();
 
     public Map<String, String> getConverters() {
         return converters;
     }
 
+    public List<String> getPrefixes() {
+        return prefixes;
+    }
+
+    public Map<String, String> getSchemas() {
+        return schemas;
+    }
+
+    public Map<String, String> getNamespaces() {
+        return namespaces;
+    }
+
     @PostConstruct
-    private void initConverters() {
-        for (Map.Entry<String, String> entry : converters.entrySet()) {
-            MetadataFormatConverter converter = createConverter(entry.getValue());
-            if (converter != null) {
-                metadataConverters.put(entry.getKey(), converter);
+    private void initFormats() {
+        for (String prefix : prefixes) {
+            if (schemas.get(prefix) != null && namespaces.get(prefix) != null) {
+                MetadataFormat format = new MetadataFormat(prefix, schemas.get(prefix), namespaces.get(prefix), createConverter(converters.get(prefix)));
+                metadataFormats.put(prefix, format);
             }
         }
     }
@@ -48,14 +71,25 @@ public class MetadataFormats implements MetadataFormatProvider {
 
     @Override
     public boolean canDisseminate(String metadataFormat) {
-        return converters.get(metadataFormat) != null;
+        MetadataFormat format = metadataFormats.get(metadataFormat);
+        return format != null && format.getConverter() != null;
     }
 
     @Override
     public MetadataFormatConverter getConverter(String metadataFormat) {
-        if (metadataConverters.get(metadataFormat) == null) {
+        if (metadataFormats.get(metadataFormat) == null) {
             return null;
         }
-        return metadataConverters.get(metadataFormat);
+        return metadataFormats.get(metadataFormat).getConverter();
+    }
+
+    @Override
+    public ListMetadataFormats listMetadataFormats() throws NoMetadataFormatsException {
+        if (metadataFormats.isEmpty()) {
+            throw new NoMetadataFormatsException("There are no metadata formats available.");
+        }
+        ListMetadataFormats result = new ListMetadataFormats();
+        result.setMetadataFormats(new ArrayList<>(metadataFormats.values()));
+        return result;
     }
 }

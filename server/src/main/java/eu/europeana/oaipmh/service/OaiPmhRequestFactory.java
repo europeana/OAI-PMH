@@ -3,10 +3,8 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.GetRecord;
 import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.request.GetRecordRequest;
-import eu.europeana.oaipmh.model.request.IdentifyRequest;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.model.ListMetadataFormats;
+import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.util.DateConverter;
@@ -33,6 +31,7 @@ public class OaiPmhRequestFactory {
         validVerbs.add(Identify.class.getSimpleName());
         validVerbs.add(ListIdentifiers.class.getSimpleName());
         validVerbs.add(GetRecord.class.getSimpleName());
+        validVerbs.add(ListMetadataFormats.class.getSimpleName());
 
         mandatoryVerbParameters = new HashMap<>();
         // ListIdentifiers
@@ -62,6 +61,10 @@ public class OaiPmhRequestFactory {
         validParameters.add(OaiParameterName.METADATA_PREFIX);
         validParameters.add(OaiParameterName.IDENTIFIER);
         validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
+        // ListMetadataFormats
+        validParameters = new HashSet<>();
+        validParameters.add(OaiParameterName.IDENTIFIER);
+        validVerbParameters.put(ListMetadataFormats.class.getSimpleName(), validParameters);
 
         exclusiveParameters = new HashMap<>();
         // metadataPrefix
@@ -330,6 +333,10 @@ public class OaiPmhRequestFactory {
             return createGetRecordRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX), parameters.get(OaiParameterName.IDENTIFIER));
         }
 
+        if (ListMetadataFormats.class.getSimpleName().equals(verb)) {
+            return createListMetadataFormatsRequest(baseUrl, parameters.get(OaiParameterName.IDENTIFIER));
+        }
+
         if (!ignoreErrors) {
             throw new BadArgumentException("Unsupported verb.");
         }
@@ -365,5 +372,9 @@ public class OaiPmhRequestFactory {
 
     public static GetRecordRequest createGetRecordRequest(String baseUrl, String metadataPrefix, String identifier) {
         return new GetRecordRequest(GetRecord.class.getSimpleName(), baseUrl, metadataPrefix, identifier);
+    }
+
+    public static ListMetadataFormatsRequest createListMetadataFormatsRequest(String baseUrl, String identifier) {
+        return new ListMetadataFormatsRequest(ListMetadataFormats.class.getSimpleName(), baseUrl, identifier);
     }
 }
