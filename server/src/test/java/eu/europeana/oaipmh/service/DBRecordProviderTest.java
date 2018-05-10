@@ -1,5 +1,7 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.corelib.definitions.jibx.CollectionName;
+import eu.europeana.corelib.definitions.jibx.EuropeanaAggregationType;
 import eu.europeana.corelib.definitions.jibx.RDF;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
 import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
@@ -28,10 +30,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(EdmUtils.class)
@@ -70,6 +75,15 @@ public class DBRecordProviderTest extends BaseApiTest {
         RDF rdf = PowerMockito.mock(RDF.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
         PowerMockito.mockStatic(EdmUtils.class);
+        RDF rdf = PowerMockito.mock(RDF.class);
+        given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
+        EuropeanaAggregationType type = PowerMockito.mock(EuropeanaAggregationType.class);
+        List<EuropeanaAggregationType> types = new ArrayList<>();
+        types.add(type);
+        given(rdf.getEuropeanaAggregationList()).willReturn(types);
+        CollectionName name = PowerMockito.mock(CollectionName.class);
+        given(type.getCollectionName()).willReturn(name);
+        given(name.getString()).willReturn(TEST_RECORD_SETS[0]);
         given(EdmUtils.toEDM(any(RDF.class))).willReturn(record);
         given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);

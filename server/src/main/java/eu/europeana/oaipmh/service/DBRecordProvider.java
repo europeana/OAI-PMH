@@ -107,6 +107,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                 }
                 expandWithFullText(rdf, recordId);
                 updatePreview(rdf);
+                updateDatasetName(rdf);
                 Header header = getHeader(id, bean);
                 String edm = EdmUtils.toEDM(rdf);
                 edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
@@ -117,6 +118,14 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             throw new InternalServerErrorException("Record with id " + id + " could not be retrieved due to database problems.");
         }
         throw new IdDoesNotExistException(id);
+    }
+
+    private void updateDatasetName(RDF rdf) {
+        EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
+        DatasetName dsName = new DatasetName();
+        dsName.setString(aggregationType.getCollectionName().getString());
+        aggregationType.setDatasetName(dsName);
+        aggregationType.setCollectionName(null);
     }
 
     /**
