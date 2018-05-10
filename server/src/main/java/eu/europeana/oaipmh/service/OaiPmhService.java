@@ -5,6 +5,7 @@ import eu.europeana.oaipmh.model.metadata.MetadataFormats;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
+import eu.europeana.oaipmh.model.request.ListSetsRequest;
 import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
@@ -48,12 +49,15 @@ public class OaiPmhService extends BaseService {
 
     private MetadataFormats metadataFormats;
 
-    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, IdentifyProvider identifyProvider, MetadataFormats metadataFormats) {
+    private SetsProvider setsProvider;
+
+    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, IdentifyProvider identifyProvider, MetadataFormats metadataFormats, SetsProvider setsProvider) {
         super();
         this.recordProvider = recordProvider;
         this.identifierProvider = identifierProvider;
         this.identifyProvider = identifyProvider;
         this.metadataFormats = metadataFormats;
+        this.setsProvider = setsProvider;
     }
 
     @PostConstruct
@@ -110,6 +114,24 @@ public class OaiPmhService extends BaseService {
     }
 
     /**
+     * Retrieve list of sets
+     *
+     * @param request request containing all necessary parameters
+     * @return list of sets
+     * @throws OaiPmhException
+     */
+    public String listSets(ListSetsRequest request) throws OaiPmhException {
+        ListSets responseObject;
+        if (request.getResumptionToken() != null) {
+            ResumptionToken validated = validateResumptionToken(request.getResumptionToken(), true);
+            responseObject = setsProvider.listSets(validated);
+        } else {
+            responseObject = setsProvider.listSets();
+        }
+        return serialize(responseObject.getResponse(request));
+    }
+
+    /**
      * Retrieve another page of results for ListIdentifiers verb starting from the point encoded in resumption token.
      *
      * @param request request containing token used to continue retrieving list of identifiers
@@ -117,7 +139,7 @@ public class OaiPmhService extends BaseService {
      * @throws OaiPmhException
      */
     public String listIdentifiersWithToken(ListIdentifiersRequest request) throws OaiPmhException {
-        ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
+        ResumptionToken validated = validateResumptionToken(request.getResumptionToken(), false);
         ListIdentifiers responseObject = identifierProvider.listIdentifiers(validated);
         return serialize(responseObject.getResponse(request));
     }
@@ -130,10 +152,14 @@ public class OaiPmhService extends BaseService {
      * @return decoded resumption token ready to be used by the internal request to IdentifierProvider
      * @throws BadResumptionToken
      */
-    private ResumptionToken validateResumptionToken(String resumptionToken) throws BadResumptionToken {
+    private ResumptionToken validateResumptionToken(String resumptionToken, boolean simple) throws BadResumptionToken {
         ResumptionToken temporaryToken;
         try {
-            temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
+            if (simple) {
+                temporaryToken = ResumptionTokenHelper.decodeSimpleResumptionToken(resumptionToken);
+            } else {
+                temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
+            }
         } catch (IllegalArgumentException e) {
             throw new BadResumptionToken("Resumption token " + resumptionToken + " is not correct.");
         }

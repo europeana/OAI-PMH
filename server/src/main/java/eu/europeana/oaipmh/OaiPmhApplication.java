@@ -91,12 +91,20 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	public IdentifyProvider identifyProvider() { return new DefaultIdentifyProvider(); }
 
 	/**
+	 * Handles providing information for ListSets verb.
+	 *
+	 * @return object implementing SetsProvider interface
+	 */
+	@Bean
+	public SetsProvider setsProvider() { return new DefaultSetsProvider(); }
+
+	/**
 	 * OAI-PMH service that does the actual work
 	 * @return
 	 */
 	@Bean
 	public OaiPmhService oaiPmhService() {
-		return new OaiPmhService(recordProvider(), identifierProvider(), identifyProvider(), metadataFormats());
+		return new OaiPmhService(recordProvider(), identifierProvider(), identifyProvider(), metadataFormats(), setsProvider());
 	}
 
 
