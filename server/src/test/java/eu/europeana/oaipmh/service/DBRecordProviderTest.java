@@ -75,7 +75,6 @@ public class DBRecordProviderTest extends BaseApiTest {
         RDF rdf = PowerMockito.mock(RDF.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
         PowerMockito.mockStatic(EdmUtils.class);
-        RDF rdf = PowerMockito.mock(RDF.class);
         given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         EuropeanaAggregationType type = PowerMockito.mock(EuropeanaAggregationType.class);
         List<EuropeanaAggregationType> types = new ArrayList<>();
