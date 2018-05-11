@@ -125,4 +125,13 @@ public class SolrQueryBuilder {
         }
         return query;
     }
+
+    public static SolrQuery earliestTimestamp() {
+        SolrQuery query = new SolrQuery("*:*");
+        query.setRows(1);
+        query.setFields(TIMESTAMP_UPDATE);
+        query.setSort(TIMESTAMP_UPDATE, SolrQuery.ORDER.asc);
+        query.setParam(WT_PARAM, WT_JSON);
+        return query;
+    }
 }

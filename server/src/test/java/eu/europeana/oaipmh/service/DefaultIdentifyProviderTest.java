@@ -1,18 +1,29 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Identify;
+import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.params.SolrParams;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
+@PropertySources(value = {})
 @SpringBootTest
-public class DefaultIdentifyProviderTest {
+public class DefaultIdentifyProviderTest extends SolrBasedProviderTest {
     private static final String REPOSITORY_NAME="Europeana OAI Endpoint v2.0";
 
     private static final String BASE_URL="https://oai.europeana.eu/oai";
@@ -29,10 +40,13 @@ public class DefaultIdentifyProviderTest {
 
     private static final String COMPRESSION="gzip";
 
-    private DefaultIdentifyProvider defaultIdentifyProvider = new DefaultIdentifyProvider();
+    private static final String IDENTIFY = "identify";
+
+    @InjectMocks
+    private DefaultIdentifyProvider defaultIdentifyProvider;
 
     @Before
-    public void init() {
+    public void initTest() {
         ReflectionTestUtils.setField(defaultIdentifyProvider, "repositoryName", REPOSITORY_NAME);
         ReflectionTestUtils.setField(defaultIdentifyProvider, "baseURL", BASE_URL);
         ReflectionTestUtils.setField(defaultIdentifyProvider, "protocolVersion", PROTOCOL_VERSION);
@@ -44,7 +58,10 @@ public class DefaultIdentifyProviderTest {
     }
 
     @Test
-    public void provideIdentify() {
+    public void provideIdentify() throws OaiPmhException, IOException, SolrServerException {
+        QueryResponse response = getResponse(IDENTIFY);
+        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
+
         Identify identify = defaultIdentifyProvider.provideIdentify();
         assertEquals(identify.getRepositoryName(), REPOSITORY_NAME);
         assertEquals(identify.getBaseURL(), BASE_URL);

@@ -1,9 +1,20 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Identify;
+import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.util.DateConverter;
+import eu.europeana.oaipmh.util.SolrQueryBuilder;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.springframework.beans.factory.annotation.Value;
 
-public class DefaultIdentifyProvider implements IdentifyProvider {
+import java.util.Date;
+
+import static eu.europeana.oaipmh.util.SolrConstants.TIMESTAMP_UPDATE;
+
+public class DefaultIdentifyProvider extends SolrBasedProvider implements IdentifyProvider {
 
     @Value("${repositoryName}")
     private String repositoryName;
@@ -31,16 +42,28 @@ public class DefaultIdentifyProvider implements IdentifyProvider {
     private String[] compression;
 
     @Override
-    public Identify provideIdentify() {
+    public Identify provideIdentify() throws OaiPmhException {
         Identify identify = new Identify();
         identify.setBaseURL(baseURL);
         identify.setAdminEmail(adminEmail);
         identify.setCompression(compression);
         identify.setDeletedRecord(deletedRecord);
-        identify.setEarliestDatestamp(earliestDatestamp);
+        identify.setEarliestDatestamp(getEarliestTimestamp());
         identify.setGranularity(granularity);
         identify.setProtocolVersion(protocolVersion);
         identify.setRepositoryName(repositoryName);
         return identify;
+    }
+
+    private String getEarliestTimestamp() throws OaiPmhException {
+        QueryResponse response = executeQuery(SolrQueryBuilder.earliestTimestamp());
+        SolrDocumentList results = response.getResults();
+        for (SolrDocument doc : results) {
+            Date value = (Date) doc.getFieldValue(TIMESTAMP_UPDATE);
+            if (value != null) {
+                return DateConverter.toIsoDate(value);
+            }
+        }
+        return earliestDatestamp;
     }
 }
