@@ -34,7 +34,7 @@ import static eu.europeana.oaipmh.util.SolrConstants.*;
 /**
  * Retrieve information from Search API
  */
-public class SearchApi extends BaseProvider implements IdentifierProvider {
+public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
 
     private static final Logger LOG = LogManager.getLogger(SearchApi.class);
 
@@ -43,47 +43,14 @@ public class SearchApi extends BaseProvider implements IdentifierProvider {
     @Value("${identifiersPerPage}")
     private int identifiersPerPage;
 
-    @Value("${resumptionTokenTTL}")
-    private int resumptionTokenTTL;
-
-    @Value("${solr.hosts}")
-    private String solrHosts;
-
-    @Value("${solr.zookeeperURL}")
-    private String zookeeperURL;
-
-    @Value("${solr.core}")
-    private String solrCore;
-
-    @Value("${solr.username}")
-    private String username;
-
-    @Value("${solr.password}")
-    private String password;
-
     @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
     private Date defaultIdentifierTimestamp;
 
-    private CloudSolrClient client;
-
     /**
-     * Initialize connection to Solr instance.
+     * Initialize default timestamp.
      */
     @PostConstruct
     private void init() {
-        LBHttpSolrClient lbTarget;
-        try {
-            lbTarget = new LBHttpSolrClient(solrHosts.split(","));
-        } catch (MalformedURLException e) {
-            LOG.error("Solr Server is not constructed!", e);
-            throw new RuntimeException(e);
-        }
-        LOG.info("Using Zookeeper {} to connect to Solr cluster", zookeeperURL, solrHosts);
-        client = new CloudSolrClient(zookeeperURL, lbTarget);
-        client.setDefaultCollection(solrCore);
-        client.connect();
-        LOG.info("Connected to Solr {}", solrHosts);
-
         if (defaultIdentifierTimestamp == null) {
             defaultIdentifierTimestamp = DEFAULT_IDENTIFIER_TIMESTAMP;
         }
@@ -105,8 +72,8 @@ public class SearchApi extends BaseProvider implements IdentifierProvider {
     public ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
         LOG.info("List identifiers: from {}, until {}, set {}, metadataPrefix {}", from, until, set, metadataPrefix);
 
-        SolrQuery query = SolrQueryBuilder.listIdentifiers(from, until, set, identifiersPerPage);
-        ListIdentifiers result = listIdentifiers(query, 0, null);
+        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, identifiersPerPage));
+        ListIdentifiers result = responseToListIdentifiers(response, 0, null);
         if (result.getHeaders().isEmpty()) {
             throw new NoRecordsMatchException("No records found!");
         }
@@ -123,28 +90,8 @@ public class SearchApi extends BaseProvider implements IdentifierProvider {
      */
     @Override
     public ListIdentifiers listIdentifiers(ResumptionToken resumptionToken) throws OaiPmhException {
-        SolrQuery query = SolrQueryBuilder.listIdentifiers(resumptionToken.getFilterQuery(), resumptionToken.getValue(), identifiersPerPage);
-        return listIdentifiers(query, resumptionToken.getCursor() + identifiersPerPage, resumptionToken.getValue());
-    }
-
-    /**
-     * Perform the direct query on the Solr client. Query is given as the parameter. Cursor parameter is the current number of retrieved identifiers
-     * and is used for preparation of the next resumption token. Previous cursor mark is used for detecting the last page of results (Solr returns the
-     * same cursor mark for all queries that are done after the last page of results is retrieved).
-     *
-     * @param query Solr query that can be directly used with Solr client
-     * @param cursor current number of retrieved identifiers
-     * @param previousCursorMark cursor mark that was used for previous page
-     * @return next page of the list of identifiers
-     * @throws OaiPmhException
-     */
-    private ListIdentifiers listIdentifiers(SolrQuery query, long cursor, String previousCursorMark) throws OaiPmhException {
-        try {
-            QueryResponse response = client.query(query);
-            return responseToListIdentifiers(response, cursor, previousCursorMark);
-        } catch (SolrServerException | IOException e) {
-            throw new OaiPmhException(e.getMessage());
-        }
+        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(resumptionToken.getFilterQuery(), resumptionToken.getValue(), identifiersPerPage));
+        return responseToListIdentifiers(response, resumptionToken.getCursor() + identifiersPerPage, resumptionToken.getValue());
     }
 
     /**
@@ -173,7 +120,7 @@ public class SearchApi extends BaseProvider implements IdentifierProvider {
         ResumptionToken resumptionToken;
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             resumptionToken = ResumptionTokenHelper.createResumptionToken(response.getNextCursorMark(),
-                    docs.getNumFound(), new Date(System.currentTimeMillis() + resumptionTokenTTL), cursor, getFilterQuery(response));
+                    docs.getNumFound(), new Date(System.currentTimeMillis() + getResumptionTokenTTL()), cursor, getFilterQuery(response));
         } else {
             resumptionToken = null;
         }
@@ -241,13 +188,4 @@ public class SearchApi extends BaseProvider implements IdentifierProvider {
         return new Header(prepareFullId((String) document.getFieldValue(EUROPEANA_ID)), timestampUpdate, sets);
     }
 
-    @Override
-    public void close() {
-        try {
-            LOG.info("Destroying Solr client...");
-            this.client.close();
-        } catch (IOException e) {
-            LOG.error("Solr client could not be closed.", e);
-        }
-    }
 }

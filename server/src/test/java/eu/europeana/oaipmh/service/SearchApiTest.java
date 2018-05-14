@@ -31,7 +31,7 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
-public class SearchApiTest extends BaseApiTest {
+public class SearchApiTest extends SolrBasedProviderTest {
     private static final String METADATA_FORMAT = "edm";
 
     private static final String DATE_1 = "2017-08-03T15:16:21Z";
@@ -56,9 +56,6 @@ public class SearchApiTest extends BaseApiTest {
 
     private static final String LIST_IDENTIFIERS_UNTIL = "listIdentifiersUntil";
 
-    @Mock
-    private CloudSolrClient solrClient;
-
     @InjectMocks
     private SearchApi searchApi;
 
@@ -69,13 +66,6 @@ public class SearchApiTest extends BaseApiTest {
 
         ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, null);
         assertResults(result, null, null, null);
-    }
-
-    private QueryResponse getResponse(String fileName) throws IOException {
-        Path path = Paths.get(resDir + "/" + fileName);
-        byte[] bytes = Files.readAllBytes(path);
-        QueryResponse response = (QueryResponse) QueryResponse.deserialize(bytes);
-        return response;
     }
 
     @Test

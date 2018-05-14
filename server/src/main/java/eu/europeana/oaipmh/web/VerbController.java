@@ -146,8 +146,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = "verb=ListSets", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListSets() throws OaiPmhException {
-        return "Not implemented yet";
+    public String handleListSets(HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
+        return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, null));
     }
 
     /**
@@ -160,7 +161,7 @@ public class VerbController {
     public String handleListSetsToken(@RequestParam(value = "resumptionToken") String resumptionToken,
                                       HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return "Not implemented yet";
+        return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, resumptionToken));
     }
 
     /**
