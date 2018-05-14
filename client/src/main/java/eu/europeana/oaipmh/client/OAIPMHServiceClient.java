@@ -2,9 +2,14 @@ package eu.europeana.oaipmh.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.response.GetRecordResponse;
 import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
+import eu.europeana.oaipmh.model.serialize.GetRecordResponseDeserializer;
 import eu.europeana.oaipmh.model.serialize.ListIdentifiersResponseDeserializer;
+import eu.europeana.oaipmh.model.serialize.RDFMetadataDeserializer;
+import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.XML;
@@ -32,17 +37,25 @@ public class OAIPMHServiceClient {
     @Autowired
     private ListIdentifiersQuery listIdentifiersQuery;
 
-    private Map<String, OAIPMHQuery> queries = new HashMap<>();
+    @Autowired
+    private GetRecordQuery getRecordQuery;
 
-    public OAIPMHServiceClient() {
-    }
+    @Autowired
+    private ListRecordsQuery listRecordsQuery;
+
+    private Map<String, OAIPMHQuery> queries = new HashMap<>();
 
     @PostConstruct
     public void init() {
         queries.put("ListIdentifiers", listIdentifiersQuery);
+        queries.put("GetRecord", getRecordQuery);
+        queries.put("ListRecords", listRecordsQuery);
+
         mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(ListIdentifiersResponse.class, new ListIdentifiersResponseDeserializer());
+        module.addDeserializer(GetRecordResponse.class, new GetRecordResponseDeserializer());
+        module.addDeserializer(RDFMetadata.class, new RDFMetadataDeserializer());
         mapper.registerModule(module);
         LOG.info("Using OAI-PMH server at " + oaipmhServer);
     }
@@ -51,7 +64,7 @@ public class OAIPMHServiceClient {
         return oaipmhServer;
     }
 
-    public void execute(String verb) {
+    public void execute(String verb) throws OaiPmhException {
         OAIPMHQuery verbToExecute = queries.get(verb);
         if (verbToExecute != null) {
             verbToExecute.execute(this);

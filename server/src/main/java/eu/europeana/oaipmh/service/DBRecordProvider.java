@@ -100,17 +100,25 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         try {
             FullBean bean = mongoServer.getFullBean(recordId);
             if (bean != null) {
+                LOG.info("Bean retrieved");
                 enhanceWithTechnicalMetadata(bean);
+                LOG.info("Enhanced with technical metadata");
                 RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
                 if (rdf == null) {
                     throw new InternalServerErrorException("Record with id " + id + " could not be converted to EDM.");
                 }
+                LOG.info("RDF created");
                 expandWithFullText(rdf, recordId);
+                LOG.info("Expanded full text info");
                 updatePreview(rdf);
+                LOG.info("Preview updated");
                 updateDatasetName(rdf);
+                LOG.info("Dataset name renamed");
                 Header header = getHeader(id, bean);
                 String edm = EdmUtils.toEDM(rdf);
+                LOG.info("EDM created");
                 edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
+                LOG.info("Completeness injected");
                 return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
             }
         } catch (MongoDBException | MongoRuntimeException e) {
