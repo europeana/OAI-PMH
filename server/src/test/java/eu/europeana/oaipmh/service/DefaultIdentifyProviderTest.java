@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
-public class DefaultIdentifyProviderTest extends SolrBasedProviderTest {
+public class DefaultIdentifyProviderTest extends SolrBasedProviderTestCase {
     private static final String REPOSITORY_NAME="Europeana OAI Endpoint v2.0";
 
     private static final String BASE_URL="https://oai.europeana.eu/oai";

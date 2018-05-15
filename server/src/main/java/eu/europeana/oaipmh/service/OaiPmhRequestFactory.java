@@ -366,7 +366,7 @@ public class OaiPmhRequestFactory {
         return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl);
     }
 
-    private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) throws BadArgumentException {
+    private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
         if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
             return createListIdentifiersRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
         }

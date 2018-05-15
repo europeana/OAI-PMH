@@ -89,7 +89,7 @@ public class MetadataFormatsTest {
 
         ListMetadataFormats retrieved = testedMetadataFormats.listMetadataFormats();
         assertEquals(formats.getMetadataFormats().size(), retrieved.getMetadataFormats().size());
-        assertEquals(retrieved.getMetadataFormats().size(), 1);
+        assertEquals(1, retrieved.getMetadataFormats().size());
         assertEquals(formats.getMetadataFormats().get(0).getMetadataPrefix(), retrieved.getMetadataFormats().get(0).getMetadataPrefix());
         assertEquals(formats.getMetadataFormats().get(0).getSchema(), retrieved.getMetadataFormats().get(0).getSchema());
         assertEquals(formats.getMetadataFormats().get(0).getMetadataNamespace(), retrieved.getMetadataFormats().get(0).getMetadataNamespace());

@@ -81,7 +81,7 @@ public class GlobalExceptionHandler extends BaseService {
         return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request);
     }
 
-    private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException, SerializationException {
+    private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, SerializationException {
         if (e.doLog()) {
             LOG.error(e.getMessage(), e);
         }
