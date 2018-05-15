@@ -44,7 +44,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * Initialize default timestamp.
      */
     @PostConstruct
-    private void init() {
+    private void initDefaults() {
         if (defaultIdentifierTimestamp == null) {
             defaultIdentifierTimestamp = DEFAULT_IDENTIFIER_TIMESTAMP;
         }
