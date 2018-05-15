@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(value = "/oai")
 public class VerbController {
 
-    private static final Logger LOG = LogManager.getLogger(VerbController.class);
-
     @Value("${baseURL}")
     private String baseUrl;
 

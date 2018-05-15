@@ -16,7 +16,7 @@ import java.util.*;
  * the converter of the specified class is created.
  */
 @ConfigurationProperties(prefix="metadata.formats")
-public class MetadataFormats implements MetadataFormatProvider {
+public class MetadataFormatsService implements MetadataFormatsProvider {
 
     @Value("#{'${metadata.formats.prefixes}'.split(',')}")
     private final List<String> prefixes = new ArrayList<>();

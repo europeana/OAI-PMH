@@ -13,6 +13,7 @@ public class NoMetadataFormatsException extends OaiPmhException {
         super(msg, ErrorCode.NO_METADATA_FORMATS);
     }
 
+    @Override
     public boolean doLog() {
         return false;
     }

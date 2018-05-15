@@ -1,6 +1,6 @@
 package eu.europeana.oaipmh;
 
-import eu.europeana.oaipmh.model.metadata.MetadataFormats;
+import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
 import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.SocksProxyHelper;
 import eu.europeana.oaipmh.web.VerbController;
@@ -12,7 +12,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
@@ -79,7 +78,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 * @return object implementing MetadataFormats interface
 	 */
 	@Bean
-	public MetadataFormats metadataFormats() { return new MetadataFormats(); }
+	public MetadataFormatsService metadataFormats() { return new MetadataFormatsService(); }
 
 	/**
 	 * Handles providing information for Identify verb.

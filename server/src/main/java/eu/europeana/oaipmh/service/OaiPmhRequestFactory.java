@@ -249,34 +249,19 @@ public class OaiPmhRequestFactory {
         for (String argument : arguments) {
             String[] paramValue = argument.split("=");
             if (paramValue.length == 2) {
-                prepareNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
+                validateNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
             } else if (paramValue.length == 1) {
-                prepareParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
+                validateParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
             } else {
                 String value = argument.substring(argument.indexOf('=') + 1);
-                try {
-                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], value);
-                    validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
-                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
-                } catch (BadArgumentException e) {
-                    if (!ignoreErrors) {
-                        throw e;
-                    }
-                }
-                try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(value, StandardCharsets.UTF_8.name()));
-                } catch (IllegalArgumentException e) {
-                    // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
-                } catch (UnsupportedEncodingException e) {
-                    throw new BadArgumentException("The value of the parameter \"" + paramValue[0] + "\" has wrong syntax: \"" + value);
-                }
+                validateNormalParameter(ignoreErrors, parameters, paramValue[0], value);
             }
         }
 
         return parameters;
     }
 
-    private static void prepareParameterWithoutValue(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String name) throws BadArgumentException {
+    private static void validateParameterWithoutValue(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String name) throws BadArgumentException {
         try {
             validateParameter(parameters.get(OaiParameterName.VERB), name, null);
             validateExclusiveParameters(OaiParameterName.fromString(name), parameters.keySet());
@@ -292,10 +277,10 @@ public class OaiPmhRequestFactory {
         }
     }
 
-    private static void prepareNormalParameter(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String paramName, String paramValue) throws BadArgumentException {
+    private static void validateNormalParameter(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String paramName, String paramValue) throws BadArgumentException {
         try {
             validateParameter(parameters.get(OaiParameterName.VERB), paramName, paramValue);
-            validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramName)), paramValue);
+            validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramName)), paramName);
             validateExclusiveParameters(OaiParameterName.fromString(paramName), parameters.keySet());
         } catch (BadArgumentException e) {
             if (!ignoreErrors) {

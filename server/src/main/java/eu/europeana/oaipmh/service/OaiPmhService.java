@@ -1,7 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.*;
-import eu.europeana.oaipmh.model.metadata.MetadataFormats;
+import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
 import eu.europeana.oaipmh.model.request.GetRecordRequest;
 import eu.europeana.oaipmh.model.request.IdentifyRequest;
 import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
@@ -48,11 +48,11 @@ public class OaiPmhService extends BaseService {
 
     private IdentifyProvider identifyProvider;
 
-    private MetadataFormats metadataFormats;
+    private MetadataFormatsProvider metadataFormats;
 
     private SetsProvider setsProvider;
 
-    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, IdentifyProvider identifyProvider, MetadataFormats metadataFormats, SetsProvider setsProvider) {
+    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, IdentifyProvider identifyProvider, MetadataFormatsProvider metadataFormats, SetsProvider setsProvider) {
         super();
         this.recordProvider = recordProvider;
         this.identifierProvider = identifierProvider;

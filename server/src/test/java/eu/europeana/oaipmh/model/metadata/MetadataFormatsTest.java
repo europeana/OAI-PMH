@@ -6,23 +6,9 @@ import eu.europeana.oaipmh.service.exception.NoMetadataFormatsException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -51,7 +37,7 @@ public class MetadataFormatsTest {
 
     private Map<String, String> namespaces = new HashMap<>();
 
-    private MetadataFormats testedMetadataFormats = new MetadataFormats();
+    private MetadataFormatsService testedMetadataFormats = new MetadataFormatsService();
 
     @Before
     public void init() throws InvocationTargetException, IllegalAccessException {
@@ -63,7 +49,7 @@ public class MetadataFormatsTest {
         Whitebox.setInternalState(testedMetadataFormats, "schemas", schemas);
         namespaces.put(METADATA_FORMAT_PREFIX, METADATA_FORMAT_NAMESPACE);
         Whitebox.setInternalState(testedMetadataFormats, "namespaces", namespaces);
-        Whitebox.getMethod(MetadataFormats.class, "initFormats").invoke(testedMetadataFormats);
+        Whitebox.getMethod(MetadataFormatsService.class, "initFormats").invoke(testedMetadataFormats);
     }
 
     @Test
