@@ -137,7 +137,7 @@ public class VerbController {
     public String handleListMetadataFormats(@RequestParam(value = "identifier", required = false) String identifier,
                                             HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return "Not implemented yet";
+        return ops.listMetadataFormats(OaiPmhRequestFactory.createListMetadataFormatsRequest(baseUrl, identifier));
     }
 
     /**
