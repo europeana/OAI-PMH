@@ -3,7 +3,6 @@ package eu.europeana.oaipmh.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import java.io.Serializable;
 
 /**

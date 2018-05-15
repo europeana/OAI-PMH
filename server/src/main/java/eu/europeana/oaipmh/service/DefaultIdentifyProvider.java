@@ -4,7 +4,6 @@ import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.SolrQueryBuilder;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;

@@ -1,6 +1,8 @@
 package eu.europeana.oaipmh.model;
 
-public class RDFMetadata {
+import java.io.Serializable;
+
+public class RDFMetadata implements Serializable {
     public static final String METADATA_TAG = "metadata";
 
     private String metadata;

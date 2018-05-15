@@ -5,7 +5,6 @@ import eu.europeana.oaipmh.model.response.IdentifyResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
 
 /**
  * Container for identify data
@@ -13,7 +12,7 @@ import java.io.Serializable;
  * Created on 27-02-2018
  */
 @XmlType(propOrder = {"repositoryName", "baseURL", "protocolVersion", "adminEmail", "earliestDatestamp", "deletedRecord", "granularity", "compression", "description"})
-public class Identify extends OAIPMHVerb implements Serializable {
+public class Identify extends OAIPMHVerb {
 
     private static final long serialVersionUID = 203469625750930136L;
 

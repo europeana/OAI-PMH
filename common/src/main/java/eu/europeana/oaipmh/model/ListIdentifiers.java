@@ -7,7 +7,6 @@ import eu.europeana.oaipmh.model.response.OAIResponse;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @XmlRootElement(name="ListIdentifiers")
 @XmlType(propOrder={"headers", "resumptionToken"})
-public class ListIdentifiers extends OAIPMHVerb implements Serializable {
+public class ListIdentifiers extends OAIPMHVerb {
 
     private static final long serialVersionUID = -8111855326100870425L;
 

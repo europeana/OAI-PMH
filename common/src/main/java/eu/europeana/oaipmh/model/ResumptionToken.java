@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * This class represents resumption token tag in the ListIdentifiers verb response XML
  */
 @XmlType(propOrder = {"completeListSize", "expirationDate", "cursor"})
-public class ResumptionToken {
+public class ResumptionToken implements Serializable {
 
     @XmlAttribute
     private Date expirationDate;

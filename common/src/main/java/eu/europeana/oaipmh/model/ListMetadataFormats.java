@@ -6,7 +6,6 @@ import eu.europeana.oaipmh.model.response.OAIResponse;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
  * This class represents the ListIdentifiers tag in the ListIdentifiers verb XML response
  */
 @XmlRootElement(name="ListMetadataFormats")
-public class ListMetadataFormats extends OAIPMHVerb implements Serializable {
+public class ListMetadataFormats extends OAIPMHVerb {
 
     private static final long serialVersionUID = -8111855326108565425L;
 

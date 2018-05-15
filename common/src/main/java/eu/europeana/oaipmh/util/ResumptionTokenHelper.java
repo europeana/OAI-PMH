@@ -101,14 +101,14 @@ public class ResumptionTokenHelper {
      * @return resumption token object filled with values retrieved from the encoded token
      * @throws IllegalArgumentException
      */
-    public static ResumptionToken decodeSimpleResumptionToken(String base64EncodedToken) throws IllegalArgumentException {
+    public static ResumptionToken decodeSimpleResumptionToken(String base64EncodedToken) {
         try {
             String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken), StandardCharsets.UTF_8);
             String[] parts = decoded.split(TOKEN_SEPARATOR);
             if (parts.length == 3) {
                 Long completeListSize = Long.valueOf(parts[0]);
                 Date expirationDate = new Date(Long.valueOf(parts[1]));
-                long cursor = Long.valueOf(parts[2]);
+                long cursor = Long.parseLong(parts[2]);
                 return new ResumptionToken(null, completeListSize, expirationDate, cursor, null);
             }
         } catch (Exception e) {

@@ -1,6 +1,5 @@
 package eu.europeana.oaipmh.service.exception;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.europeana.oaipmh.model.OAIError;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.service.BaseService;
@@ -38,7 +37,7 @@ public class GlobalExceptionHandler extends BaseService {
      */
     @ExceptionHandler({BadArgumentException.class, BadResumptionToken.class, BadVerbException.class, CannotDisseminateFormatException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleBadRequest(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+    public String handleBadRequest(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request);
     }
 
@@ -49,7 +48,7 @@ public class GlobalExceptionHandler extends BaseService {
      */
     @ExceptionHandler({IdDoesNotExistException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleNotFound(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+    public String handleNotFound(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request);
     }
 
@@ -60,7 +59,7 @@ public class GlobalExceptionHandler extends BaseService {
      */
     @ExceptionHandler({BadMethodException.class})
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public String handleBadMethod(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+    public String handleBadMethod(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request);
     }
 
@@ -71,13 +70,13 @@ public class GlobalExceptionHandler extends BaseService {
      */
     @ExceptionHandler(OaiPmhException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleOther(OaiPmhException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+    public String handleOther(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, JsonProcessingException, SerializationException {
+    public String handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, SerializationException {
         return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request);
     }
 
@@ -97,7 +96,7 @@ public class GlobalExceptionHandler extends BaseService {
      */
     @ExceptionHandler(NoRecordsMatchException.class)
     @ResponseStatus(HttpStatus.OK)
-    public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException, JsonProcessingException {
+    public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request);
     }
 }

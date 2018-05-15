@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import eu.europeana.oaipmh.model.serialize.RDFMetadataSerializer;
 
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
-public class Record {
+public class Record implements Serializable {
     @XmlElement
     private Header header;
 
