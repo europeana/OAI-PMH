@@ -8,7 +8,7 @@ import eu.europeana.oaipmh.model.RDFMetadata;
 
 import java.io.IOException;
 
-import static eu.europeana.oaipmh.model.RDFMetadata.METADATA;
+import static eu.europeana.oaipmh.model.RDFMetadata.METADATA_TAG;
 
 public class RDFMetadataDeserializer extends StdDeserializer<RDFMetadata> {
 
@@ -24,7 +24,7 @@ public class RDFMetadataDeserializer extends StdDeserializer<RDFMetadata> {
     public RDFMetadata deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
-        JsonNode metadata = node.get(METADATA);
+        JsonNode metadata = node.get(METADATA_TAG);
 
         return new RDFMetadata(metadata.asText());
     }

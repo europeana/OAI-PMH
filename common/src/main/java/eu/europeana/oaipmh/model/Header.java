@@ -28,7 +28,7 @@ public class Header implements Serializable {
         this.identifier = identifier;
         this.datestamp = datestamp;
         if (this.setSpec == null) {
-            this.setSpec = new ArrayList<String>();
+            this.setSpec = new ArrayList<>();
         }
         this.setSpec.add(setSpec);
     }
@@ -61,7 +61,7 @@ public class Header implements Serializable {
 
     public void setSetSpec(String setSpec) {
         if (this.setSpec == null) {
-            this.setSpec = new ArrayList<String>();
+            this.setSpec = new ArrayList<>();
         }
         this.setSpec.add(setSpec);
     }

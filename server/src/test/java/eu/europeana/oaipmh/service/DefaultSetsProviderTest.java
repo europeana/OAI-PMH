@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
-public class DefaultSetsProviderTest extends SolrBasedProviderTest {
+public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
     private static final String LIST_SETS = "listSets";
 
     private static final String LIST_SETS_WITH_RESUMPTION_TOKEN_SECOND_PAGE = "listSetsWithResumptionTokenSecondPage";

@@ -7,6 +7,8 @@ import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import eu.europeana.oaipmh.util.SolrQueryBuilder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
@@ -24,6 +26,8 @@ import java.util.List;
 import static eu.europeana.oaipmh.util.SolrConstants.DATASET_NAME;
 
 public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvider {
+    private static final Logger LOG = LogManager.getLogger(DefaultSetsProvider.class);
+
     @Value("${setsPerPage}")
     private int setsPerPage;
 
@@ -88,7 +92,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      * @return set identifier
      */
     private String getSetIdentifier(String setName) {
-        int index = setName.indexOf("_");
+        int index = setName.indexOf('_');
         if (index == -1) {
             return setName;
         }
@@ -109,7 +113,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
         try {
             Files.write(path, SolrResponse.serializable(response));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage());
         }
         return responseToListSets(response, resumptionToken.getCursor() + setsPerPage, resumptionToken.getCompleteListSize());
     }

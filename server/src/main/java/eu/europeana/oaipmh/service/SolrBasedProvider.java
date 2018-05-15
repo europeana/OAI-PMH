@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,13 +42,13 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
      * Initialize connection to Solr instance.
      */
     @PostConstruct
-    private void init() {
+    private void init() throws InternalServerErrorException {
         LBHttpSolrClient lbTarget;
         try {
             lbTarget = new LBHttpSolrClient(solrHosts.split(","));
         } catch (MalformedURLException e) {
             LOG.error("Solr Server is not constructed!", e);
-            throw new RuntimeException(e);
+            throw new InternalServerErrorException(e.getMessage());
         }
         LOG.info("Using Zookeeper {} to connect to Solr cluster", zookeeperURL, solrHosts);
         client = new CloudSolrClient(zookeeperURL, lbTarget);

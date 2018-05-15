@@ -25,7 +25,7 @@ import static org.mockito.BDDMockito.given;
  */
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
-public class RecordApiTest extends BaseApiTest {
+public class RecordApiTest extends BaseApiTestCase {
 
     private static final String TEST_RECORD_ID = "90402/BK_1978_399";
 

@@ -46,14 +46,14 @@ public class DefaultIdentifyProviderTest {
     @Test
     public void provideIdentify() {
         Identify identify = defaultIdentifyProvider.provideIdentify();
-        assertEquals(identify.getRepositoryName(), REPOSITORY_NAME);
-        assertEquals(identify.getBaseURL(), BASE_URL);
-        assertEquals(identify.getProtocolVersion(), PROTOCOL_VERSION);
-        assertEquals(identify.getEarliestDatestamp(), EARLIEST_DATESTAMP);
-        assertEquals(identify.getDeletedRecord(), DELETED_RECORD);
-        assertEquals(identify.getAdminEmail().length, 1);
-        assertEquals(identify.getAdminEmail()[0], ADMIN_EMAIL);
-        assertEquals(identify.getCompression().length, 1);
-        assertEquals(identify.getCompression()[0], COMPRESSION);
+        assertEquals(REPOSITORY_NAME, identify.getRepositoryName());
+        assertEquals(BASE_URL, identify.getBaseURL());
+        assertEquals(PROTOCOL_VERSION, identify.getProtocolVersion());
+        assertEquals(EARLIEST_DATESTAMP, identify.getEarliestDatestamp());
+        assertEquals(DELETED_RECORD, identify.getDeletedRecord());
+        assertEquals(1, identify.getAdminEmail().length);
+        assertEquals(ADMIN_EMAIL, identify.getAdminEmail()[0]);
+        assertEquals(1, identify.getCompression().length);
+        assertEquals(COMPRESSION, identify.getCompression()[0]);
     }
 }

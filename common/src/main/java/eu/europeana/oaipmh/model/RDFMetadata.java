@@ -1,7 +1,7 @@
 package eu.europeana.oaipmh.model;
 
 public class RDFMetadata {
-    public static final String METADATA = "metadata";
+    public static final String METADATA_TAG = "metadata";
 
     private String metadata;
 

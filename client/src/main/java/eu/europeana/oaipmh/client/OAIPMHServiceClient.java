@@ -34,9 +34,6 @@ public class OAIPMHServiceClient {
 
     private Map<String, OAIPMHQuery> queries = new HashMap<>();
 
-    public OAIPMHServiceClient() {
-    }
-
     @PostConstruct
     public void init() {
         queries.put("ListIdentifiers", listIdentifiersQuery);

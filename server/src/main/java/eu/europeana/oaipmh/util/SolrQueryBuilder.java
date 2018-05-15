@@ -26,6 +26,8 @@ public class SolrQueryBuilder {
 
     private static final String ANY_DATE = "*";
 
+    private SolrQueryBuilder() {}
+
     /**
      * Build Solr query using from, until and set filter parameters. Rows parameter specifies number of results to be retrieved in a single query.
      *

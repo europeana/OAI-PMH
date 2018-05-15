@@ -37,7 +37,9 @@ public class Identify extends OAIPMHVerb implements Serializable {
 
     private String[] description;
 
-    public Identify() {}
+    public Identify() {
+        // to support serialization
+    }
 
     public void setRepositoryName(String repositoryName) {
         this.repositoryName = repositoryName;

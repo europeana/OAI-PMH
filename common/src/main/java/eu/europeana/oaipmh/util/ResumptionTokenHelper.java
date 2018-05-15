@@ -16,6 +16,8 @@ public class ResumptionTokenHelper {
 
     private static final String FILTER_SEPARATOR = "&&&";
 
+    private ResumptionTokenHelper() {}
+
     /**
      * Creates resumption token object that can be used to prepare the response for the request
      *
@@ -59,14 +61,14 @@ public class ResumptionTokenHelper {
      * @return temporary resumption token object with decoded next cursor mark (that can be used by Solr directly), expiration date and cursor
      * but invalid complete list size.
      */
-    public static ResumptionToken decodeResumptionToken(String base64EncodedToken) throws IllegalArgumentException {
+    public static ResumptionToken decodeResumptionToken(String base64EncodedToken) {
         try {
             String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken), StandardCharsets.UTF_8);
             String[] parts = decoded.split(TOKEN_SEPARATOR);
             if (parts.length == 4) {
                 String[] filterQuery = parts[0].split(FILTER_SEPARATOR);
                 Date expirationDate = new Date(Long.valueOf(parts[1]));
-                long cursor = Long.valueOf(parts[2]);
+                long cursor = Long.parseLong(parts[2]);
                 String cursorMark = parts[3];
                 return new ResumptionToken(cursorMark, -1, expirationDate, cursor, Arrays.asList(filterQuery));
             }

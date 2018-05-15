@@ -13,6 +13,7 @@ public class NoRecordsMatchException extends OaiPmhException {
         super(msg, ErrorCode.NO_RECORDS_MATCH);
     }
 
+    @Override
     public boolean doLog() {
         return false;
     }

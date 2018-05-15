@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OaiPmhRequestFactory {
+    private static final String PARAMETER_INFO = "Parameter \"%s\" ";
+
     private static final Set<String> validVerbs;
 
     private static final Map<String, Set<OaiParameterName>> validVerbParameters;
@@ -90,6 +92,7 @@ public class OaiPmhRequestFactory {
         exclusiveParameters.put(OaiParameterName.SET, exclusiveForParam);
     }
 
+    private OaiPmhRequestFactory() {}
 
     public static void validateVerb(String verb) throws BadVerbException {
         if (verb == null || !validVerbs.contains(verb)) {
@@ -105,7 +108,7 @@ public class OaiPmhRequestFactory {
         }
         for (OaiParameterName exclusiveParameter : exclusive) {
             if (currentParameters.contains(exclusiveParameter)) {
-                throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" cannot be used with parameter \"" + exclusiveParameter.toString() + "\"");
+                throw new BadArgumentException(String.format(PARAMETER_INFO, parameterName.toString()) + "cannot be used with parameter \"" + exclusiveParameter.toString() + "\"");
             }
         }
     }
@@ -113,7 +116,7 @@ public class OaiPmhRequestFactory {
     private static void validateVerbParameter(String verb, OaiParameterName parameterName) throws BadArgumentException {
         Set<OaiParameterName> valid = validVerbParameters.get(verb);
         if (valid != null && !valid.contains(parameterName)) {
-            throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" is illegal for verb \"" + verb + "\"");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, parameterName.toString()) + "is illegal for verb \"" + verb + "\"");
         }
     }
 
@@ -133,6 +136,35 @@ public class OaiPmhRequestFactory {
     }
 
     private static void validateMandatoryParameters(Map<OaiParameterName, String> parameters) throws BadVerbException, BadArgumentException {
+        String verb = getVerb(parameters);
+        Set<OaiParameterName> mandatoryParameters = mandatoryVerbParameters.get(verb);
+        if (mandatoryParameters != null && !mandatoryParameters.isEmpty()) {
+            for (OaiParameterName parameterName : mandatoryParameters) {
+                checkMandatoryParameter(parameters, parameterName);
+            }
+        }
+    }
+
+    private static void checkMandatoryParameter(Map<OaiParameterName, String> parameters, OaiParameterName parameterName) throws BadArgumentException {
+        if (!parameters.containsKey(parameterName)) {
+            // when this parameter is missing maybe it is one from the exclusive
+            Set<OaiParameterName> exclusive = exclusiveParameters.get(parameterName);
+            boolean found = false;
+            if (exclusive != null) {
+                for (OaiParameterName exclusiveParameterName : exclusive) {
+                    if (parameters.containsKey(exclusiveParameterName)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                throw new BadArgumentException("Required parameter \"" + parameterName + "\" is missing.");
+            }
+        }
+    }
+
+    private static String getVerb(Map<OaiParameterName, String> parameters) throws BadVerbException {
         if (parameters == null || parameters.isEmpty()) {
             throw new BadVerbException("Verb is missing.");
         }
@@ -140,27 +172,7 @@ public class OaiPmhRequestFactory {
         if (verb == null || verb.isEmpty()) {
             throw new BadVerbException("Verb is missing.");
         }
-        Set<OaiParameterName> mandatoryParameters = mandatoryVerbParameters.get(verb);
-        if (mandatoryParameters != null && !mandatoryParameters.isEmpty()) {
-            for (OaiParameterName parameterName : mandatoryParameters) {
-                if (!parameters.containsKey(parameterName)) {
-                    // when this parameter is missing maybe it is one from the exclusive
-                    Set<OaiParameterName> exclusive = exclusiveParameters.get(parameterName);
-                    boolean found = false;
-                    if (exclusive != null) {
-                        for (OaiParameterName exclusiveParameterName : exclusive) {
-                            if (parameters.containsKey(exclusiveParameterName)) {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found) {
-                        throw new BadArgumentException("Required parameter \"" + parameterName + "\" is missing.");
-                    }
-                }
-            }
-        }
+        return verb;
     }
 
     /**
@@ -204,7 +216,7 @@ public class OaiPmhRequestFactory {
 
         // empty
         if (value == null || value.isEmpty()) {
-            throw new BadArgumentException("Parameter \"" + name + "\" cannot be empty");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, name) + "cannot be empty");
         }
 
         // specified multiple times
@@ -231,38 +243,11 @@ public class OaiPmhRequestFactory {
         for (String argument : arguments) {
             String[] paramValue = argument.split("=");
             if (paramValue.length == 2) {
-                try {
-                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], paramValue[1]);
-                    validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
-                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
-                } catch (BadArgumentException e) {
-                    if (!ignoreErrors) {
-                        throw e;
-                    }
-                }
-                try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(paramValue[1], StandardCharsets.UTF_8.name()));
-                } catch (IllegalArgumentException e) {
-                    // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
-                } catch (UnsupportedEncodingException e) {
-                    throw new BadArgumentException("The value of the parameter \"" + paramValue[0] + "\" has wrong syntax: \"" + paramValue[1]);
-                }
+                prepareNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
             } else if (paramValue.length == 1) {
-                try {
-                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], null);
-                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
-                } catch (BadArgumentException e) {
-                    if (!ignoreErrors) {
-                        throw e;
-                    }
-                }
-                try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), "");
-                } catch (IllegalArgumentException e) {
-                    // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
-                }
+                prepareParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
             } else {
-                String value = argument.substring(argument.indexOf("=") + 1);
+                String value = argument.substring(argument.indexOf('=') + 1);
                 try {
                     validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], value);
                     validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
@@ -285,6 +270,41 @@ public class OaiPmhRequestFactory {
         return parameters;
     }
 
+    private static void prepareParameterWithoutValue(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String name) throws BadArgumentException {
+        try {
+            validateParameter(parameters.get(OaiParameterName.VERB), name, null);
+            validateExclusiveParameters(OaiParameterName.fromString(name), parameters.keySet());
+        } catch (BadArgumentException e) {
+            if (!ignoreErrors) {
+                throw e;
+            }
+        }
+        try {
+            parameters.put(OaiParameterName.fromString(name), "");
+        } catch (IllegalArgumentException e) {
+            // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
+        }
+    }
+
+    private static void prepareNormalParameter(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String paramName, String paramValue) throws BadArgumentException {
+        try {
+            validateParameter(parameters.get(OaiParameterName.VERB), paramName, paramValue);
+            validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramName)), paramValue);
+            validateExclusiveParameters(OaiParameterName.fromString(paramName), parameters.keySet());
+        } catch (BadArgumentException e) {
+            if (!ignoreErrors) {
+                throw e;
+            }
+        }
+        try {
+            parameters.put(OaiParameterName.fromString(paramName), URLDecoder.decode(paramValue, StandardCharsets.UTF_8.name()));
+        } catch (IllegalArgumentException e) {
+            // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
+        } catch (UnsupportedEncodingException e) {
+            throw new BadArgumentException("The value of the parameter \"" + paramName + "\" has wrong syntax: \"" + paramValue);
+        }
+    }
+
     /**
      * Throw an exception when parameter name has already been used.
      *
@@ -294,7 +314,7 @@ public class OaiPmhRequestFactory {
      */
     private static void validateMultipleParameter(boolean used, String name) throws BadArgumentException {
         if (used) {
-            throw new BadArgumentException("Parameter \"" + name + "\" can be specified only once.");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, name) + "can be specified only once.");
         }
     }
 

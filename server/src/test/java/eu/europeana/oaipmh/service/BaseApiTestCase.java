@@ -4,7 +4,7 @@ import org.junit.BeforeClass;
 
 import java.nio.file.Paths;
 
-public class BaseApiTest {
+public class BaseApiTestCase {
     private static final String LINUX_SEPARATOR = "/";
 
     private static final String WINDOWS_SEPARATOR = "\\";

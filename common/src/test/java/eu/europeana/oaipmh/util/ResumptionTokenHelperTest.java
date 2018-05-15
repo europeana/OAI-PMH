@@ -50,6 +50,6 @@ public class ResumptionTokenHelperTest {
         assertEquals(encodedToken.getExpirationDate(), decodedToken.getExpirationDate());
         assertEquals(encodedToken.getFilterQuery(), decodedToken.getFilterQuery());
         assertEquals(encodedToken.getCursor(), decodedToken.getCursor());
-        assertEquals(decodedToken.getValue(), NEXT_CURSOR_MARK);
+        assertEquals(NEXT_CURSOR_MARK, decodedToken.getValue());
     }
 }
