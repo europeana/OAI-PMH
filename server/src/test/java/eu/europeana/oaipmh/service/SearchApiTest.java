@@ -35,9 +35,9 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
 
     private static final String DATE_3 = "2017-08-03T15:25:23Z";
 
-    private static final String SET_1 = "2064125_Otto-Lilienthal-Museum";
+    private static final String SET_1 = "2064125";
 
-    private static final String SET_2 = "08506_Ag_EU_ATHENA_Central_Library_of_the_Bulgaria";
+    private static final String SET_2 = "08506";
 
     private static final String LIST_IDENTIFIERS = "listIdentifiers";
 

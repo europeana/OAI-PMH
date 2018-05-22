@@ -18,7 +18,7 @@ import static org.apache.solr.common.params.StatsParams.STATS_FACET;
  */
 public class SolrQueryBuilder {
 
-    private static final String FQ_TEMPLATE = "%s:\"%s\"";
+    private static final String FQ_TEMPLATE = "%s:*/%s/*";
 
     private static final String DATE_RANGE_TEMPLATE = "%s:[%s TO %s]";
 
@@ -47,13 +47,13 @@ public class SolrQueryBuilder {
      * Add filter query part to the Solr query.
      *
      * @param query Solr query
-     * @param set set that the identifiers belong to
+     * @param set set identifier that the identifiers belong to
      * @param from staring date
      * @param until ending date
      */
     private static void addFilters(SolrQuery query, String set, Date from, Date until) {
         if (set != null && !set.isEmpty()) {
-            query.addFilterQuery(String.format(FQ_TEMPLATE, DATASET_NAME, set));
+            query.addFilterQuery(String.format(FQ_TEMPLATE, EUROPEANA_ID, set));
         }
 
         if (from != null || until != null) {
