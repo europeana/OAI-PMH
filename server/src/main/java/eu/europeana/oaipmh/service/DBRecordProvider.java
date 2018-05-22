@@ -35,6 +35,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(DBRecordProvider.class);
 
+    private static final String RECORD_WITH_ID = "Record with id %s ";
+
     @Value("${mongo.host}")
     private String host;
 
@@ -64,12 +66,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     private Set<String> fullTextIds = new HashSet<>();
 
     @PostConstruct
-    private void init() {
+    private void init() throws InternalServerErrorException {
         try {
             mongoServer = new EdmMongoServerImpl(host, port, recordDBName, username, password);
         } catch (MongoDBException e) {
             LOG.error("Could not connect to Mongo DB.", e);
-            throw new RuntimeException(e);
+            throw new InternalServerErrorException(e.getMessage());
         }
         loadFullTextIds();
     }
@@ -105,7 +107,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                 LOG.info("Enhanced with technical metadata");
                 RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
                 if (rdf == null) {
-                    throw new InternalServerErrorException("Record with id " + id + " could not be converted to EDM.");
+                    throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be converted to EDM.");
                 }
                 LOG.info("RDF created");
                 expandWithFullText(rdf, recordId);
@@ -122,8 +124,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                 return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
             }
         } catch (MongoDBException | MongoRuntimeException e) {
-            LOG.error("Record with id " + id + " could not be retrieved.", e);
-            throw new InternalServerErrorException("Record with id " + id + " could not be retrieved due to database problems.");
+            LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
+            throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
         }
         throw new IdDoesNotExistException(id);
     }
@@ -137,6 +139,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     /**
+     * @deprecated
+     *
      * This method is deprecated. It was temporarily created to include europeana completeness
      * to the resulting record metadata but without including it to EDM schema. It just searches the
      * EDM string (with RDF xml) to locate the end tag for edm:EuropeanaAggregation. After finding it it
@@ -170,16 +174,14 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                 break;
             }
         }
-        if (resource != null) {
-            if (!rdf.getEuropeanaAggregationList().isEmpty()) {
-                EuropeanaAggregationType europeanaAggregationType = rdf.getEuropeanaAggregationList().get(0);
-                Preview preview = europeanaAggregationType.getPreview();
-                if (preview == null) {
-                    preview = new Preview();
-                    europeanaAggregationType.setPreview(preview);
-                }
-                preview.setResource(resource);
+        if (resource != null && !rdf.getEuropeanaAggregationList().isEmpty()) {
+            EuropeanaAggregationType europeanaAggregationType = rdf.getEuropeanaAggregationList().get(0);
+            Preview preview = europeanaAggregationType.getPreview();
+            if (preview == null) {
+                preview = new Preview();
+                europeanaAggregationType.setPreview(preview);
             }
+            preview.setResource(resource);
         }
     }
 
@@ -190,6 +192,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     /**
+     * @deprecated
+     *
      * This functionality will be removed in the next version. It was introduced only for migration.
      * @param rdf rdf to expand
      */

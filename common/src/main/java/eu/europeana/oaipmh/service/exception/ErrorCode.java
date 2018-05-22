@@ -17,6 +17,7 @@ public enum ErrorCode {
         this.code = code;
     }
 
+    @Override
     public String toString() {
         return this.code;
     }

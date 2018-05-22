@@ -7,23 +7,18 @@ import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySources;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Date;
 
 import static org.junit.Assert.*;
@@ -31,7 +26,7 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
-public class SearchApiTest extends BaseApiTest {
+public class SearchApiTest extends SolrBasedProviderTestCase {
     private static final String METADATA_FORMAT = "edm";
 
     private static final String DATE_1 = "2017-08-03T15:16:21Z";
@@ -56,9 +51,6 @@ public class SearchApiTest extends BaseApiTest {
 
     private static final String LIST_IDENTIFIERS_UNTIL = "listIdentifiersUntil";
 
-    @Mock
-    private CloudSolrClient solrClient;
-
     @InjectMocks
     private SearchApi searchApi;
 
@@ -69,13 +61,6 @@ public class SearchApiTest extends BaseApiTest {
 
         ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, null);
         assertResults(result, null, null, null);
-    }
-
-    private QueryResponse getResponse(String fileName) throws IOException {
-        Path path = Paths.get(resDir + "/" + fileName);
-        byte[] bytes = Files.readAllBytes(path);
-        QueryResponse response = (QueryResponse) QueryResponse.deserialize(bytes);
-        return response;
     }
 
     @Test

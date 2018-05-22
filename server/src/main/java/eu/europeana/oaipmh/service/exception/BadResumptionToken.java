@@ -12,6 +12,7 @@ public class BadResumptionToken extends OaiPmhException {
         super(msg, ErrorCode.BAD_RESUMPTION_TOKEN);
     }
 
+    @Override
     public boolean doLog() {
         return false;
     }

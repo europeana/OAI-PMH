@@ -7,6 +7,8 @@ import java.io.IOException;
 
 public class SocksProxyHelper {
 
+    private SocksProxyHelper() {}
+
     /**
      * Socks proxy settings have to be loaded before anything else, so we check the property files for its settings
      * @throws IOException

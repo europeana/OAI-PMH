@@ -3,10 +3,9 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.GetRecord;
 import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.request.GetRecordRequest;
-import eu.europeana.oaipmh.model.request.IdentifyRequest;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.model.ListSets;
+import eu.europeana.oaipmh.model.ListMetadataFormats;
+import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.util.DateConverter;
@@ -20,6 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class OaiPmhRequestFactory {
+    private static final String PARAMETER_INFO = "Parameter \"%s\" ";
+
     private static final Set<String> validVerbs;
 
     private static final Map<String, Set<OaiParameterName>> validVerbParameters;
@@ -33,6 +34,8 @@ public class OaiPmhRequestFactory {
         validVerbs.add(Identify.class.getSimpleName());
         validVerbs.add(ListIdentifiers.class.getSimpleName());
         validVerbs.add(GetRecord.class.getSimpleName());
+        validVerbs.add(ListSets.class.getSimpleName());
+        validVerbs.add(ListMetadataFormats.class.getSimpleName());
 
         mandatoryVerbParameters = new HashMap<>();
         // ListIdentifiers
@@ -62,6 +65,14 @@ public class OaiPmhRequestFactory {
         validParameters.add(OaiParameterName.METADATA_PREFIX);
         validParameters.add(OaiParameterName.IDENTIFIER);
         validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
+        // ListSets
+        validParameters = new HashSet<>();
+        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validVerbParameters.put(ListSets.class.getSimpleName(), validParameters);
+        // ListMetadataFormats
+        validParameters = new HashSet<>();
+        validParameters.add(OaiParameterName.IDENTIFIER);
+        validVerbParameters.put(ListMetadataFormats.class.getSimpleName(), validParameters);
 
         exclusiveParameters = new HashMap<>();
         // metadataPrefix
@@ -87,6 +98,7 @@ public class OaiPmhRequestFactory {
         exclusiveParameters.put(OaiParameterName.SET, exclusiveForParam);
     }
 
+    private OaiPmhRequestFactory() {}
 
     public static void validateVerb(String verb) throws BadVerbException {
         if (verb == null || !validVerbs.contains(verb)) {
@@ -102,7 +114,7 @@ public class OaiPmhRequestFactory {
         }
         for (OaiParameterName exclusiveParameter : exclusive) {
             if (currentParameters.contains(exclusiveParameter)) {
-                throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" cannot be used with parameter \"" + exclusiveParameter.toString() + "\"");
+                throw new BadArgumentException(String.format(PARAMETER_INFO, parameterName.toString()) + "cannot be used with parameter \"" + exclusiveParameter.toString() + "\"");
             }
         }
     }
@@ -110,7 +122,7 @@ public class OaiPmhRequestFactory {
     private static void validateVerbParameter(String verb, OaiParameterName parameterName) throws BadArgumentException {
         Set<OaiParameterName> valid = validVerbParameters.get(verb);
         if (valid != null && !valid.contains(parameterName)) {
-            throw new BadArgumentException("Parameter \"" + parameterName.toString() + "\" is illegal for verb \"" + verb + "\"");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, parameterName.toString()) + "is illegal for verb \"" + verb + "\"");
         }
     }
 
@@ -130,6 +142,35 @@ public class OaiPmhRequestFactory {
     }
 
     private static void validateMandatoryParameters(Map<OaiParameterName, String> parameters) throws BadVerbException, BadArgumentException {
+        String verb = getVerb(parameters);
+        Set<OaiParameterName> mandatoryParameters = mandatoryVerbParameters.get(verb);
+        if (mandatoryParameters != null && !mandatoryParameters.isEmpty()) {
+            for (OaiParameterName parameterName : mandatoryParameters) {
+                checkMandatoryParameter(parameters, parameterName);
+            }
+        }
+    }
+
+    private static void checkMandatoryParameter(Map<OaiParameterName, String> parameters, OaiParameterName parameterName) throws BadArgumentException {
+        if (!parameters.containsKey(parameterName)) {
+            // when this parameter is missing maybe it is one from the exclusive
+            Set<OaiParameterName> exclusive = exclusiveParameters.get(parameterName);
+            boolean found = false;
+            if (exclusive != null) {
+                for (OaiParameterName exclusiveParameterName : exclusive) {
+                    if (parameters.containsKey(exclusiveParameterName)) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if (!found) {
+                throw new BadArgumentException("Required parameter \"" + parameterName + "\" is missing.");
+            }
+        }
+    }
+
+    private static String getVerb(Map<OaiParameterName, String> parameters) throws BadVerbException {
         if (parameters == null || parameters.isEmpty()) {
             throw new BadVerbException("Verb is missing.");
         }
@@ -137,27 +178,7 @@ public class OaiPmhRequestFactory {
         if (verb == null || verb.isEmpty()) {
             throw new BadVerbException("Verb is missing.");
         }
-        Set<OaiParameterName> mandatoryParameters = mandatoryVerbParameters.get(verb);
-        if (mandatoryParameters != null && !mandatoryParameters.isEmpty()) {
-            for (OaiParameterName parameterName : mandatoryParameters) {
-                if (!parameters.containsKey(parameterName)) {
-                    // when this parameter is missing maybe it is one from the exclusive
-                    Set<OaiParameterName> exclusive = exclusiveParameters.get(parameterName);
-                    boolean found = false;
-                    if (exclusive != null) {
-                        for (OaiParameterName exclusiveParameterName : exclusive) {
-                            if (parameters.containsKey(exclusiveParameterName)) {
-                                found = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (!found) {
-                        throw new BadArgumentException("Required parameter \"" + parameterName + "\" is missing.");
-                    }
-                }
-            }
-        }
+        return verb;
     }
 
     /**
@@ -201,7 +222,7 @@ public class OaiPmhRequestFactory {
 
         // empty
         if (value == null || value.isEmpty()) {
-            throw new BadArgumentException("Parameter \"" + name + "\" cannot be empty");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, name) + "cannot be empty");
         }
 
         // specified multiple times
@@ -228,58 +249,51 @@ public class OaiPmhRequestFactory {
         for (String argument : arguments) {
             String[] paramValue = argument.split("=");
             if (paramValue.length == 2) {
-                try {
-                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], paramValue[1]);
-                    validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
-                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
-                } catch (BadArgumentException e) {
-                    if (!ignoreErrors) {
-                        throw e;
-                    }
-                }
-                try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(paramValue[1], StandardCharsets.UTF_8.name()));
-                } catch (IllegalArgumentException e) {
-                    // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
-                } catch (UnsupportedEncodingException e) {
-                    throw new BadArgumentException("The value of the parameter \"" + paramValue[0] + "\" has wrong syntax: \"" + paramValue[1]);
-                }
+                validateNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
             } else if (paramValue.length == 1) {
-                try {
-                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], null);
-                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
-                } catch (BadArgumentException e) {
-                    if (!ignoreErrors) {
-                        throw e;
-                    }
-                }
-                try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), "");
-                } catch (IllegalArgumentException e) {
-                    // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
-                }
+                validateParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
             } else {
-                String value = argument.substring(argument.indexOf("=") + 1);
-                try {
-                    validateParameter(parameters.get(OaiParameterName.VERB), paramValue[0], value);
-                    validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramValue[0])), paramValue[0]);
-                    validateExclusiveParameters(OaiParameterName.fromString(paramValue[0]), parameters.keySet());
-                } catch (BadArgumentException e) {
-                    if (!ignoreErrors) {
-                        throw e;
-                    }
-                }
-                try {
-                    parameters.put(OaiParameterName.fromString(paramValue[0]), URLDecoder.decode(value, StandardCharsets.UTF_8.name()));
-                } catch (IllegalArgumentException e) {
-                    // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
-                } catch (UnsupportedEncodingException e) {
-                    throw new BadArgumentException("The value of the parameter \"" + paramValue[0] + "\" has wrong syntax: \"" + value);
-                }
+                String value = argument.substring(argument.indexOf('=') + 1);
+                validateNormalParameter(ignoreErrors, parameters, paramValue[0], value);
             }
         }
 
         return parameters;
+    }
+
+    private static void validateParameterWithoutValue(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String name) throws BadArgumentException {
+        try {
+            validateParameter(parameters.get(OaiParameterName.VERB), name, null);
+            validateExclusiveParameters(OaiParameterName.fromString(name), parameters.keySet());
+        } catch (BadArgumentException e) {
+            if (!ignoreErrors) {
+                throw e;
+            }
+        }
+        try {
+            parameters.put(OaiParameterName.fromString(name), "");
+        } catch (IllegalArgumentException e) {
+            // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
+        }
+    }
+
+    private static void validateNormalParameter(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String paramName, String paramValue) throws BadArgumentException {
+        try {
+            validateParameter(parameters.get(OaiParameterName.VERB), paramName, paramValue);
+            validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramName)), paramName);
+            validateExclusiveParameters(OaiParameterName.fromString(paramName), parameters.keySet());
+        } catch (BadArgumentException e) {
+            if (!ignoreErrors) {
+                throw e;
+            }
+        }
+        try {
+            parameters.put(OaiParameterName.fromString(paramName), URLDecoder.decode(paramValue, StandardCharsets.UTF_8.name()));
+        } catch (IllegalArgumentException e) {
+            // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
+        } catch (UnsupportedEncodingException e) {
+            throw new BadArgumentException("The value of the parameter \"" + paramName + "\" has wrong syntax: \"" + paramValue);
+        }
     }
 
     /**
@@ -291,7 +305,7 @@ public class OaiPmhRequestFactory {
      */
     private static void validateMultipleParameter(boolean used, String name) throws BadArgumentException {
         if (used) {
-            throw new BadArgumentException("Parameter \"" + name + "\" can be specified only once.");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, name) + "can be specified only once.");
         }
     }
 
@@ -330,6 +344,14 @@ public class OaiPmhRequestFactory {
             return createGetRecordRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX), parameters.get(OaiParameterName.IDENTIFIER));
         }
 
+        if (ListSets.class.getSimpleName().equals(verb)) {
+            return createListSetsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+        }
+
+        if (ListMetadataFormats.class.getSimpleName().equals(verb)) {
+            return createListMetadataFormatsRequest(baseUrl, parameters.get(OaiParameterName.IDENTIFIER));
+        }
+
         if (!ignoreErrors) {
             throw new BadArgumentException("Unsupported verb.");
         }
@@ -337,7 +359,14 @@ public class OaiPmhRequestFactory {
         return new OAIRequest(verb, baseUrl);
     }
 
-    private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) throws BadArgumentException {
+    public static ListSetsRequest createListSetsRequest(String baseUrl, String resumptionToken) {
+        if (resumptionToken != null) {
+            return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, resumptionToken);
+        }
+        return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl);
+    }
+
+    private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
         if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
             return createListIdentifiersRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
         }
@@ -365,5 +394,9 @@ public class OaiPmhRequestFactory {
 
     public static GetRecordRequest createGetRecordRequest(String baseUrl, String metadataPrefix, String identifier) {
         return new GetRecordRequest(GetRecord.class.getSimpleName(), baseUrl, metadataPrefix, identifier);
+    }
+
+    public static ListMetadataFormatsRequest createListMetadataFormatsRequest(String baseUrl, String identifier) {
+        return new ListMetadataFormatsRequest(ListMetadataFormats.class.getSimpleName(), baseUrl, identifier);
     }
 }

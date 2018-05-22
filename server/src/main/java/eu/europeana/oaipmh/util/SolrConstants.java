@@ -1,6 +1,6 @@
 package eu.europeana.oaipmh.util;
 
-public interface SolrConstants {
+public class SolrConstants {
     public static final String TIMESTAMP_UPDATE = "timestamp_update";
 
     public static final String EUROPEANA_ID = "europeana_id";
@@ -12,4 +12,6 @@ public interface SolrConstants {
     public static final String WT_PARAM = "wt";
 
     public static final String WT_JSON = "json";
+
+    private SolrConstants() {}
 }

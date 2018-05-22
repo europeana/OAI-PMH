@@ -5,8 +5,6 @@ import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.BadMethodException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +24,6 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping(value = "/oai")
 public class VerbController {
-
-    private static final Logger LOG = LogManager.getLogger(VerbController.class);
 
     @Value("${baseURL}")
     private String baseUrl;
@@ -137,7 +133,7 @@ public class VerbController {
     public String handleListMetadataFormats(@RequestParam(value = "identifier", required = false) String identifier,
                                             HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return "Not implemented yet";
+        return ops.listMetadataFormats(OaiPmhRequestFactory.createListMetadataFormatsRequest(baseUrl, identifier));
     }
 
     /**
@@ -146,8 +142,9 @@ public class VerbController {
      * @throws OaiPmhException
      */
     @RequestMapping(params = "verb=ListSets", method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
-    public String handleListSets() throws OaiPmhException {
-        return "Not implemented yet";
+    public String handleListSets(HttpServletRequest request) throws OaiPmhException {
+        OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
+        return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, null));
     }
 
     /**
@@ -160,7 +157,7 @@ public class VerbController {
     public String handleListSetsToken(@RequestParam(value = "resumptionToken") String resumptionToken,
                                       HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return "Not implemented yet";
+        return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, resumptionToken));
     }
 
     /**

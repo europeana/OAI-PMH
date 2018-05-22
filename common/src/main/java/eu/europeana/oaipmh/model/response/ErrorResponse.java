@@ -2,7 +2,6 @@ package eu.europeana.oaipmh.model.response;
 
 import eu.europeana.oaipmh.model.OAIError;
 import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.service.exception.OaiPmhException;
 
 import javax.xml.bind.annotation.XmlElement;
 

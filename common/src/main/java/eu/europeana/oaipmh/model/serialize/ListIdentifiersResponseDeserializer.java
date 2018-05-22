@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIdentifiersResponse> {
 
+    private static final String RESUMPTION_TOKEN = "resumptionToken";
+
     public ListIdentifiersResponseDeserializer() {
         this(null);
     }
@@ -65,7 +67,7 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         JsonNode headerNode = listIdentifiersNode.get("header");
 
         ListIdentifiers listIdentifiers = new ListIdentifiers();
-        listIdentifiers.setResumptionToken(getResumptionToken(listIdentifiersNode.get("resumptionToken")));
+        listIdentifiers.setResumptionToken(getResumptionToken(listIdentifiersNode.get(RESUMPTION_TOKEN)));
         listIdentifiers.setHeaders(getHeaders(headerNode));
 
         listIdentifiersResponse.setListIdentifiers(listIdentifiers);
@@ -89,32 +91,44 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
 
                 // identifier should never be null, but better safe than sorry
                 JsonNode id = identifierNode.get("identifier");
-                if (id == null) {
-                    LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! "+header.textValue());
-                } else {
-                    headerObject.setIdentifier(identifierNode.get("identifier").asText());
-                }
+                setIdentifier(header, identifierNode, headerObject, id);
 
                 JsonNode dateNode = identifierNode.get("datestamp");
-                if (dateNode != null) {
-                    headerObject.setDatestamp(DateConverter.fromIsoDateTime(identifierNode.get("datestamp").asText()));
-                }
+                setDatestamp(identifierNode, headerObject, dateNode);
 
                 JsonNode setSpecNode = identifierNode.get("setSpec");
-                if (setSpecNode != null) {
-                    if (setSpecNode.isArray()) {
-                        for (int s = 0; s < setSpecNode.size(); s++) {
-                            JsonNode setSpecEntry = setSpecNode.get(s);
-                            headerObject.setSetSpec(setSpecEntry.get(0).asText());
-                        }
-                    } else {
-                        headerObject.setSetSpec(setSpecNode.asText());
-                    }
-                }
+                setSetSpec(headerObject, setSpecNode);
                 headers.add(headerObject);
             }
         }
         return headers;
+    }
+
+    private void setSetSpec(Header headerObject, JsonNode setSpecNode) {
+        if (setSpecNode != null) {
+            if (setSpecNode.isArray()) {
+                for (int s = 0; s < setSpecNode.size(); s++) {
+                    JsonNode setSpecEntry = setSpecNode.get(s);
+                    headerObject.setSetSpec(setSpecEntry.get(0).asText());
+                }
+            } else {
+                headerObject.setSetSpec(setSpecNode.asText());
+            }
+        }
+    }
+
+    private void setDatestamp(JsonNode identifierNode, Header headerObject, JsonNode dateNode) {
+        if (dateNode != null) {
+            headerObject.setDatestamp(DateConverter.fromIsoDateTime(identifierNode.get("datestamp").asText()));
+        }
+    }
+
+    private void setIdentifier(JsonNode header, JsonNode identifierNode, Header headerObject, JsonNode id) {
+        if (id == null) {
+            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! "+header.textValue());
+        } else {
+            headerObject.setIdentifier(identifierNode.get("identifier").asText());
+        }
     }
 
     /**
@@ -155,8 +169,8 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         if (request.get("metadataPrefix") != null) {
             listIdentifiersRequest.setMetadataPrefix(request.get("metadataPrefix").asText());
         }
-        if (request.get("resumptionToken") != null) {
-            listIdentifiersRequest.setResumptionToken(request.get("resumptionToken").asText());
+        if (request.get(RESUMPTION_TOKEN) != null) {
+            listIdentifiersRequest.setResumptionToken(request.get(RESUMPTION_TOKEN).asText());
         }
         return listIdentifiersRequest;
     }

@@ -3,13 +3,14 @@ package eu.europeana.oaipmh.model.request;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import java.io.Serializable;
 
 /**
  * Basic OAI request data (always part of OAI response)
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-public class OAIRequest {
+public class OAIRequest implements Serializable {
 
     @XmlAttribute
     private String verb;

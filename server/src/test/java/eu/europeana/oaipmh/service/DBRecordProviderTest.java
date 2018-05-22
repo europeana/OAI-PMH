@@ -42,7 +42,7 @@ import static org.mockito.Matchers.anyString;
 @PrepareForTest(EdmUtils.class)
 @PowerMockIgnore("javax.management.*")
 @SpringBootTest
-public class DBRecordProviderTest extends BaseApiTest {
+public class DBRecordProviderTest extends BaseApiTestCase {
     private static final String TEST_RECORD_ID = "http://data.europeana.eu/item/2048432/item_RAUFTMSVPDRDYE67HPNM5FL4G6VALEOJ";
 
     private static final String TEST_RECORD_FILENAME = "getRecordFromDB.xml";

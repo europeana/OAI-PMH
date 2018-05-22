@@ -13,6 +13,8 @@ public class DateConverter {
     private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTimeNoMillis().withZoneUTC();
     private static final DateTimeFormatter fmt2 = ISODateTimeFormat.dateTime().withZoneUTC();
 
+    private DateConverter() {}
+
     public static Date fromIsoDateTime(String isoDateTime) {
         if (isoDateTime == null || isoDateTime.isEmpty()) {
             return null;

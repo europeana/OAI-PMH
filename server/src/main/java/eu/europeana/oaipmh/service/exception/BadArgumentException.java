@@ -13,6 +13,7 @@ public class BadArgumentException extends OaiPmhException {
         super(argument, ErrorCode.BAD_ARGUMENT);
     }
 
+    @Override
     public boolean doLog() {
         return false;
     }

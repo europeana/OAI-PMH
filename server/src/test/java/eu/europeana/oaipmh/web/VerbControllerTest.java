@@ -1,9 +1,6 @@
 package eu.europeana.oaipmh.web;
 
-import eu.europeana.oaipmh.model.request.GetRecordRequest;
-import eu.europeana.oaipmh.model.request.IdentifyRequest;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.request.OAIRequest;
+import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import org.junit.Before;
@@ -13,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -45,6 +43,8 @@ public class VerbControllerTest {
 
     private static final String LIST_IDENTIFIERS_CORRUPTED_TOKEN = "ZWRtX19fQW9KMnI4N2oxdDBDUHc4dk1qQTBPRFF6TWk5cGRHVnRYMFZJTlZKUFJrNVlRaljBSQ1NrVkhUMW96V1VnMQ==";
 
+    private static final String LIST_METADATA_FORMATS_RESPONSE = "<OAI-PMH xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd\"><responseDate>2018-05-10T08:33:02Z</responseDate><request verb=\"ListMetadataFormats\">https://oai-pmh.europeana.eu/oai</request><ListMetadataFormats><metadataFormat><metadataPrefix>edm</metadataPrefix><schema>http://www.europeana.eu/schemas/edm/EDM.xsd</schema><metadataNamespace>http://www.europeana.eu/schemas/edm/</metadataNamespace></metadataFormat></ListMetadataFormats></OAI-PMH>";
+
     private MockMvc mockMvc;
 
     @Mock
@@ -68,6 +68,30 @@ public class VerbControllerTest {
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testListMetadataFormats() throws Exception {
+        given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willReturn(LIST_METADATA_FORMATS_RESPONSE);
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testListMetadataFormatsWrongArgument() throws Exception {
+        given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willCallRealMethod();
+
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats&resumptionToken=XXX").accept(MediaType.parseMediaType("text/xml")))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    @Test
+    public void testListMetadataFormatsWrongMethod() throws Exception {
+        given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willCallRealMethod();
+
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
+                .andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
     @Test
