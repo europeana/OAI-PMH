@@ -16,7 +16,7 @@ public class RDFMetadataDeserializer extends StdDeserializer<RDFMetadata> {
         this(null);
     }
 
-    public RDFMetadataDeserializer(Class<?> vc) {
+    private RDFMetadataDeserializer(Class<?> vc) {
         super(vc);
     }
 
@@ -25,7 +25,9 @@ public class RDFMetadataDeserializer extends StdDeserializer<RDFMetadata> {
             throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
         JsonNode metadata = node.get(METADATA_TAG);
-
-        return new RDFMetadata(metadata.asText());
+        if (metadata != null) {
+            return new RDFMetadata(metadata.asText());
+        }
+        return new RDFMetadata(node.toString());
     }
 }
