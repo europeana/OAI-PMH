@@ -64,14 +64,10 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      */
     @Override
     public ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
-        LOG.info("List identifiers: from {}, until {}, set {}, metadataPrefix {}", from, until, set, metadataPrefix);
-
-        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, identifiersPerPage));
-        ListIdentifiers result = responseToListIdentifiers(response, 0, null);
-        if (result.getHeaders().isEmpty()) {
-            throw new NoRecordsMatchException("No records found!");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("List identifiers: from {}, until {}, set {}, metadataPrefix {}", from, until, set, metadataPrefix);
         }
-        return result;
+        return listIdentifiers(metadataPrefix, from, until, set, 0, null);
     }
 
     /**
@@ -84,8 +80,48 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      */
     @Override
     public ListIdentifiers listIdentifiers(ResumptionToken resumptionToken) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(resumptionToken.getFilterQuery(), resumptionToken.getValue(), identifiersPerPage));
-        return responseToListIdentifiers(response, resumptionToken.getCursor() + identifiersPerPage, resumptionToken.getValue());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("List identifiers: from {}, until {}, set {}, metadataPrefix {}", ResumptionTokenHelper.getFrom(resumptionToken.getValue()), DateConverter.fromIsoDateTime(ResumptionTokenHelper.getUntil(resumptionToken.getValue())), ResumptionTokenHelper.getSet(resumptionToken.getValue()), ResumptionTokenHelper.getFormat(resumptionToken.getValue()));
+        }
+        return listIdentifiers(ResumptionTokenHelper.getFormat(resumptionToken.getValue()),
+                DateConverter.fromIsoDateTime(ResumptionTokenHelper.getFrom(resumptionToken.getValue())),
+                DateConverter.fromIsoDateTime(ResumptionTokenHelper.getUntil(resumptionToken.getValue())),
+                ResumptionTokenHelper.getSet(resumptionToken.getValue()),
+                resumptionToken.getCursor() + identifiersPerPage, ResumptionTokenHelper.getCursorMark(resumptionToken.getValue()));
+    }
+
+    /**
+     * This method does the actual work for retrieving the identifiers. It creates a proper Solr query, runs it and prepares the results.
+     *
+     * @param metadataPrefix metadata prefix for the identifiers
+     * @param from start date
+     * @param until end date
+     * @param set set identifier
+     * @param cursor number of items already retrieved
+     * @param previousCursorMark previous cursor mark if there was any
+     * @return ListIdentifiers object containing the results
+     * @throws OaiPmhException
+     */
+    private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark) throws OaiPmhException {
+        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, identifiersPerPage));
+        ListIdentifiers result = responseToListIdentifiers(response);
+        if (result.getHeaders().isEmpty()) {
+            throw new NoRecordsMatchException("No records found!");
+        }
+
+        if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
+            ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(DateConverter.toIsoDate(from),
+                    DateConverter.toIsoDate(until),
+                    set,
+                    metadataPrefix,
+                    new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+                    response.getResults().getNumFound(),
+                    cursor,
+                    response.getNextCursorMark());
+            result.setResumptionToken(resumptionToken);
+        }
+
+        return result;
     }
 
     /**
@@ -94,31 +130,18 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * which there is no next resumption token.
      *
      * @param response response retrieved from Solr
-     * @param cursor current number of results
-     * @param previousCursorMark cursor mark that was used for previous page
      * @return next page of the list of identifiers
      */
-    private ListIdentifiers responseToListIdentifiers(QueryResponse response, long cursor, String previousCursorMark) {
+    private ListIdentifiers responseToListIdentifiers(QueryResponse response) {
         List<Header> headers = new ArrayList<>();
 
         SolrDocumentList docs = response.getResults();
         for (SolrDocument document : docs) {
             headers.add(documentToHeader(document));
         }
-
-        ResumptionToken resumptionToken = prepareResumptionToken(response, cursor, previousCursorMark, docs);
-        return new ListIdentifiers(headers, resumptionToken);
-    }
-
-    private ResumptionToken prepareResumptionToken(QueryResponse response, long cursor, String previousCursorMark, SolrDocumentList docs) {
-        ResumptionToken resumptionToken;
-        if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
-            resumptionToken = ResumptionTokenHelper.createResumptionToken(response.getNextCursorMark(),
-                    docs.getNumFound(), new Date(System.currentTimeMillis() + getResumptionTokenTTL()), cursor, getFilterQuery(response));
-        } else {
-            resumptionToken = null;
-        }
-        return resumptionToken;
+        ListIdentifiers listIdentifiersResult = new ListIdentifiers();
+        listIdentifiersResult.setHeaders(headers);
+        return listIdentifiersResult;
     }
 
     /**
@@ -139,26 +162,6 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
         }
         // last page
         return !response.getNextCursorMark().equals(previousCursorMark) && response.getResults().size() + cursor != response.getResults().getNumFound();
-    }
-
-    /**
-     * Retrieve filter query part from the query response. This filter is used to create resumption token that is returned
-     * as part of the response object.
-     *
-     * @param response query response retrieved from Solr
-     * @return a list of strings corresponding to the filter query used in the Solr query
-     */
-    private List<String> getFilterQuery(QueryResponse response) {
-        Object fq = ((NamedList) response.getHeader().get(PARAMS)).get(CommonParams.FQ);
-        List<String> list = new ArrayList<>();
-        if (fq == null) {
-            return list;
-        }
-        if (fq instanceof String) {
-            list.add((String) fq);
-            return list;
-        }
-        return (List<String>) fq;
     }
 
     /**

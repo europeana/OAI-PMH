@@ -1,133 +1,249 @@
 package eu.europeana.oaipmh.util;
 
 import eu.europeana.oaipmh.model.ResumptionToken;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Helper class for managing resumption tokens. It is used to encode and decode information into base64 string that is returned to the client.
+ * Generally token should have the following format:
+ *
+ * FROM|UNTIL|SET|FORMAT|EXPIRATION_TIME|COMPLETE_LIST_SIZE|CURSOR|CURSOR_MARK
+ *
+ *  where:
+ *
+ * FROM - start date used for filtering identifiers (ListIdentifiers) or records (ListRecords) specified as from parameter; token generated for ListSets will have this part empty
+ * UNTIL - end date used for filtering identifiers (ListIdentifiers) or records (ListRecords) specified as until parameter; token generated for ListSets will have this part empty
+ * SET - identifier of the dataset used for filtering identifiers (ListIdentifiers) or records (ListRecords) specified as set parameter; token generated for ListSets will have this part empty
+ * FORMAT - matadata format used for filtering identifiers (ListIdentifiers) or records (ListRecords) specified as metadataPrefix parameter; token generated for ListSets will have this part empty
+ * EXPIRATION_TIME - date (as miliseconds) when this resumption token expires
+ * COMPLETE_LIST_SIZE - number of all elements that should be returned for the request (valid only for ListSets request, tokens for other requests will have this part empty)
+ * CURSOR - number of already retrieved identifiers (ListIdentifiers), records (ListRecords) or sets (ListSets)
+ * CURSOR_MARK - cursor mark used by Solr to continue the query, valid only for ListIdentifiers and ListRecords requests
+ *
  */
 public class ResumptionTokenHelper {
-    private static final String TOKEN_SEPARATOR = "___";
+    private static final String TOKEN_SEPARATOR = "|";
 
-    private static final String FILTER_SEPARATOR = "&&&";
+    private static final String TOKEN_TEMPLATE = "%s|%s|%s|%s|%s|%s|%s|%s";
+
+    private static final byte FROM_INDEX = 0;
+    private static final byte UNTIL_INDEX = 1;
+    private static final byte SET_INDEX = 2;
+    private static final byte FORMAT_INDEX = 3;
+    private static final byte EXPIRATION_TIME_INDEX = 4;
+    private static final byte COMPLETE_LIST_SIZE_INDEX = 5;
+    private static final byte CURSOR_INDEX = 6;
+    private static final byte CURSOR_MARK_INDEX = 7;
 
     private ResumptionTokenHelper() {}
 
     /**
-     * Creates resumption token object that can be used to prepare the response for the request
+     * Creates the resumption token object that consists of the specified parameters. Some of them are optional according to the request that
+     * the created token is used for.
      *
-     * @param nextCursorMark next cursor mark from Solr
-     * @param completeListSize complete list size
-     * @param expirationDate expiration date of the resumption token
-     * @param cursor cursor of the current request
-     * @param filterQuery filter query used for this resumption token, must be the same when we want to use the nextCursorMark for the next page
-     * @return resumption token object which contains token encoded with Base64 and containing information on expiration date, cursor and next cursor mark
+     * @param from start date (optional)
+     * @param until end date (optional)
+     * @param set set identifier (optional)
+     * @param format metadata format (optional)
+     * @param expirationDate token expiration date (mandatory)
+     * @param completeListSize total number of results (mandatory)
+     * @param cursor number of already retrieved results (mandatory)
+     * @param nextCursorMark next cursor mark that will be used for retrieving next page of results from Solr (optional)
+     * @return resumption token object that contains encoded token string
      */
-    public static ResumptionToken createResumptionToken(String nextCursorMark, long completeListSize, Date expirationDate, long cursor, List<String> filterQuery) {
-        String encodedCursorMark = encodeCursorMark(nextCursorMark, expirationDate, cursor, filterQuery);
-        return new ResumptionToken(encodedCursorMark, completeListSize, expirationDate, cursor, filterQuery);
+    public static ResumptionToken createResumptionToken(String from,
+                                                        String until,
+                                                        String set,
+                                                        String format,
+                                                        Date expirationDate,
+                                                        long completeListSize,
+                                                        long cursor,
+                                                        String nextCursorMark) {
+        String tokenEncoded = encodeToken(from, until, set, format, expirationDate, completeListSize, cursor, nextCursorMark);
+        return new ResumptionToken(tokenEncoded, completeListSize, expirationDate, cursor);
     }
 
     /**
-     * Encode cursor from solr together with expiration date and progress cursor using base64
+     * Creates the resumption token object that consists of the specified parameters. Some of them are optional according to the request that
+     * the created token is used for.
      *
-     * @param nextCursorMark cursor mark from solr
-     * @param expirationDate token expiration date
-     * @param cursor progress cursor
-     * @return encoded token containing all necessary information
+     * @param expirationDate token expiration date (mandatory)
+     * @param completeListSize total number of results (mandatory)
+     * @param cursor number of already retrieved results (mandatory)
+     * @return resumption token object that contains encoded token string
      */
-    private static String encodeCursorMark(String nextCursorMark, Date expirationDate, long cursor, List<String> filterQuery) {
-        StringBuilder filter = new StringBuilder();
-        for (int i = 0; i < filterQuery.size(); i++) {
-            filter.append(filterQuery.get(i));
-            if (i < filterQuery.size() - 1) {
-                filter.append(FILTER_SEPARATOR);
-            }
+    public static ResumptionToken createResumptionToken(Date expirationDate,
+                                                        long completeListSize,
+                                                        long cursor) {
+        return createResumptionToken(null, null, null, null, expirationDate, completeListSize, cursor, null);
+    }
+
+    /**
+     * Returns empty string when given value is null or the specified value otherwise.
+     *
+     * @param value value to be checked and returned
+     * @return value or empty string when value is null
+     */
+    private static String getTokenPart(String value) {
+        if (value == null) {
+            return "";
         }
-        return Base64.getUrlEncoder().encodeToString(String.valueOf(filter + TOKEN_SEPARATOR + expirationDate.getTime() +
-                TOKEN_SEPARATOR + cursor + TOKEN_SEPARATOR + nextCursorMark).getBytes(StandardCharsets.UTF_8));
+        return value;
+    }
+
+
+    /**
+     * Prepare and encode the token string with Base64.
+     *
+     * @param from start date
+     * @param until end date
+     * @param set set identifier
+     * @param format metadata format
+     * @param expirationDate token expiration date
+     * @param completeListSize total number of results
+     * @param cursor number of already retrieved results
+     * @param nextCursorMark next cursor mark that will be used for retrieving next page of results from Solr
+     * @return token string encoded with Base64
+     */
+    private static String encodeToken(String from,
+                                      String until,
+                                      String set,
+                                      String format,
+                                      Date expirationDate,
+                                      long completeListSize,
+                                      long cursor,
+                                      String nextCursorMark) {
+        String token = String.format(TOKEN_TEMPLATE,
+                getTokenPart(from),
+                getTokenPart(until),
+                getTokenPart(set),
+                getTokenPart(format),
+                expirationDate.getTime(),
+                completeListSize,
+                cursor,
+                nextCursorMark);
+        return Base64.getUrlEncoder().encodeToString(token.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
-     * Decodes the given token (encoded with Base64) and retrieves information on expiration date, cursor and next cursor mark.
-     * The returned resumption token CANNOT be used as a part of the response for OAI-PMH request.
+     * Decodes the given token (encoded with Base64) and retrieves information on expiration date, cursor and complete list size.
+     * The value stored in this token is in decoded form and CANNOT be used as a part of the response for OAI-PMH request.
+     * However this gives possibility to retrieve all necessary information (from, until, set, format, expiration date, complete list size,
+     * cursor and next cursor mark).
      *
      * @param base64EncodedToken token encoded with Base64
-     * @return temporary resumption token object with decoded next cursor mark (that can be used by Solr directly), expiration date and cursor
-     * but invalid complete list size.
+     * @return temporary resumption token object with decoded value, expiration date, cursor and complete list size.
      */
     public static ResumptionToken decodeResumptionToken(String base64EncodedToken) {
         try {
             String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken), StandardCharsets.UTF_8);
-            String[] parts = decoded.split(TOKEN_SEPARATOR);
-            if (parts.length == 4) {
-                String[] filterQuery = parts[0].split(FILTER_SEPARATOR);
-                Date expirationDate = new Date(Long.valueOf(parts[1]));
-                long cursor = Long.parseLong(parts[2]);
-                String cursorMark = parts[3];
-                return new ResumptionToken(cursorMark, -1, expirationDate, cursor, Arrays.asList(filterQuery));
-            }
+            String[] parts = tokenize(decoded);
+            Date expirationDate = new Date(Long.valueOf(parts[EXPIRATION_TIME_INDEX]));
+            long cursor = Long.parseLong(parts[CURSOR_INDEX]);
+            long completeListSize = Long.parseLong(parts[COMPLETE_LIST_SIZE_INDEX]);
+            return new ResumptionToken(decoded, completeListSize, expirationDate, cursor);
         } catch (Exception e) {
             // in case of any exception we assume there is something wrong with the resumption token being decoded
             throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Splits the resumption token into parts and checks whether there are 8 of them. If not IllegalArgumentException will be thrown
+     *
+     * @param token resumption token in decoded form
+     * @return array of parts
+     */
+    private static String[] tokenize(String token) {
+        String[] parts = StringUtils.splitByWholeSeparatorPreserveAllTokens(token, TOKEN_SEPARATOR);
+        if (parts.length == 8) {
+            // token must have 8 parts
+            return parts;
         }
         throw new IllegalArgumentException();
     }
 
     /**
-     * Creates a simple version of resumption token which does not use cursor mark. It consists of 3 elements in the following order:
-     * complete list size, expiration date and cursor. They are concatenated and encoded with Base64.
+     * Get value of FROM part from the resumption token.
      *
-     * @param completeListSize complete list size
-     * @param expirationDate the date this token expires
-     * @param cursor number of items retrieved so far
-     * @return resumption token object
+     * @param token resumption token in decoded form
+     * @return value of FROM part
      */
-    public static ResumptionToken createSimpleResumptionToken(long completeListSize, Date expirationDate, long cursor) {
-        String encodedValue = encodeSimpleResumptionToken(completeListSize, expirationDate, cursor);
-        return new ResumptionToken(encodedValue, completeListSize, expirationDate, cursor, null);
+    public static String getFrom(String token) {
+        return tokenize(token)[FROM_INDEX];
     }
 
     /**
-     * Decodes the simple resumption token. The decoded values (complete list size, expiration date and cursor) will be set inside the object.
-     * The returned object CANNOT be used in the response to the client.
+     * Get value of UNTIL part from the resumption token.
      *
-     * @param base64EncodedToken encoded token
-     * @return resumption token object filled with values retrieved from the encoded token
-     * @throws IllegalArgumentException
+     * @param token resumption token in decoded form
+     * @return value of UNTIL part
      */
-    public static ResumptionToken decodeSimpleResumptionToken(String base64EncodedToken) {
-        try {
-            String decoded = new String(Base64.getUrlDecoder().decode(base64EncodedToken), StandardCharsets.UTF_8);
-            String[] parts = decoded.split(TOKEN_SEPARATOR);
-            if (parts.length == 3) {
-                Long completeListSize = Long.valueOf(parts[0]);
-                Date expirationDate = new Date(Long.valueOf(parts[1]));
-                long cursor = Long.parseLong(parts[2]);
-                return new ResumptionToken(null, completeListSize, expirationDate, cursor, null);
-            }
-        } catch (Exception e) {
-            // in case of any exception we assume there is something wrong with the resumption token being decoded
-            throw new IllegalArgumentException();
-        }
-        throw new IllegalArgumentException();
+    public static String getUntil(String token) {
+        return tokenize(token)[UNTIL_INDEX];
     }
 
     /**
-     * Encode the values of the resumption token into one Base64 string.
+     * Get value of SET part from the resumption token.
      *
-     * @param completeListSize complete list size
-     * @param expirationDate the date the token expires
-     * @param cursor number of items returned so far
-     * @return Base64 encoded string
+     * @param token resumption token in decoded form
+     * @return value of SET part
      */
-    private static String encodeSimpleResumptionToken(long completeListSize, Date expirationDate, long cursor) {
-        return Base64.getUrlEncoder().encodeToString(String.valueOf(completeListSize + TOKEN_SEPARATOR + expirationDate.getTime() +
-                TOKEN_SEPARATOR + cursor).getBytes(StandardCharsets.UTF_8));
+    public static String getSet(String token) {
+        return tokenize(token)[SET_INDEX];
+    }
+
+    /**
+     * Get value of FORMAT part from the resumption token.
+     *
+     * @param token resumption token in decoded form
+     * @return value of FORMAT part
+     */
+    public static String getFormat(String token) {
+        return tokenize(token)[FORMAT_INDEX];
+    }
+
+    /**
+     * Get value of EXPIRATION_TIME part from the resumption token.
+     *
+     * @param token resumption token in decoded form
+     * @return value of EXPIRATION_TIME part
+     */
+    public static Date getExpirationDate(String token) {
+        return new Date(Long.valueOf(tokenize(token)[EXPIRATION_TIME_INDEX]));
+    }
+
+    /**
+     * Get value of COMPLETE_LIST_SIZE part from the resumption token.
+     *
+     * @param token resumption token in decoded form
+     * @return value of COMPLETE_LIST_SIZE part
+     */
+    public static long getCompleteListSize(String token) {
+        return Long.parseLong(tokenize(token)[COMPLETE_LIST_SIZE_INDEX]);
+    }
+
+    /**
+     * Get value of CURSOR part from the resumption token.
+     *
+     * @param token resumption token in decoded form
+     * @return value of CURSOR part
+     */
+    public static long getCursor(String token) {
+        return Long.parseLong(tokenize(token)[CURSOR_INDEX]);
+    }
+
+    /**
+     * Get value of CURSOR_MARK part from the resumption token.
+     *
+     * @param token resumption token in decoded form
+     * @return value of CURSOR_MARK part
+     */
+    public static String getCursorMark(String token) {
+        return tokenize(token)[CURSOR_MARK_INDEX];
     }
 }

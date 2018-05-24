@@ -2,11 +2,7 @@ package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
-import eu.europeana.oaipmh.model.request.GetRecordRequest;
-import eu.europeana.oaipmh.model.request.IdentifyRequest;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.request.ListSetsRequest;
-import eu.europeana.oaipmh.model.request.ListMetadataFormatsRequest;
+import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.BadResumptionToken;
 import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
@@ -124,7 +120,7 @@ public class OaiPmhService extends BaseService {
     public String listSets(ListSetsRequest request) throws OaiPmhException {
         ListSets responseObject;
         if (request.getResumptionToken() != null) {
-            ResumptionToken validated = validateResumptionToken(request.getResumptionToken(), true);
+            ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
             responseObject = setsProvider.listSets(validated);
         } else {
             responseObject = setsProvider.listSets();
@@ -140,7 +136,7 @@ public class OaiPmhService extends BaseService {
      * @throws OaiPmhException
      */
     public String listIdentifiersWithToken(ListIdentifiersRequest request) throws OaiPmhException {
-        ResumptionToken validated = validateResumptionToken(request.getResumptionToken(), false);
+        ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
         ListIdentifiers responseObject = identifierProvider.listIdentifiers(validated);
         return serialize(responseObject.getResponse(request));
     }
@@ -153,14 +149,10 @@ public class OaiPmhService extends BaseService {
      * @return decoded resumption token ready to be used by the internal request to IdentifierProvider
      * @throws BadResumptionToken
      */
-    private ResumptionToken validateResumptionToken(String resumptionToken, boolean simple) throws BadResumptionToken {
+    private ResumptionToken validateResumptionToken(String resumptionToken) throws BadResumptionToken {
         ResumptionToken temporaryToken;
         try {
-            if (simple) {
-                temporaryToken = ResumptionTokenHelper.decodeSimpleResumptionToken(resumptionToken);
-            } else {
-                temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
-            }
+            temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
         } catch (IllegalArgumentException e) {
             throw new BadResumptionToken("Resumption token " + resumptionToken + " is not correct.");
         }
