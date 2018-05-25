@@ -62,14 +62,9 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
 
         if (shouldCreateResumptionToken(cursor, field.getValueCount(), completeListSize)) {
             // create resumption token for ListSets
-            ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(null,
-                    null,
-                    null,
-                    null,
-                    new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+            ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
                     completeListSize,
-                    cursor,
-                    null);
+                    cursor);
             listSets.setResumptionToken(resumptionToken);
         }
         return listSets;
