@@ -1,9 +1,17 @@
 package eu.europeana.oaipmh.client;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 import java.util.concurrent.Callable;
 
 public class ListRecordsExecutor implements Callable<ListRecordsResult> {
+
+    private static final Logger LOG = LogManager.getLogger(ListRecordsExecutor.class);
+
+    private static final int MAX_ERRORS_PER_THREAD = 50;
+
     private List<String> identifiers;
 
     private String metadataPrefix;
@@ -24,7 +32,12 @@ public class ListRecordsExecutor implements Callable<ListRecordsResult> {
             try {
                 new GetRecordQuery(metadataPrefix, identifier).execute(oaipmhServer);
             } catch (Exception e) {
+                LOG.error("Error retrieving record {}", identifier, e);
                 errors++;
+                // if there are too many errors, just abort
+                if (errors > MAX_ERRORS_PER_THREAD) {
+                    break;
+                }
             }
         }
         return new ListRecordsResult((System.currentTimeMillis() - start) / 1000, errors);
