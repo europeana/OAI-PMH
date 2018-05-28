@@ -1,22 +1,16 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.oaipmh.model.GetRecord;
-import eu.europeana.oaipmh.model.Identify;
-import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.ListSets;
-import eu.europeana.oaipmh.model.ListMetadataFormats;
+import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.util.DateConverter;
 
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.Set;
 
 public class OaiPmhRequestFactory {
     private static final String PARAMETER_INFO = "Parameter \"%s\" ";
@@ -36,6 +30,7 @@ public class OaiPmhRequestFactory {
         validVerbs.add(GetRecord.class.getSimpleName());
         validVerbs.add(ListSets.class.getSimpleName());
         validVerbs.add(ListMetadataFormats.class.getSimpleName());
+        validVerbs.add(ListRecords.class.getSimpleName());
 
         mandatoryVerbParameters = new HashMap<>();
         // ListIdentifiers
@@ -47,6 +42,10 @@ public class OaiPmhRequestFactory {
         mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
         mandatoryParameters.add(OaiParameterName.IDENTIFIER);
         mandatoryVerbParameters.put(GetRecord.class.getSimpleName(), mandatoryParameters);
+        // ListRecords
+        mandatoryParameters = new HashSet<>();
+        mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
+        mandatoryVerbParameters.put(ListRecords.class.getSimpleName(), mandatoryParameters);
 
         validVerbParameters = new HashMap<>();
         // Identify
@@ -73,6 +72,14 @@ public class OaiPmhRequestFactory {
         validParameters = new HashSet<>();
         validParameters.add(OaiParameterName.IDENTIFIER);
         validVerbParameters.put(ListMetadataFormats.class.getSimpleName(), validParameters);
+        // ListRecords
+        validParameters = new HashSet<>();
+        validParameters.add(OaiParameterName.METADATA_PREFIX);
+        validParameters.add(OaiParameterName.FROM);
+        validParameters.add(OaiParameterName.UNTIL);
+        validParameters.add(OaiParameterName.SET);
+        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validVerbParameters.put(ListRecords.class.getSimpleName(), validParameters);
 
         exclusiveParameters = new HashMap<>();
         // metadataPrefix
@@ -352,6 +359,10 @@ public class OaiPmhRequestFactory {
             return createListMetadataFormatsRequest(baseUrl, parameters.get(OaiParameterName.IDENTIFIER));
         }
 
+        if (ListRecords.class.getSimpleName().equals(verb)) {
+            return createListRecordsRequest(baseUrl, parameters);
+        }
+
         if (!ignoreErrors) {
             throw new BadArgumentException("Unsupported verb.");
         }
@@ -398,5 +409,27 @@ public class OaiPmhRequestFactory {
 
     public static ListMetadataFormatsRequest createListMetadataFormatsRequest(String baseUrl, String identifier) {
         return new ListMetadataFormatsRequest(ListMetadataFormats.class.getSimpleName(), baseUrl, identifier);
+    }
+
+    private static ListRecordsRequest createListRecordsRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
+        if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
+            return createListRecordsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+        }
+        if (parameters.containsKey(OaiParameterName.METADATA_PREFIX)) {
+            return createListRecordsRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX),
+                    parameters.get(OaiParameterName.SET),
+                    parameters.get(OaiParameterName.FROM),
+                    parameters.get(OaiParameterName.UNTIL));
+        }
+        // when key parameters are missing return a basic list records request object
+        return new ListRecordsRequest(parameters.get(OaiParameterName.VERB), baseUrl);
+    }
+
+    public static ListRecordsRequest createListRecordsRequest(String baseUrl, String metadataPrefix, String set, String from, String until) {
+        return new ListRecordsRequest(ListRecords.class.getSimpleName(), baseUrl, metadataPrefix, set, from, until);
+    }
+
+    public static ListRecordsRequest createListRecordsRequest(String baseUrl, String resumptionToken) {
+        return new ListRecordsRequest(ListRecords.class.getSimpleName(), baseUrl, resumptionToken);
     }
 }

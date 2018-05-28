@@ -10,10 +10,12 @@ import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
 import eu.europeana.corelib.search.impl.WebMetaInfo;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
+import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,9 +28,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -101,25 +101,52 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
         try {
             FullBean bean = mongoServer.getFullBean(recordId);
-            if (bean != null) {
-                enhanceWithTechnicalMetadata(bean);
-                RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
-                if (rdf == null) {
-                    throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be converted to EDM.");
-                }
-                expandWithFullText(rdf, recordId);
-                updatePreview(rdf);
-                updateDatasetName(rdf);
-                Header header = getHeader(id, bean);
-                String edm = EdmUtils.toEDM(rdf);
-                edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
-                return new Record(header, new RDFMetadata(removeXMLHeader(edm)));
-            }
+            return new Record(getHeader(id, bean), prepareRDFMetadata(recordId, (FullBeanImpl) bean));
         } catch (MongoDBException | MongoRuntimeException e) {
             LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
             throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
         }
-        throw new IdDoesNotExistException(id);
+    }
+
+    private RDFMetadata prepareRDFMetadata(String recordId, FullBeanImpl bean) throws OaiPmhException {
+        if (bean != null) {
+            enhanceWithTechnicalMetadata(bean);
+            RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
+            if (rdf == null) {
+                throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be converted to EDM.");
+            }
+            expandWithFullText(rdf, recordId);
+            updatePreview(rdf);
+            updateDatasetName(rdf);
+            String edm = EdmUtils.toEDM(rdf);
+            edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
+            return new RDFMetadata(removeXMLHeader(edm));
+        }
+        throw new IdDoesNotExistException(recordId);
+    }
+
+    @Override
+    public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
+        List<Record> records = new ArrayList<>();
+
+        for (Header header : identifiers) {
+            try {
+                String recordId = prepareRecordId(header.getIdentifier());
+                FullBean bean = mongoServer.getFullBean(recordId);
+                records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
+            } catch (MongoDBException | MongoRuntimeException e) {
+                LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
+                throw new InternalServerErrorException(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved due to database problems.");
+            }
+        }
+
+        if (records.isEmpty()) {
+            throw new NoRecordsMatchException("No records found!");
+        }
+
+        ListRecords result = new ListRecords();
+        result.setRecords(records);
+        return result;
     }
 
     private void updateDatasetName(RDF rdf) {
@@ -212,12 +239,15 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         return xml;
     }
 
-    private Header getHeader(String id, FullBean bean) {
-        Header header = new Header();
-        header.setIdentifier(id);
-        header.setDatestamp(bean.getTimestampCreated());
-        header.setSetSpec(Arrays.asList(bean.getEuropeanaCollectionName()));
-        return header;
+    private Header getHeader(String id, FullBean bean) throws IdDoesNotExistException {
+        if (bean != null) {
+            Header header = new Header();
+            header.setIdentifier(id);
+            header.setDatestamp(bean.getTimestampCreated());
+            header.setSetSpec(Arrays.asList(bean.getEuropeanaCollectionName()));
+            return header;
+        }
+        throw new IdDoesNotExistException(id);
     }
 
     @Override

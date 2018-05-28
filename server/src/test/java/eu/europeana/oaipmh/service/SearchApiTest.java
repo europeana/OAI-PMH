@@ -27,6 +27,8 @@ import static org.junit.Assert.*;
 @PropertySources(value = {})
 @SpringBootTest
 public class SearchApiTest extends SolrBasedProviderTestCase {
+    private static final int IDENTIFIERS_PER_PAGE = 300;
+
     private static final String METADATA_FORMAT = "edm";
 
     private static final String DATE_1 = "2017-08-03T15:16:21Z";
@@ -59,7 +61,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         QueryResponse response = getResponse(LIST_IDENTIFIERS);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
 
-        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, null);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, null, IDENTIFIERS_PER_PAGE);
         assertResults(result, null, null, null);
     }
 
@@ -68,7 +70,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         QueryResponse response = getResponse(LIST_IDENTIFIERS_SET);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
 
-        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, SET_1);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, SET_1, IDENTIFIERS_PER_PAGE);
         assertResults(result, null, null, SET_1);
     }
 
@@ -78,7 +80,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
         Date from = DateConverter.fromIsoDateTime(DATE_1);
 
-        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, null, null);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, null, null, IDENTIFIERS_PER_PAGE);
         assertResults(result, from, null, null);
     }
 
@@ -88,7 +90,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
         Date until = DateConverter.fromIsoDateTime(DATE_1);
 
-        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, until, null);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, until, null, IDENTIFIERS_PER_PAGE);
         assertResults(result, null, until, null);
     }
 
@@ -99,7 +101,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Date from = DateConverter.fromIsoDateTime(DATE_2);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
-        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, null);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, null, IDENTIFIERS_PER_PAGE);
         assertResults(result, from, until, null);
     }
 
@@ -111,7 +113,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
-        searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2);
+        searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
     }
 
     @Test
@@ -121,7 +123,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
-        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
         assertResults(result, from, until, SET_2);
     }
 
