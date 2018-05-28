@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.client;
 
+import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +45,17 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
 
     private List<String> sets = new ArrayList<>();
 
+    public ListIdentifiersQuery() {
+    }
+
+    public ListIdentifiersQuery(String metadataPrefix, String from, String until, String set, int logProgressInterval) {
+        this.metadataPrefix = metadataPrefix;
+        this.from = from;
+        this.until = until;
+        this.set = set;
+        this.logProgressInterval = logProgressInterval;
+    }
+
     @PostConstruct
     public void initSets() {
         if (set != null && !set.isEmpty()) {
@@ -59,15 +71,27 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
     @Override
     public void execute(OAIPMHServiceClient oaipmhServer) {
         if (sets.isEmpty()) {
-            execute(oaipmhServer, null);
+            execute(oaipmhServer, null, null);
         } else {
             for (String setName : sets) {
-                execute(oaipmhServer, setName);
+                execute(oaipmhServer, setName, null);
             }
         }
     }
 
-    private void execute(OAIPMHServiceClient oaipmhServer, String setName) {
+    public List<String> getIdentifiers(OAIPMHServiceClient oaipmhServer) {
+        List<String> identifiers = new ArrayList<>();
+        if (sets.isEmpty()) {
+            execute(oaipmhServer, null, identifiers);
+        } else {
+            for (String setName : sets) {
+                execute(oaipmhServer, setName, identifiers);
+            }
+        }
+        return identifiers;
+    }
+
+    private void execute(OAIPMHServiceClient oaipmhServer, String setName, List<String> identifiers) {
         long counter = 0;
         long start = System.currentTimeMillis();
         ProgressLogger logger = new ProgressLogger(-1, logProgressInterval);
@@ -79,6 +103,7 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
         if (responseObject != null) {
             counter += responseObject.getHeaders().size();
             logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
+            collectIdentifiers(responseObject.getHeaders(), identifiers);
 
             while (responseObject.getResumptionToken() != null) {
                 request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
@@ -89,11 +114,20 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
                 }
                 counter += responseObject.getHeaders().size();
                 logger.logProgress(counter);
+                collectIdentifiers(responseObject.getHeaders(), identifiers);
             }
         }
 
         LOG.info("ListIdentifiers for set " + setName + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
                 ". Harvested " + counter + " identifiers.");
+    }
+
+    private void collectIdentifiers(List<Header> headers, List<String> identifiers) {
+        if (identifiers != null) {
+            for (Header header : headers) {
+                identifiers.add(header.getIdentifier());
+            }
+        }
     }
 
     private String getResumptionRequest(String oaipmhServer, String resumptionToken) {
