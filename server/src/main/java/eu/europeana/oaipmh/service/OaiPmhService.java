@@ -95,19 +95,48 @@ public class OaiPmhService extends BaseService {
 
     /**
      * Retrieve list of identifiers that match given filter parameters: metadata format, date between from and until and set.
-     * When no identifiers were found then NoRecordsMatch error is returned.
+     * When no identifiers were found then NoRecordsMatch error is returned. When resumption token is inside the request
+     * then the method retrieves another page of results for ListIdentifiers verb starting from the point encoded in resumption token.
      *
      * @param request request containing all necessary parameters
      * @return list of identifiers matching the given filter parameters
      * @throws OaiPmhException
      */
     public String listIdentifiers(ListIdentifiersRequest request) throws OaiPmhException {
-        if (!metadataFormats.canDisseminate(request.getMetadataPrefix())) {
-            throw new CannotDisseminateFormatException(request.getMetadataPrefix());
-        }
-
-        ListIdentifiers responseObject = identifierProvider.listIdentifiers(request.getMetadataPrefix(), DateConverter.fromIsoDateTime(request.getFrom()), DateConverter.fromIsoDateTime(request.getUntil()), request.getSet());
+        ListIdentifiers responseObject = getListIdentifiersObject(request.getMetadataPrefix(),
+                DateConverter.fromIsoDateTime(request.getFrom()),
+                DateConverter.fromIsoDateTime(request.getUntil()),
+                request.getSet(),
+                request.getResumptionToken(),
+                identifiersPerPage);
         return serialize(responseObject.getResponse(request));
+    }
+
+    /**
+     * Prepare the ListIdentifiers object according to the specified parameters.
+     *
+     * @param metadataPrefix metadata prefix
+     * @param from start date
+     * @param until end date
+     * @param set dataset identifier
+     * @param resumptionToken resumption token (encoded)
+     * @param pageSize page size
+     * @return ListIdentifiers object containing max pageSize number of identifiers
+     * @throws OaiPmhException
+     */
+    private ListIdentifiers getListIdentifiersObject(String metadataPrefix, Date from, Date until, String set, String resumptionToken, int pageSize) throws OaiPmhException {
+        ListIdentifiers responseObject;
+        if (resumptionToken != null) {
+            ResumptionToken validated = validateResumptionToken(resumptionToken);
+            responseObject = identifierProvider.listIdentifiers(validated, pageSize);
+        } else {
+            if (!metadataFormats.canDisseminate(metadataPrefix)) {
+                throw new CannotDisseminateFormatException(metadataPrefix);
+            }
+
+            responseObject = identifierProvider.listIdentifiers(metadataPrefix, from, until, set, pageSize);
+        }
+        return responseObject;
     }
 
     /**
@@ -129,17 +158,25 @@ public class OaiPmhService extends BaseService {
     }
 
     /**
-     * Retrieve another page of results for ListIdentifiers verb starting from the point encoded in resumption token.
+     * Retrieve list of records that match given filter parameters: metadata format, date between from and until and set.
+     * When no records were found then NoRecordsMatch error is returned.
      *
-     * @param request request containing token used to continue retrieving list of identifiers
-     * @return another page of list of identifiers
+     * @param request request containing all necessary parameters
+     * @return list of records matching the given filter parameters
      * @throws OaiPmhException
      */
-    public String listIdentifiersWithToken(ListIdentifiersRequest request) throws OaiPmhException {
-        ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
-        ListIdentifiers responseObject = identifierProvider.listIdentifiers(validated);
+    public String listRecords(ListRecordsRequest request) throws OaiPmhException {
+        ListIdentifiers identifiers = getListIdentifiersObject(request.getMetadataPrefix(),
+                DateConverter.fromIsoDateTime(request.getFrom()),
+                DateConverter.fromIsoDateTime(request.getUntil()),
+                request.getSet(),
+                request.getResumptionToken(),
+                recordsPerPage);
+        ListRecords responseObject = recordProvider.listRecords(identifiers.getHeaders());
+        responseObject.setResumptionToken(identifiers.getResumptionToken());
         return serialize(responseObject.getResponse(request));
     }
+
 
     /**
      * Validate resumption token passed by the client. The base64 string is decoded and is checked against the expiration date.

@@ -21,7 +21,7 @@ public interface IdentifierProvider extends ClosableProvider {
      * @return object with the list of Header objects containing necessary information
      * @throws OaiPmhException when there is a problem retrieving the information (e.g. IdDoesNotExistException)
      */
-    ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException;
+    ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, int pageSize) throws OaiPmhException;
 
     /**
      * Returns next page of list identifiers. ResumptionToken is an object which is decoded from a valid string retrieved by calling 4 argument version of listIdentifiers.
@@ -30,5 +30,5 @@ public interface IdentifierProvider extends ClosableProvider {
      * @return object with a list of header objects from the next page
      * @throws OaiPmhException
      */
-    ListIdentifiers listIdentifiers(ResumptionToken resumptionToken) throws OaiPmhException;
+    ListIdentifiers listIdentifiers(ResumptionToken resumptionToken, int pageSize) throws OaiPmhException;
 }

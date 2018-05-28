@@ -1,6 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
@@ -15,7 +16,9 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Retrieve record xml information from the Europeana Record API
@@ -66,6 +69,17 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         header.setIdentifier(id);
         header.setDatestamp(new Date());
         return new Record(header, rdf);
+    }
+
+    @Override
+    public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
+        ListRecords listRecords = new ListRecords();
+        List<Record> records = new ArrayList<>();
+        for (Header header : identifiers) {
+            records.add(getRecord(header.getIdentifier()));
+        }
+        listRecords.setRecords(records);
+        return listRecords;
     }
 
     private String constructRequestUrl(String id) {

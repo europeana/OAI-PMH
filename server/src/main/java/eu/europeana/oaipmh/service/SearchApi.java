@@ -13,8 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.params.CommonParams;
-import org.apache.solr.common.util.NamedList;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
@@ -33,9 +31,6 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
     private static final Logger LOG = LogManager.getLogger(SearchApi.class);
 
     private static final Date DEFAULT_IDENTIFIER_TIMESTAMP = DateConverter.fromIsoDateTime("1970-01-01T00:00:00Z");
-
-    @Value("${identifiersPerPage}")
-    private int identifiersPerPage;
 
     @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
     private Date defaultIdentifierTimestamp;
@@ -63,11 +58,11 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @throws OaiPmhException
      */
     @Override
-    public ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set) throws OaiPmhException {
+    public ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, int pageSize) throws OaiPmhException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("List identifiers: from {}, until {}, set {}, metadataPrefix {}", from, until, set, metadataPrefix);
         }
-        return listIdentifiers(metadataPrefix, from, until, set, 0, null);
+        return listIdentifiers(metadataPrefix, from, until, set, 0, null, pageSize);
     }
 
     /**
@@ -79,7 +74,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @throws OaiPmhException
      */
     @Override
-    public ListIdentifiers listIdentifiers(ResumptionToken resumptionToken) throws OaiPmhException {
+    public ListIdentifiers listIdentifiers(ResumptionToken resumptionToken, int pageSize) throws OaiPmhException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("List identifiers: from {}, until {}, set {}, metadataPrefix {}", ResumptionTokenHelper.getFrom(resumptionToken.getValue()), DateConverter.fromIsoDateTime(ResumptionTokenHelper.getUntil(resumptionToken.getValue())), ResumptionTokenHelper.getSet(resumptionToken.getValue()), ResumptionTokenHelper.getFormat(resumptionToken.getValue()));
         }
@@ -87,7 +82,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
                 DateConverter.fromIsoDateTime(ResumptionTokenHelper.getFrom(resumptionToken.getValue())),
                 DateConverter.fromIsoDateTime(ResumptionTokenHelper.getUntil(resumptionToken.getValue())),
                 ResumptionTokenHelper.getSet(resumptionToken.getValue()),
-                resumptionToken.getCursor() + identifiersPerPage, ResumptionTokenHelper.getCursorMark(resumptionToken.getValue()));
+                resumptionToken.getCursor() + pageSize, ResumptionTokenHelper.getCursorMark(resumptionToken.getValue()), pageSize);
     }
 
     /**
@@ -102,8 +97,8 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @return ListIdentifiers object containing the results
      * @throws OaiPmhException
      */
-    private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, identifiersPerPage));
+    private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark, int pageSize) throws OaiPmhException {
+        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, pageSize));
         ListIdentifiers result = responseToListIdentifiers(response);
         if (result.getHeaders().isEmpty()) {
             throw new NoRecordsMatchException("No records found!");

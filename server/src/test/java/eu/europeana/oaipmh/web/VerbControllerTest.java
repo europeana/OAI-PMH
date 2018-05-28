@@ -104,7 +104,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiersWithResumptionToken() throws Exception {
-        given(ops.listIdentifiersWithToken(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
+        given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -112,7 +112,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiersWithCorruptedResumptionToken() throws Exception {
-        given(ops.listIdentifiersWithToken(any(ListIdentifiersRequest.class))).willCallRealMethod();
+        given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willCallRealMethod();
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_CORRUPTED_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());

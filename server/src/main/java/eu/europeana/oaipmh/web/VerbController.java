@@ -69,7 +69,7 @@ public class VerbController {
     @RequestMapping(params = {"verb=ListIdentifiers", "resumptionToken", "!metadataPrefix", "!set", "!from", "!until"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
     public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken") String resumptionToken, HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return ops.listIdentifiersWithToken(OaiPmhRequestFactory.createListIdentifiersRequest(baseUrl, resumptionToken));
+        return ops.listIdentifiers(OaiPmhRequestFactory.createListIdentifiersRequest(baseUrl, resumptionToken));
     }
 
     /**
@@ -107,7 +107,7 @@ public class VerbController {
                                     @RequestParam(value = "set", required = false) String set,
                                     HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return "Not implemented yet";
+        return ops.listRecords(OaiPmhRequestFactory.createListRecordsRequest(baseUrl, metadataPrefix, set, from, until));
     }
 
     /**
@@ -116,11 +116,11 @@ public class VerbController {
      * @return
      * @throws OaiPmhException
      */
-    @RequestMapping(params = {"verb=ListRecords", "resumptionToken", "!metadataPrefix"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
+    @RequestMapping(params = {"verb=ListRecords", "resumptionToken", "!metadataPrefix", "!set", "!from", "!until"}, method = {RequestMethod.GET, RequestMethod.POST}, produces = MediaType.TEXT_XML_VALUE)
     public String handleListRecordsToken(@RequestParam(value = "resumptionToken") String resumptionToken,
                                          HttpServletRequest request) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        return "Not implemented yet";
+        return ops.listRecords(OaiPmhRequestFactory.createListRecordsRequest(baseUrl, resumptionToken));
     }
 
     /**
