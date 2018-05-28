@@ -65,7 +65,7 @@ public class GetRecordQuery implements OAIPMHQuery {
             }
         }
 
-        LOG.info("GetRecord for identifier " + currentIdentifier + " executed in " + (System.currentTimeMillis() - start) + ".");
+        LOG.debug("GetRecord for identifier {} executed in {} ms", currentIdentifier, (System.currentTimeMillis() - start));
     }
 
     private String getBaseRequest(String oaipmhServer) {
