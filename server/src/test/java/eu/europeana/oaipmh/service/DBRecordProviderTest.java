@@ -50,7 +50,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
 
     private static final Date TEST_RECORD_CREATE_DATE = DateConverter.fromIsoDateTime("2017-04-05T15:04:03Z");
 
-    private static final String[] TEST_RECORD_SETS = new String[] {"2048432_Ag_DE_DDB_BINE_99900678"};
+    private static final String[] TEST_RECORD_SETS = new String[] {"2048432"};
 
     private static final String IDENTIFIER_PREFIX_FIELD_NAME = "identifierPrefix";
 

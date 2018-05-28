@@ -19,4 +19,18 @@ class BaseProvider {
         }
         return identifierPrefix + recordId;
     }
+
+    /**
+     * Retrieve set identifier from the set name. Set name always starts with identifier concatenated with the rest of the name using "_"
+     *
+     * @param setName name of the set
+     * @return set identifier
+     */
+    String getSetIdentifier(String setName) {
+        int index = setName.indexOf('_');
+        if (index == -1) {
+            return setName;
+        }
+        return setName.substring(0, index);
+    }
 }
