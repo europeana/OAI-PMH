@@ -140,14 +140,15 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
                 assertTrue(timestamp.before(until));
             }
             if (set != null) {
-                assertNotNull(header.getSetSpec().contains(set));
+                assertEquals(1, header.getSetSpec().size());
+                assertTrue(header.getSetSpec().get(0).startsWith(set));
             }
         }
         ResumptionToken token = results.getResumptionToken();
         if (token != null) {
-            assertTrue(token.getValue() != null);
+            assertNotNull(token.getValue());
             assertTrue(token.getCursor() >= 0 && token.getCursor() < token.getCompleteListSize());
-            assertTrue(token.getExpirationDate() != null);
+            assertNotNull(token.getExpirationDate());
         }
     }
 }

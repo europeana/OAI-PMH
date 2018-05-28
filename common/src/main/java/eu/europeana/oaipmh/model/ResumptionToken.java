@@ -3,12 +3,10 @@ package eu.europeana.oaipmh.model;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This class represents resumption token tag in the ListIdentifiers verb response XML
@@ -29,17 +27,13 @@ public class ResumptionToken implements Serializable {
     @XmlValue
     private String value;
 
-    @XmlTransient
-    private List<String> filterQuery;
-
     public ResumptionToken() {}
 
-    public ResumptionToken(String resumptionToken, long completeListSize, Date expirationDate, long cursor, List<String> filterQuery) {
+    public ResumptionToken(String resumptionToken, long completeListSize, Date expirationDate, long cursor) {
         this.value = resumptionToken;
         this.completeListSize = completeListSize;
         this.expirationDate = expirationDate;
         this.cursor = cursor;
-        this.filterQuery = filterQuery;
     }
 
     public Date getExpirationDate() {
@@ -72,15 +66,5 @@ public class ResumptionToken implements Serializable {
 
     public void setCursor(long cursor) {
         this.cursor = cursor;
-    }
-
-    @XmlTransient
-    public List<String> getFilterQuery() {
-        return filterQuery;
-    }
-
-    @XmlTransient
-    public void setFilterQuery(List<String> filterQuery) {
-        this.filterQuery = filterQuery;
     }
 }

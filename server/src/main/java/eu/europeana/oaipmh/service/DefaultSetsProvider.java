@@ -9,16 +9,11 @@ import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import eu.europeana.oaipmh.util.SolrQueryBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.solr.client.solrj.SolrResponse;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,8 +21,6 @@ import java.util.List;
 import static eu.europeana.oaipmh.util.SolrConstants.DATASET_NAME;
 
 public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvider {
-    private static final Logger LOG = LogManager.getLogger(DefaultSetsProvider.class);
-
     @Value("${setsPerPage}")
     private int setsPerPage;
 
@@ -69,7 +62,10 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
 
         if (shouldCreateResumptionToken(cursor, field.getValueCount(), completeListSize)) {
             // create resumption token for ListSets
-            listSets.setResumptionToken(ResumptionTokenHelper.createSimpleResumptionToken(completeListSize, new Date(System.currentTimeMillis() + getResumptionTokenTTL()), cursor));
+            ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+                    completeListSize,
+                    cursor);
+            listSets.setResumptionToken(resumptionToken);
         }
         return listSets;
     }
@@ -109,12 +105,6 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
     @Override
     public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
         QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, resumptionToken.getCursor() + setsPerPage));
-        Path path = Paths.get("/home/helin/work/" + "listSets" + System.currentTimeMillis());
-        try {
-            Files.write(path, SolrResponse.serializable(response));
-        } catch (IOException e) {
-            LOG.error(e.getMessage());
-        }
         return responseToListSets(response, resumptionToken.getCursor() + setsPerPage, resumptionToken.getCompleteListSize());
     }
 }

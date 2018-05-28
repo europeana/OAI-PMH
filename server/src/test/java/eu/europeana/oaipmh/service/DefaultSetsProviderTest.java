@@ -66,7 +66,7 @@ public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
         QueryResponse response = getResponse(LIST_SETS_WITH_RESUMPTION_TOKEN_SECOND_PAGE);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
 
-        ResumptionToken token = ResumptionTokenHelper.createSimpleResumptionToken(COMPLETE_LIST_SIZE, new Date(System.currentTimeMillis() + RESUMPTION_TOKEN_TTL), 0);
+        ResumptionToken token = ResumptionTokenHelper.createResumptionToken(new Date(System.currentTimeMillis() + RESUMPTION_TOKEN_TTL), COMPLETE_LIST_SIZE, 0);
         ListSets result = setsProvider.listSets(token);
         assertResults(result);
     }
