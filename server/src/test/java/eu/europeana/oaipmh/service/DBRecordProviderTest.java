@@ -9,6 +9,7 @@ import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -70,7 +71,18 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     public void getRecord() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
         // given
         String record = loadRecord();
+        prepareTest(record);
 
+        // when
+        Record preparedRecord = prepareRecord(record);
+        Record retrievedRecord = recordProvider.getRecord(TEST_RECORD_ID);
+
+        // then
+        Assert.assertNotNull(retrievedRecord);
+        assertRecordEquals(retrievedRecord, preparedRecord);
+    }
+
+    private void prepareTest(String record) throws MongoDBException, MongoRuntimeException {
         FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
         RDF rdf = PowerMockito.mock(RDF.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
@@ -87,14 +99,6 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
-
-        // when
-        Record preparedRecord = prepareRecord(record);
-        Record retrievedRecord = recordProvider.getRecord(TEST_RECORD_ID);
-
-        // then
-        Assert.assertNotNull(retrievedRecord);
-        assertRecordEquals(retrievedRecord, preparedRecord);
     }
 
     private void assertRecordEquals(Record retrievedRecord, Record preparedRecord) {
@@ -129,5 +133,24 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     private String loadRecord() throws IOException {
         Path path = Paths.get(resDir + "/" + TEST_RECORD_FILENAME);
         return new String(Files.readAllBytes(path));
+    }
+
+    @Test
+    public void listRecords() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+        // given
+        String record = loadRecord();
+        prepareTest(record);
+
+        // when
+        Record preparedRecord = prepareRecord(record);
+        List<Header> headers = new ArrayList<>();
+        headers.add(preparedRecord.getHeader());
+
+        ListRecords retrievedRecords = recordProvider.listRecords(headers);
+
+        // then
+        Assert.assertNotNull(retrievedRecords);
+        Assert.assertEquals(1, retrievedRecords.getRecords().size());
+        assertRecordEquals(retrievedRecords.getRecords().get(0), preparedRecord);
     }
 }
