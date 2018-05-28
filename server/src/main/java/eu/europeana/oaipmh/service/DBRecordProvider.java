@@ -244,7 +244,11 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             Header header = new Header();
             header.setIdentifier(id);
             header.setDatestamp(bean.getTimestampCreated());
-            header.setSetSpec(Arrays.asList(bean.getEuropeanaCollectionName()));
+            List<String> setSpec = new ArrayList<>();
+            for (String setName : bean.getEuropeanaCollectionName()) {
+                setSpec.add(getSetIdentifier(setName));
+            }
+            header.setSetSpec(setSpec);
             return header;
         }
         throw new IdDoesNotExistException(id);
