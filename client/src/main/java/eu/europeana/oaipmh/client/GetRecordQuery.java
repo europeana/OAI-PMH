@@ -11,13 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GetRecordQuery implements OAIPMHQuery {
+public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
 
     private static final Logger LOG = LogManager.getLogger(GetRecordQuery.class);
-
-    private static final String METADATA_PREFIX_PARAMETER = "&metadataPrefix=%s";
-
-    private static final String IDENTIFIER_PARAMETER = "&identifier=%s";
 
     @Value("${GetRecord.metadataPrefix}")
     private String metadataPrefix;
@@ -68,15 +64,9 @@ public class GetRecordQuery implements OAIPMHQuery {
         LOG.info("GetRecord for identifier " + currentIdentifier + " executed in " + (System.currentTimeMillis() - start) + ".");
     }
 
-    private String getBaseRequest(String oaipmhServer) {
-        return oaipmhServer +
-                "?" +
-                String.format(VERB_PARAMETER, getVerbName());
-    }
-
     private String getRequest(String oaipmhServer, String identifier) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getBaseRequest(oaipmhServer));
+        sb.append(getBaseRequest(oaipmhServer, getVerbName()));
         sb.append(String.format(METADATA_PREFIX_PARAMETER, metadataPrefix));
         if (identifier != null && !identifier.isEmpty()) {
             sb.append(String.format(IDENTIFIER_PARAMETER, identifier));

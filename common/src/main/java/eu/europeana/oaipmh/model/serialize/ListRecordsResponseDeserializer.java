@@ -3,12 +3,11 @@ package eu.europeana.oaipmh.model.serialize;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import eu.europeana.oaipmh.model.Header;
-import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.ResumptionToken;
-import eu.europeana.oaipmh.model.request.ListIdentifiersRequest;
-import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
+import eu.europeana.oaipmh.model.*;
+import eu.europeana.oaipmh.model.request.ListRecordsRequest;
+import eu.europeana.oaipmh.model.response.ListRecordsResponse;
 import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.logging.log4j.LogManager;
 
@@ -19,15 +18,15 @@ import java.util.List;
 /**
  * This class is a custom deserializer to support deserializing unwrapped lists
  */
-public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIdentifiersResponse> {
+public class ListRecordsResponseDeserializer extends StdDeserializer<ListRecordsResponse> {
 
     private static final String RESUMPTION_TOKEN = "resumptionToken";
 
-    public ListIdentifiersResponseDeserializer() {
+    public ListRecordsResponseDeserializer() {
         this(null);
     }
 
-    public ListIdentifiersResponseDeserializer(Class<?> vc) {
+    public ListRecordsResponseDeserializer(Class<?> vc) {
         super(vc);
     }
 
@@ -41,7 +40,7 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
      * @throws IOException
      */
     @Override
-    public ListIdentifiersResponse deserialize(JsonParser jp, DeserializationContext ctxt)
+    public ListRecordsResponse deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
         JsonNode node = jp.getCodec().readTree(jp);
 
@@ -49,59 +48,76 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         JsonNode requestNode = mainNode.get("request");
         JsonNode responseDateNode = mainNode.get("responseDate");
         // create basic response
-        ListIdentifiersRequest listIdentifiersRequest = getListIdentifiersRequest(requestNode);
-        ListIdentifiersResponse listIdentifiersResponse = new ListIdentifiersResponse();
-        listIdentifiersResponse.setResponseDate(DateConverter.fromIsoDateTime(responseDateNode.asText()));
-        listIdentifiersResponse.setRequest(listIdentifiersRequest);
+        ListRecordsRequest listRecordsRequest = getListRecordsRequest(requestNode);
+        ListRecordsResponse listRecordsResponse = new ListRecordsResponse();
+        listRecordsResponse.setResponseDate(DateConverter.fromIsoDateTime(responseDateNode.asText()));
+        listRecordsResponse.setRequest(listRecordsRequest);
 
         // check if we got error or content
         JsonNode errorNode = mainNode.get("error");
         if (errorNode != null) {
             // return basic response so harvest can continue (in case there are other sets to harvest)
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("Error message: {}", errorNode);
-            return listIdentifiersResponse;
+            LogManager.getLogger(ListRecordsResponseDeserializer.class).error("Error message: {}", errorNode);
+            return listRecordsResponse;
         }
 
         //return full response
-        JsonNode listIdentifiersNode = mainNode.get("ListIdentifiers");
-        JsonNode headerNode = listIdentifiersNode.get("header");
+        JsonNode listRecordsNode = mainNode.get("ListRecords");
+        JsonNode recordNode = listRecordsNode.get("record");
 
-        ListIdentifiers listIdentifiers = new ListIdentifiers();
-        listIdentifiers.setResumptionToken(getResumptionToken(listIdentifiersNode.get(RESUMPTION_TOKEN)));
-        listIdentifiers.setHeaders(getHeaders(headerNode));
+        ListRecords listRecords = new ListRecords();
+        listRecords.setResumptionToken(getResumptionToken(listRecordsNode.get(RESUMPTION_TOKEN)));
+        listRecords.setRecords(getRecords(recordNode));
 
-        listIdentifiersResponse.setListIdentifiers(listIdentifiers);
+        listRecordsResponse.setListRecords(listRecords);
 
-        return listIdentifiersResponse;
+        return listRecordsResponse;
     }
 
     /**
-     * Deserialize Header entries into the list.
+     * Deserialize Record entries into the list.
      *
-     * @param header header json node
-     * @return list of header objects
+     * @param node record json node
+     * @return list of Record objects
      */
-    private List<Header> getHeaders(JsonNode header) {
-        List<Header> headers = new ArrayList<>();
+    private List<Record> getRecords(JsonNode node) throws IOException {
+        List<Record> records = new ArrayList<>();
 
-        if (header.isArray()) {
-            for (int i = 0; i < header.size(); i++) {
-                JsonNode identifierNode = header.get(i);
-                Header headerObject = new Header();
-
-                // identifier should never be null, but better safe than sorry
-                JsonNode id = identifierNode.get("identifier");
-                setIdentifier(header, identifierNode, headerObject, id);
-
-                JsonNode dateNode = identifierNode.get("datestamp");
-                setDatestamp(identifierNode, headerObject, dateNode);
-
-                JsonNode setSpecNode = identifierNode.get("setSpec");
-                setSetSpec(headerObject, setSpecNode);
-                headers.add(headerObject);
+        if (node.isArray()) {
+            for (int i = 0; i < node.size(); i++) {
+                records.add(getRecord(node.get(i)));
             }
+        } else {
+            records.add(getRecord(node));
         }
-        return headers;
+        return records;
+    }
+
+    private Record getRecord(JsonNode recordNode) throws IOException {
+        if (recordNode != null) {
+            Record record = new Record();
+            record.setHeader(getHeader(recordNode.get("header")));
+            ObjectMapper mapper = new ObjectMapper();
+            RDFMetadata metadata = mapper.readValue(recordNode.get("metadata").toString(), RDFMetadata.class);
+            record.setMetadata(metadata);
+            return record;
+        }
+        return null;
+    }
+
+    private Header getHeader(JsonNode headerNode) {
+        Header headerObject = new Header();
+
+        // identifier should never be null, but better safe than sorry
+        JsonNode id = headerNode.get("identifier");
+        setIdentifier(headerNode, headerObject, id);
+
+        JsonNode dateNode = headerNode.get("datestamp");
+        setDatestamp(headerNode, headerObject, dateNode);
+
+        JsonNode setSpecNode = headerNode.get("setSpec");
+        setSetSpec(headerObject, setSpecNode);
+        return headerObject;
     }
 
     private void setSetSpec(Header headerObject, JsonNode setSpecNode) {
@@ -117,17 +133,17 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         }
     }
 
-    private void setDatestamp(JsonNode identifierNode, Header headerObject, JsonNode dateNode) {
+    private void setDatestamp(JsonNode headerNode, Header headerObject, JsonNode dateNode) {
         if (dateNode != null) {
-            headerObject.setDatestamp(DateConverter.fromIsoDateTime(identifierNode.get("datestamp").asText()));
+            headerObject.setDatestamp(DateConverter.fromIsoDateTime(headerNode.get("datestamp").asText()));
         }
     }
 
-    private void setIdentifier(JsonNode header, JsonNode identifierNode, Header headerObject, JsonNode id) {
+    private void setIdentifier(JsonNode headerNode, Header headerObject, JsonNode id) {
         if (id == null) {
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! "+header.textValue());
+            LogManager.getLogger(ListRecordsResponseDeserializer.class).error("No id found in header! ");
         } else {
-            headerObject.setIdentifier(identifierNode.get("identifier").asText());
+            headerObject.setIdentifier(headerNode.get("identifier").asText());
         }
     }
 
@@ -150,28 +166,28 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
     }
 
     /**
-     * Prepare ListIdentifiersRequest object from the json node.
+     * Prepare ListRecordsRequest object from the json node.
      *
      * @param request request json node
-     * @return ListIdentifiersRequest object desrialized from the json node
+     * @return ListRecordsRequest object desrialized from the json node
      */
-    private ListIdentifiersRequest getListIdentifiersRequest(JsonNode request) {
-        ListIdentifiersRequest listIdentifiersRequest = new ListIdentifiersRequest(request.get("verb").asText(), request.get("content").asText());
+    private ListRecordsRequest getListRecordsRequest(JsonNode request) {
+        ListRecordsRequest listRecordsRequest = new ListRecordsRequest(request.get("verb").asText(), request.get("content").asText());
         if (request.get("from") != null) {
-            listIdentifiersRequest.setFrom(request.get("from").asText());
+            listRecordsRequest.setFrom(request.get("from").asText());
         }
         if (request.get("until") != null) {
-            listIdentifiersRequest.setUntil(request.get("until").asText());
+            listRecordsRequest.setUntil(request.get("until").asText());
         }
         if (request.get("set") != null) {
-            listIdentifiersRequest.setSet(request.get("set").asText());
+            listRecordsRequest.setSet(request.get("set").asText());
         }
         if (request.get("metadataPrefix") != null) {
-            listIdentifiersRequest.setMetadataPrefix(request.get("metadataPrefix").asText());
+            listRecordsRequest.setMetadataPrefix(request.get("metadataPrefix").asText());
         }
         if (request.get(RESUMPTION_TOKEN) != null) {
-            listIdentifiersRequest.setResumptionToken(request.get(RESUMPTION_TOKEN).asText());
+            listRecordsRequest.setResumptionToken(request.get(RESUMPTION_TOKEN).asText());
         }
-        return listIdentifiersRequest;
+        return listRecordsRequest;
     }
 }
