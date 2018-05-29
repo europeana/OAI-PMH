@@ -1,8 +1,10 @@
 package eu.europeana.oaipmh.model;
 
-import java.io.Serializable;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import eu.europeana.oaipmh.model.serialize.RDFMetadataDeserializer;
 
-public class RDFMetadata implements Serializable {
+@JsonDeserialize(using = RDFMetadataDeserializer.class)
+public class RDFMetadata {
     public static final String METADATA_TAG = "metadata";
 
     private String metadata;
