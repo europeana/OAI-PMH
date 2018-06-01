@@ -208,6 +208,9 @@ public class OaiPmhService extends BaseService {
     }
 
     public String listMetadataFormats(ListMetadataFormatsRequest request) throws OaiPmhException {
+        if (request.getIdentifier() != null) {
+            recordProvider.checkRecordExists(request.getIdentifier());
+        }
         ListMetadataFormats responseObject = metadataFormats.listMetadataFormats();
         return serialize(responseObject.getResponse(request));
     }

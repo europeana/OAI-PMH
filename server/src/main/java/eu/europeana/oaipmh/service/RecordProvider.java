@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 
 import java.util.List;
@@ -21,6 +22,13 @@ public interface RecordProvider extends ClosableProvider {
      * @throws OaiPmhException when there is a problem retrieving the information (e.g. IdDoesNotExistException)
      */
     Record getRecord(String id) throws OaiPmhException;
+
+    /**
+     * Checks whether the record specified by the given identifiers exists. Throws IdDoesNotExistException in case it doesn't exist.
+     * @param id record identifier
+     * @throws IdDoesNotExistException
+     */
+    void checkRecordExists(String id) throws OaiPmhException;
 
     /**
      * Returns the ListRecords object containing the records of the specified identifiers.

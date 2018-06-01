@@ -12,6 +12,7 @@ import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import org.junit.Assert;
@@ -152,5 +153,30 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         Assert.assertNotNull(retrievedRecords);
         Assert.assertEquals(1, retrievedRecords.getRecords().size());
         assertRecordEquals(retrievedRecords.getRecords().get(0), preparedRecord);
+    }
+
+    @Test
+    public void checkRecordExists() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+        // given
+        FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
+        given(mongoServer.getFullBean(anyString())).willReturn(bean);
+
+        // when
+        recordProvider.checkRecordExists(TEST_RECORD_ID);
+
+        // then
+        Assert.assertTrue(true);
+    }
+
+    @Test(expected = IdDoesNotExistException.class)
+    public void checkRecordExistsWithWrongIdentifier() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+        // given
+        given(mongoServer.getFullBean(anyString())).willReturn(null);
+
+        // when
+        recordProvider.checkRecordExists(TEST_RECORD_ID);
+
+        // then
+        Assert.assertFalse(true);
     }
 }
