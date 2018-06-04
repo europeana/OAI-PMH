@@ -96,7 +96,7 @@ public class ListRecordsQuery implements OAIPMHQuery {
             if (i == threads - 1) {
                 toIndex = identifiers.size();
             }
-            tasks.add(new ListRecordsExecutor(identifiers.subList(fromIndex, toIndex), metadataPrefix, oaipmhServer));
+            tasks.add(new ListRecordsExecutor(identifiers.subList(fromIndex, toIndex), metadataPrefix, oaipmhServer, logProgressInterval));
         }
 
         try {
@@ -111,11 +111,11 @@ public class ListRecordsQuery implements OAIPMHQuery {
                 logger.logProgress(counter);
             }
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             LOG.error("Interrupted.", e);
         } catch (ExecutionException e) {
             LOG.error("Problem with task thread execution.", e);
         }
-
 
         LOG.info("ListRecords for set " + setName + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
                 ". Harvested " + identifiers.size() + " identifiers.");
