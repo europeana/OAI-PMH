@@ -13,6 +13,7 @@ import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
@@ -28,7 +29,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -96,11 +100,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
      * @throws OaiPmhException
      */
     @Override
+    @TrackTime
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
 
         try {
-            FullBean bean = mongoServer.getFullBean(recordId);
+            FullBean bean = getFullBean(recordId);
             return new Record(getHeader(id, bean), prepareRDFMetadata(recordId, (FullBeanImpl) bean));
         } catch (MongoDBException | MongoRuntimeException e) {
             LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
@@ -108,21 +113,36 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
+    @TrackTime
+    private FullBean getFullBean(String recordId) throws MongoDBException, MongoRuntimeException {
+        return mongoServer.getFullBean(recordId);
+    }
+
     private RDFMetadata prepareRDFMetadata(String recordId, FullBeanImpl bean) throws OaiPmhException {
         if (bean != null) {
             enhanceWithTechnicalMetadata(bean);
-            RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
+            RDF rdf = getRDF(bean);
             if (rdf == null) {
                 throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be converted to EDM.");
             }
             expandWithFullText(rdf, recordId);
             updatePreview(rdf);
             updateDatasetName(rdf);
-            String edm = EdmUtils.toEDM(rdf);
+            String edm = getEDM(rdf);
             edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
             return new RDFMetadata(removeXMLHeader(edm));
         }
         throw new IdDoesNotExistException(recordId);
+    }
+
+    @TrackTime
+    private String getEDM(RDF rdf) {
+        return EdmUtils.toEDM(rdf);
+    }
+
+    @TrackTime
+    private RDF getRDF(FullBeanImpl bean) {
+        return EdmUtils.toRDF(bean);
     }
 
     @Override
@@ -132,7 +152,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         for (Header header : identifiers) {
             try {
                 String recordId = prepareRecordId(header.getIdentifier());
-                FullBean bean = mongoServer.getFullBean(recordId);
+                FullBean bean = getFullBean(recordId);
                 records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
             } catch (MongoDBException | MongoRuntimeException e) {
                 LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
@@ -149,6 +169,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         return result;
     }
 
+    @TrackTime
     private void updateDatasetName(RDF rdf) {
         EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
         DatasetName dsName = new DatasetName();
@@ -172,6 +193,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
      * @return the changed edm string
      */
     @Deprecated
+    @TrackTime
     private String injectEuropeanaCompleteness(String edm, int completeness) {
         int index = edm.indexOf("</edm:EuropeanaAggregation>");
         if (index != -1) {
@@ -180,6 +202,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         return edm;
     }
 
+    @TrackTime
     private void updatePreview(RDF rdf) {
         String resource = null;
 
@@ -204,6 +227,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
+    @TrackTime
     private void enhanceWithTechnicalMetadata(FullBean bean) {
         if (enhanceWithTechnicalMetadata && bean != null) {
             WebMetaInfo.injectWebMetaInfo(bean, mongoServer);
@@ -217,6 +241,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
      * @param rdf rdf to expand
      */
     @Deprecated
+    @TrackTime
     private void expandWithFullText(RDF rdf, String id) {
         if (expandWithFullText && fullTextIds.contains(id)) {
             // expand with full text only when this option is turned on in the configuration
@@ -231,6 +256,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
+    @TrackTime
     private String removeXMLHeader(String xml) {
         String[] split = xml.split("\\?>");
         if (split.length == 2) {

@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
+import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
@@ -127,6 +128,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @param response response retrieved from Solr
      * @return next page of the list of identifiers
      */
+    @TrackTime
     private ListIdentifiers responseToListIdentifiers(QueryResponse response) {
         List<Header> headers = new ArrayList<>();
 
