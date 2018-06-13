@@ -66,10 +66,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${expandWithFullText:false}")
     private boolean expandWithFullText;
 
-    @Value("${threadsCount}")
+    @Value("${threadsCount:1}")
     private int threadsCount;
 
-    @Value("${maxThreadsCount}")
+    @Value("${maxThreadsCount:20}")
     private int maxThreadsCount;
 
     private ExecutorService threadPool;
