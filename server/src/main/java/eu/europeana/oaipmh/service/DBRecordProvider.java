@@ -267,8 +267,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     private void enhanceWithTechnicalMetadata(FullBean bean) {
+        long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfo(bean, mongoServer);
+            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
+            LOG.debug("Technical metadata injected in " + String.valueOf(System.currentTimeMillis() - start) + " ms.");
         }
     }
 
