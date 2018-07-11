@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableLoadTimeWeaving;
 
 @Configuration
-@ConditionalOnExpression("${profiling.enabled:true}")
+@ConditionalOnExpression("${profiling.enabled:false}")
 @EnableLoadTimeWeaving(aspectjWeaving = EnableLoadTimeWeaving.AspectJWeaving.ENABLED)
 public class AspectJConfig {
     @Pointcut("execution(* eu.europeana.oaipmh.service.*.*(..))")
