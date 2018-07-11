@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
@@ -57,6 +58,7 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
         LOG.info("Connected to Solr {}", solrHosts);
     }
 
+    @TrackTime
     protected QueryResponse executeQuery(SolrQuery query) throws OaiPmhException {
         try {
             return client.query(query);
