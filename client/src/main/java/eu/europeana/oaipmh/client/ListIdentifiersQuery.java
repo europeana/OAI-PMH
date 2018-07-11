@@ -102,7 +102,11 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
         ListIdentifiers responseObject = response.getListIdentifiers();
         if (responseObject != null) {
             counter += responseObject.getHeaders().size();
-            logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
+            if (responseObject.getResumptionToken() != null) {
+                logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
+            } else {
+                logger.setTotalItems(responseObject.getHeaders().size());
+            }
             collectIdentifiers(responseObject.getHeaders(), identifiers);
 
             while (responseObject.getResumptionToken() != null) {

@@ -23,7 +23,15 @@
         <spring.boot.mainclass>eu.europeana.oaipmh.OaiPmhApplication</spring.boot.mainclass>
 
         <solrj.version>5.2.1</solrj.version>
+        <aspectj.version>1.8.13</aspectj.version>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>central-repo</id>
+            <url>https://mvnrepository.com/repos/central</url>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -130,6 +138,30 @@
             <version>2.7.1-SNAPSHOT</version>
         </dependency>
 
+        <!-- Profiling using Spring AOP -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-instrument</artifactId>
+            <version>4.3.17.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>eu.europeana.corelib</groupId>
             <artifactId>corelib-storage</artifactId>
@@ -177,6 +209,62 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>profiling</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>aspectj-maven-plugin</artifactId>
+                            <version>1.7</version>
+                            <configuration>
+                                <showWeaveInfo>false</showWeaveInfo>
+                                <source>1.8</source>
+                                <target>1.8</target>
+                                <Xlint>ignore</Xlint>
+                                <complianceLevel>1.8</complianceLevel>
+                                <encoding>UTF-8</encoding>
+                                <verbose>false</verbose>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <!-- IMPORTANT -->
+                                    <phase>process-sources</phase>
+                                    <goals>
+                                        <goal>compile</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.aspectj</groupId>
+                                    <artifactId>aspectjtools</artifactId>
+                                    <version>${aspectj.version}</version>
+                                </dependency>
+                            </dependencies>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>2.5.1</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>aspectj-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

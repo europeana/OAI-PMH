@@ -1,0 +1,8 @@
+<aspectj>
+    <weaver options="-XnoInline -Xlintfile:META-INF/aspectjlint.properties">
+        <include within="eu.europeana.oaipmh..*" />
+    </weaver>
+    <aspects>
+        <aspect name="eu.europeana.oaipmh.profile.SimpleProfiler"/>
+    </aspects>
+</aspectj>
