@@ -99,6 +99,9 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
+        ReflectionTestUtils.setField(recordProvider, "threadsCount", 1);
+        ReflectionTestUtils.setField(recordProvider, "maxThreadsCount", 20);
+        ReflectionTestUtils.invokeMethod(recordProvider, "initThreadPool");
     }
 
     private void assertRecordEquals(Record retrievedRecord, Record preparedRecord) {

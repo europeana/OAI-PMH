@@ -29,10 +29,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.*;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -40,6 +38,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     private static final Logger LOG = LogManager.getLogger(DBRecordProvider.class);
 
     private static final String RECORD_WITH_ID = "Record with id %s ";
+
+    private static final int THREADS_THRESHOLD = 10;
+
+    private static final int MAX_THREADS_THRESHOLD = 20;
 
     @Value("${mongo.host}")
     private String host;
@@ -65,19 +67,55 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${expandWithFullText:false}")
     private boolean expandWithFullText;
 
+    @Value("${threadsCount:1}")
+    private int threadsCount;
+
+    @Value("${maxThreadsCount:20}")
+    private int maxThreadsCount;
+
+    private ExecutorService threadPool;
+
     private EdmMongoServer mongoServer;
 
     private Set<String> fullTextIds = new HashSet<>();
 
     @PostConstruct
     private void init() throws InternalServerErrorException {
+        initMongo();
+        loadFullTextIds();
+        initThreadPool();
+
+    }
+
+    private void initMongo() throws InternalServerErrorException {
         try {
             mongoServer = new EdmMongoServerImpl(host, port, recordDBName, username, password);
         } catch (MongoDBException e) {
             LOG.error("Could not connect to Mongo DB.", e);
             throw new InternalServerErrorException(e.getMessage());
         }
-        loadFullTextIds();
+    }
+
+    /**
+     * Threads count must be at least 1. When it's bigger than <code>THREADS_THRESHOLD</code> but smaller than <code>maxThreadsCount</code>
+     * a warning is displayed. When it exceeds <code>maxThreadsCount</code> a warning is displayed and the value is set to <code>MAX_THREADS_THRESHOLD</code>
+     */
+    private void initThreadPool() {
+        // init thread pool
+        if (maxThreadsCount < THREADS_THRESHOLD) {
+            maxThreadsCount = MAX_THREADS_THRESHOLD;
+        }
+
+        if (threadsCount < 1) {
+            threadsCount = 1;
+        } else if (threadsCount > THREADS_THRESHOLD && threadsCount <= maxThreadsCount) {
+            LOG.warn("Number of threads exceeds " + THREADS_THRESHOLD + " which may narrow the number of clients working in parallel");
+        } else if (threadsCount > maxThreadsCount) {
+            LOG.warn("Number of threads exceeds " + maxThreadsCount + " which may highly narrow the number of clients working in parallel. Changing to " + MAX_THREADS_THRESHOLD);
+            threadsCount = MAX_THREADS_THRESHOLD;
+        }
+        threadPool = Executors
+                .newFixedThreadPool(threadsCount);
     }
 
     private void loadFullTextIds() {
@@ -147,22 +185,43 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @Override
     public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
-        List<Record> records = new ArrayList<>();
+        long start = System.currentTimeMillis();
 
-        for (Header header : identifiers) {
-            try {
-                String recordId = prepareRecordId(header.getIdentifier());
-                FullBean bean = getFullBean(recordId);
-                records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
-            } catch (MongoDBException | MongoRuntimeException e) {
-                LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
-                throw new InternalServerErrorException(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved due to database problems.");
+        List<Record> records = new ArrayList<>(identifiers.size());
+
+        // split identifiers into several threads
+        List<Future<CollectRecordsResult>> results;
+        List<Callable<CollectRecordsResult>> tasks = new ArrayList<>();
+
+        float perThread = (float) identifiers.size() / (float) threadsCount;
+
+        // create task for each thread
+        for (int i = 0; i < threadsCount; i++) {
+            tasks.add(new CollectRecordsTask(identifiers.subList((int) (i * perThread), (int) ((i + 1) * perThread)), i));
+        }
+
+        try {
+            // invoke a separate thread for each provider
+            results = threadPool.invokeAll(tasks);
+
+            CollectRecordsResult collectRecordsResult;
+            for (Future<CollectRecordsResult> result : results) {
+                collectRecordsResult = result.get();
+                LOG.info("Thread no " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
+                records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.error("Interrupted.", e);
+        } catch (ExecutionException e) {
+            LOG.error("Problem with task thread execution.", e);
         }
 
         if (records.isEmpty()) {
             throw new NoRecordsMatchException("No records found!");
         }
+
+        LOG.info("ListRecords using " + threadsCount + " threads finished in " + (System.currentTimeMillis() - start) + " ms.");
 
         ListRecords result = new ListRecords();
         result.setRecords(records);
@@ -229,8 +288,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @TrackTime
     private void enhanceWithTechnicalMetadata(FullBean bean) {
+        long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfo(bean, mongoServer);
+            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
+            LOG.debug("Technical metadata injected in " + String.valueOf(System.currentTimeMillis() - start) + " ms.");
         }
     }
 
@@ -284,6 +345,56 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     public void close() {
         if (mongoServer != null) {
             mongoServer.close();
+        }
+    }
+
+
+    private class CollectRecordsTask implements Callable<CollectRecordsResult> {
+        private final Logger LOG = LogManager.getLogger(CollectRecordsTask.class);
+
+        private int threadId;
+
+        private List<Header> identifiers;
+
+        CollectRecordsTask(List<Header> identifiers, int threadId) {
+            this.identifiers = identifiers;
+            this.threadId = threadId;
+        }
+
+        @Override
+        public CollectRecordsResult call() throws Exception {
+            List<Record> records = new ArrayList<>();
+
+            for (Header header : identifiers) {
+                try {
+                    String recordId = prepareRecordId(header.getIdentifier());
+                    FullBean bean = mongoServer.getFullBean(recordId);
+                    records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
+                } catch (MongoDBException | MongoRuntimeException e) {
+                    LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
+                    throw new InternalServerErrorException(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved due to database problems.");
+                }
+            }
+            return new CollectRecordsResult(threadId, records);
+        }
+    }
+
+    private class CollectRecordsResult {
+        int threadId;
+
+        List<Record> records;
+
+        CollectRecordsResult(int threadId, List<Record> records) {
+            this.threadId = threadId;
+            this.records = records;
+        }
+
+        int getThreadId() {
+            return threadId;
+        }
+
+        List<Record> getRecords() {
+            return records;
         }
     }
 }
