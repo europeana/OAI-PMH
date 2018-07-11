@@ -231,10 +231,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @TrackTime
     private void updateDatasetName(RDF rdf) {
         EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
-        DatasetName dsName = new DatasetName();
-        dsName.setString(aggregationType.getCollectionName().getString());
-        aggregationType.setDatasetName(dsName);
-        aggregationType.setCollectionName(null);
+        if (aggregationType.getCollectionName() != null) {
+            DatasetName dsName = new DatasetName();
+            dsName.setString(aggregationType.getCollectionName().getString());
+            aggregationType.setDatasetName(dsName);
+            aggregationType.setCollectionName(null);
+        }
     }
 
     /**
