@@ -3,7 +3,7 @@ package eu.europeana.oaipmh.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import eu.europeana.oaipmh.model.serialize.RDFMetadataDeserializer;
 import java.io.Serializable;
-  
+
 @JsonDeserialize(using = RDFMetadataDeserializer.class)
 public class RDFMetadata implements Serializable {
 
