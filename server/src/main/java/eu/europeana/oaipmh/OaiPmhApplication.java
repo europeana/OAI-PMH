@@ -119,7 +119,8 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 		return new VerbController(oaiPmhService());
 	}
 
-	private static void logIpAddress() {
+	public static void logIpAddress() {
+        LOG.info("CF_INSTANCE_IP  = {} / {}", System.getProperty("CF_INSTANCE_IP"), System.getenv("CF_INSTANCE_IP"));
 		try {
 			Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
 			while (niEnum.hasMoreElements()) {
