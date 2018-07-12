@@ -167,7 +167,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             updatePreview(rdf);
             updateDatasetName(rdf);
             String edm = getEDM(rdf);
-            edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
             return new RDFMetadata(removeXMLHeader(edm));
         }
         throw new IdDoesNotExistException(recordId);
@@ -237,30 +236,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             aggregationType.setDatasetName(dsName);
             aggregationType.setCollectionName(null);
         }
-    }
-
-    /**
-     * @deprecated
-     *
-     * This method is deprecated. It was temporarily created to include europeana completeness
-     * to the resulting record metadata but without including it to EDM schema. It just searches the
-     * EDM string (with RDF xml) to locate the end tag for edm:EuropeanaAggregation. After finding it it
-     * injects the edm:completeness tag with the proper value just before the edm:EuropeanaAggregation closing
-     * tag. This may cause that deserialization RDF from this xml will not be possible without removing
-     * the edm:completeness tag first.
-     *
-     * @param edm edm string created from RDF object
-     * @param completeness completeness value to be used inside edm:completeness tag
-     * @return the changed edm string
-     */
-    @Deprecated
-    @TrackTime
-    private String injectEuropeanaCompleteness(String edm, int completeness) {
-        int index = edm.indexOf("</edm:EuropeanaAggregation>");
-        if (index != -1) {
-            return edm.substring(0, index) + "<edm:completeness>" + completeness + "</edm:completeness>" + edm.substring(index);
-        }
-        return edm;
     }
 
     @TrackTime
