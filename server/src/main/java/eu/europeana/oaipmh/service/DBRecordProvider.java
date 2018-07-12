@@ -164,6 +164,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
             throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
         }
+    }
 
     @TrackTime
     private FullBean getFullBean(String recordId) throws MongoDBException, MongoRuntimeException {
