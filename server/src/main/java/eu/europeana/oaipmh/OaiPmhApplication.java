@@ -21,6 +21,10 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 
 /**
  * Main application and configuration.
@@ -115,12 +119,34 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 		return new VerbController(oaiPmhService());
 	}
 
+	private static void logIpAddress() {
+		try {
+			Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
+			while (niEnum.hasMoreElements()) {
+				NetworkInterface ni = niEnum.nextElement();
+				Enumeration<InetAddress> iaEnum = ni.getInetAddresses();
+				StringBuilder inetAddress = new StringBuilder();
+				while (iaEnum.hasMoreElements()) {
+					if (inetAddress.length() > 0) {
+						inetAddress.append(", ");
+					}
+					inetAddress.append(iaEnum.nextElement().getHostAddress());
+				}
+				LOG.info("Network interface {} has address(es) {}", ni.getDisplayName(), inetAddress.toString());
+			}
+		}
+		catch (SocketException se) {
+			LOG.error("Error retrieving IP addresses");
+		}
+	}
+
 	/**
 	 * This method is called when starting as a Spring-Boot application ('run' this class from your IDE)
 	 * @param args
 	 */
 	@SuppressWarnings("squid:S2095") // to avoid sonarqube false positive (see https://stackoverflow.com/a/37073154/741249)
 	public static void main(String[] args)  {
+		logIpAddress();
 		try {
 			SocksProxyHelper.injectSocksProxySettings();
 			SpringApplication.run(OaiPmhApplication.class, args);
@@ -137,6 +163,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		logIpAddress();
 		try {
 			SocksProxyHelper.injectSocksProxySettings();
 			super.onStartup(servletContext);
