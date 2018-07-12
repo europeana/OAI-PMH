@@ -1,6 +1,5 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.oaipmh.OaiPmhApplication;
 import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -45,7 +44,6 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
      */
     @PostConstruct
     private void init() throws InternalServerErrorException {
-        OaiPmhApplication.logIpAddress();
         LBHttpSolrClient lbTarget;
         try {
             lbTarget = new LBHttpSolrClient(solrHosts.split(","));
