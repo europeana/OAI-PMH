@@ -14,19 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class ListIdentifiersQuery implements OAIPMHQuery {
+public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
 
     private static final Logger LOG = LogManager.getLogger(ListIdentifiersQuery.class);
-
-    private static final String METADATA_PREFIX_PARAMETER = "&metadataPrefix=%s";
-
-    private static final String FROM_PARAMETER = "&from=%s";
-
-    private static final String UNTIL_PARAMETER = "&until=%s";
-
-    private static final String SET_PARAMETER = "&set=%s";
-
-    private static final String RESUMPTION_TOKEN_PARAMETER = "&resumptionToken=%s";
 
     @Value("${ListIdentifiers.metadataPrefix}")
     private String metadataPrefix;
@@ -102,7 +92,11 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
         ListIdentifiers responseObject = response.getListIdentifiers();
         if (responseObject != null) {
             counter += responseObject.getHeaders().size();
-            logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
+            if (responseObject.getResumptionToken() != null) {
+                logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
+            } else {
+                logger.setTotalItems(responseObject.getHeaders().size());
+            }
             collectIdentifiers(responseObject.getHeaders(), identifiers);
 
             while (responseObject.getResumptionToken() != null) {
@@ -131,19 +125,13 @@ public class ListIdentifiersQuery implements OAIPMHQuery {
     }
 
     private String getResumptionRequest(String oaipmhServer, String resumptionToken) {
-        return getBaseRequest(oaipmhServer) +
+        return getBaseRequest(oaipmhServer, getVerbName()) +
                 String.format(RESUMPTION_TOKEN_PARAMETER, resumptionToken);
-    }
-
-    private String getBaseRequest(String oaipmhServer) {
-        return oaipmhServer +
-                "?" +
-                String.format(VERB_PARAMETER, getVerbName());
     }
 
     private String getRequest(String oaipmhServer, String set) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getBaseRequest(oaipmhServer));
+        sb.append(getBaseRequest(oaipmhServer, getVerbName()));
         sb.append(String.format(METADATA_PREFIX_PARAMETER, metadataPrefix));
         if (from != null && !from.isEmpty()) {
             sb.append(String.format(FROM_PARAMETER, from));

@@ -194,7 +194,7 @@ public class OaiPmhService extends BaseService {
             throw new BadResumptionToken("Resumption token " + resumptionToken + " is not correct.");
         }
         if (new Date().after(temporaryToken.getExpirationDate())) {
-            throw new BadResumptionToken("Resumption token expired ad " + temporaryToken.getExpirationDate());
+            throw new BadResumptionToken("Resumption token expired at " + temporaryToken.getExpirationDate());
         }
         return temporaryToken;
     }

@@ -13,6 +13,7 @@ import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
@@ -29,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.*;
 
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
@@ -36,6 +38,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     private static final Logger LOG = LogManager.getLogger(DBRecordProvider.class);
 
     private static final String RECORD_WITH_ID = "Record with id %s ";
+
+    private static final int THREADS_THRESHOLD = 10;
+
+    private static final int MAX_THREADS_THRESHOLD = 20;
 
     @Value("${mongo.host}")
     private String host;
@@ -61,19 +67,55 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${expandWithFullText:false}")
     private boolean expandWithFullText;
 
+    @Value("${threadsCount:1}")
+    private int threadsCount;
+
+    @Value("${maxThreadsCount:20}")
+    private int maxThreadsCount;
+
+    private ExecutorService threadPool;
+
     private EdmMongoServer mongoServer;
 
     private Set<String> fullTextIds = new HashSet<>();
 
     @PostConstruct
     private void init() throws InternalServerErrorException {
+        initMongo();
+        loadFullTextIds();
+        initThreadPool();
+
+    }
+
+    private void initMongo() throws InternalServerErrorException {
         try {
             mongoServer = new EdmMongoServerImpl(host, port, recordDBName, username, password);
         } catch (MongoDBException e) {
             LOG.error("Could not connect to Mongo DB.", e);
             throw new InternalServerErrorException(e.getMessage());
         }
-        loadFullTextIds();
+    }
+
+    /**
+     * Threads count must be at least 1. When it's bigger than <code>THREADS_THRESHOLD</code> but smaller than <code>maxThreadsCount</code>
+     * a warning is displayed. When it exceeds <code>maxThreadsCount</code> a warning is displayed and the value is set to <code>MAX_THREADS_THRESHOLD</code>
+     */
+    private void initThreadPool() {
+        // init thread pool
+        if (maxThreadsCount < THREADS_THRESHOLD) {
+            maxThreadsCount = MAX_THREADS_THRESHOLD;
+        }
+
+        if (threadsCount < 1) {
+            threadsCount = 1;
+        } else if (threadsCount > THREADS_THRESHOLD && threadsCount <= maxThreadsCount) {
+            LOG.warn("Number of threads exceeds " + THREADS_THRESHOLD + " which may narrow the number of clients working in parallel");
+        } else if (threadsCount > maxThreadsCount) {
+            LOG.warn("Number of threads exceeds " + maxThreadsCount + " which may highly narrow the number of clients working in parallel. Changing to " + MAX_THREADS_THRESHOLD);
+            threadsCount = MAX_THREADS_THRESHOLD;
+        }
+        threadPool = Executors
+                .newFixedThreadPool(threadsCount);
     }
 
     private void loadFullTextIds() {
@@ -96,11 +138,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
      * @throws OaiPmhException
      */
     @Override
+    @TrackTime
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
 
         try {
-            FullBean bean = mongoServer.getFullBean(recordId);
+            FullBean bean = getFullBean(recordId);
             return new Record(getHeader(id, bean), prepareRDFMetadata(recordId, (FullBeanImpl) bean));
         } catch (MongoDBException | MongoRuntimeException e) {
             LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
@@ -113,7 +156,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         String recordId = prepareRecordId(id);
 
         try {
-            FullBean bean = mongoServer.getFullBean(recordId);
+            FullBean bean = getFullBean(recordId);
             if (bean == null) {
                 throw new IdDoesNotExistException("Record with identifier " + id + " not found!");
             }
@@ -121,80 +164,95 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
             throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
         }
+
+    @TrackTime
+    private FullBean getFullBean(String recordId) throws MongoDBException, MongoRuntimeException {
+        return mongoServer.getFullBean(recordId);
     }
 
     private RDFMetadata prepareRDFMetadata(String recordId, FullBeanImpl bean) throws OaiPmhException {
         if (bean != null) {
             enhanceWithTechnicalMetadata(bean);
-            RDF rdf = EdmUtils.toRDF((FullBeanImpl) bean);
+            RDF rdf = getRDF(bean);
             if (rdf == null) {
                 throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be converted to EDM.");
             }
             expandWithFullText(rdf, recordId);
             updatePreview(rdf);
             updateDatasetName(rdf);
-            String edm = EdmUtils.toEDM(rdf);
-            edm = injectEuropeanaCompleteness(edm, bean.getEuropeanaCompleteness());
+            String edm = getEDM(rdf);
             return new RDFMetadata(removeXMLHeader(edm));
         }
         throw new IdDoesNotExistException(recordId);
     }
 
+    @TrackTime
+    private String getEDM(RDF rdf) {
+        return EdmUtils.toEDM(rdf);
+    }
+
+    @TrackTime
+    private RDF getRDF(FullBeanImpl bean) {
+        return EdmUtils.toRDF(bean);
+    }
+
     @Override
     public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
-        List<Record> records = new ArrayList<>();
+        long start = System.currentTimeMillis();
 
-        for (Header header : identifiers) {
-            try {
-                String recordId = prepareRecordId(header.getIdentifier());
-                FullBean bean = mongoServer.getFullBean(recordId);
-                records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
-            } catch (MongoDBException | MongoRuntimeException e) {
-                LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
-                throw new InternalServerErrorException(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved due to database problems.");
+        List<Record> records = new ArrayList<>(identifiers.size());
+
+        // split identifiers into several threads
+        List<Future<CollectRecordsResult>> results;
+        List<Callable<CollectRecordsResult>> tasks = new ArrayList<>();
+
+        float perThread = (float) identifiers.size() / (float) threadsCount;
+
+        // create task for each thread
+        for (int i = 0; i < threadsCount; i++) {
+            tasks.add(new CollectRecordsTask(identifiers.subList((int) (i * perThread), (int) ((i + 1) * perThread)), i));
+        }
+
+        try {
+            // invoke a separate thread for each provider
+            results = threadPool.invokeAll(tasks);
+
+            CollectRecordsResult collectRecordsResult;
+            for (Future<CollectRecordsResult> result : results) {
+                collectRecordsResult = result.get();
+                LOG.info("Thread no " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
+                records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.error("Interrupted.", e);
+        } catch (ExecutionException e) {
+            LOG.error("Problem with task thread execution.", e);
         }
 
         if (records.isEmpty()) {
             throw new NoRecordsMatchException("No records found!");
         }
 
+        LOG.info("ListRecords using " + threadsCount + " threads finished in " + (System.currentTimeMillis() - start) + " ms.");
+
         ListRecords result = new ListRecords();
         result.setRecords(records);
         return result;
     }
 
+    @TrackTime
     private void updateDatasetName(RDF rdf) {
         EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
-        DatasetName dsName = new DatasetName();
-        dsName.setString(aggregationType.getCollectionName().getString());
-        aggregationType.setDatasetName(dsName);
-        aggregationType.setCollectionName(null);
-    }
-
-    /**
-     * @deprecated
-     *
-     * This method is deprecated. It was temporarily created to include europeana completeness
-     * to the resulting record metadata but without including it to EDM schema. It just searches the
-     * EDM string (with RDF xml) to locate the end tag for edm:EuropeanaAggregation. After finding it it
-     * injects the edm:completeness tag with the proper value just before the edm:EuropeanaAggregation closing
-     * tag. This may cause that deserialization RDF from this xml will not be possible without removing
-     * the edm:completeness tag first.
-     *
-     * @param edm edm string created from RDF object
-     * @param completeness completeness value to be used inside edm:completeness tag
-     * @return the changed edm string
-     */
-    @Deprecated
-    private String injectEuropeanaCompleteness(String edm, int completeness) {
-        int index = edm.indexOf("</edm:EuropeanaAggregation>");
-        if (index != -1) {
-            return edm.substring(0, index) + "<edm:completeness>" + completeness + "</edm:completeness>" + edm.substring(index);
+        if (aggregationType.getCollectionName() != null) {
+            DatasetName dsName = new DatasetName();
+            dsName.setString(aggregationType.getCollectionName().getString());
+            aggregationType.setDatasetName(dsName);
+            aggregationType.setCollectionName(null);
         }
-        return edm;
     }
 
+    @TrackTime
     private void updatePreview(RDF rdf) {
         String resource = null;
 
@@ -219,9 +277,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
+    @TrackTime
     private void enhanceWithTechnicalMetadata(FullBean bean) {
+        long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfo(bean, mongoServer);
+            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
+            LOG.debug("Technical metadata injected in " + String.valueOf(System.currentTimeMillis() - start) + " ms.");
         }
     }
 
@@ -232,6 +293,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
      * @param rdf rdf to expand
      */
     @Deprecated
+    @TrackTime
     private void expandWithFullText(RDF rdf, String id) {
         if (expandWithFullText && fullTextIds.contains(id)) {
             // expand with full text only when this option is turned on in the configuration
@@ -246,6 +308,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
+    @TrackTime
     private String removeXMLHeader(String xml) {
         String[] split = xml.split("\\?>");
         if (split.length == 2) {
@@ -273,6 +336,56 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     public void close() {
         if (mongoServer != null) {
             mongoServer.close();
+        }
+    }
+
+
+    private class CollectRecordsTask implements Callable<CollectRecordsResult> {
+        private final Logger LOG = LogManager.getLogger(CollectRecordsTask.class);
+
+        private int threadId;
+
+        private List<Header> identifiers;
+
+        CollectRecordsTask(List<Header> identifiers, int threadId) {
+            this.identifiers = identifiers;
+            this.threadId = threadId;
+        }
+
+        @Override
+        public CollectRecordsResult call() throws Exception {
+            List<Record> records = new ArrayList<>();
+
+            for (Header header : identifiers) {
+                try {
+                    String recordId = prepareRecordId(header.getIdentifier());
+                    FullBean bean = mongoServer.getFullBean(recordId);
+                    records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
+                } catch (MongoDBException | MongoRuntimeException e) {
+                    LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
+                    throw new InternalServerErrorException(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved due to database problems.");
+                }
+            }
+            return new CollectRecordsResult(threadId, records);
+        }
+    }
+
+    private class CollectRecordsResult {
+        int threadId;
+
+        List<Record> records;
+
+        CollectRecordsResult(int threadId, List<Record> records) {
+            this.threadId = threadId;
+            this.records = records;
+        }
+
+        int getThreadId() {
+            return threadId;
+        }
+
+        List<Record> getRecords() {
+            return records;
         }
     }
 }

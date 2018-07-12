@@ -5,9 +5,11 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.response.GetRecordResponse;
 import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
+import eu.europeana.oaipmh.model.response.ListRecordsResponse;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.model.serialize.GetRecordResponseDeserializer;
 import eu.europeana.oaipmh.model.serialize.ListIdentifiersResponseDeserializer;
+import eu.europeana.oaipmh.model.serialize.ListRecordsResponseDeserializer;
 import eu.europeana.oaipmh.model.serialize.RDFMetadataDeserializer;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
@@ -56,6 +58,7 @@ public class OAIPMHServiceClient {
         module.addDeserializer(ListIdentifiersResponse.class, new ListIdentifiersResponseDeserializer());
         module.addDeserializer(GetRecordResponse.class, new GetRecordResponseDeserializer());
         module.addDeserializer(RDFMetadata.class, new RDFMetadataDeserializer());
+        module.addDeserializer(ListRecordsResponse.class, new ListRecordsResponseDeserializer());
         mapper.registerModule(module);
         LOG.info("Using OAI-PMH server at " + oaipmhServer);
     }
