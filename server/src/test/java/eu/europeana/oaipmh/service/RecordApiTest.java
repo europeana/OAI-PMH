@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -66,5 +67,24 @@ public class RecordApiTest extends BaseApiTestCase {
 
         recordApi.getRecord("INCORRECT/ID");
         Assert.assertTrue(false);
+    }
+
+    @Test
+    public void checkRecordExists() throws OaiPmhException, IOException {
+        Mockito.doNothing().when(recordApi).checkRecordExists(TEST_RECORD_ID);
+
+        recordApi.checkRecordExists(TEST_RECORD_ID);
+
+        Assert.assertTrue(true);
+    }
+
+
+    @Test(expected = IdDoesNotExistException.class)
+    public void checkRecordExistsWithWrongIdentifier() throws OaiPmhException, IOException {
+        Mockito.doThrow(new IdDoesNotExistException("INCORRECT/ID")).when(recordApi).checkRecordExists("INCORRECT/ID");
+
+        recordApi.checkRecordExists("INCORRECT/ID");
+
+        Assert.assertFalse(true);
     }
 }

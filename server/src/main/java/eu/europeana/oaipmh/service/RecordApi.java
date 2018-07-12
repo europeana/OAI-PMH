@@ -40,6 +40,16 @@ public class RecordApi extends BaseProvider implements RecordProvider {
      */
     @Override
     public Record getRecord(String id) throws OaiPmhException {
+        ResponseEntity<String> response = getResponseForRecord(id);
+        RDFMetadata rdf = new RDFMetadata(response.getBody());
+
+        Header header = new Header();
+        header.setIdentifier(id);
+        header.setDatestamp(new Date());
+        return new Record(header, rdf);
+    }
+
+    private ResponseEntity<String> getResponseForRecord(String id) throws OaiPmhException {
         if (id == null) {
             throw new IdDoesNotExistException(id);
         }
@@ -63,12 +73,15 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         } else if (HttpStatus.OK != responseCode) {
             throw new OaiPmhException("Error retrieving record. Status = "+response.getStatusCodeValue());
         }
-        RDFMetadata rdf = new RDFMetadata(response.getBody());
+        return response;
+    }
 
-        Header header = new Header();
-        header.setIdentifier(id);
-        header.setDatestamp(new Date());
-        return new Record(header, rdf);
+    @Override
+    public void checkRecordExists(String id) throws OaiPmhException {
+        ResponseEntity<String> response = getResponseForRecord(id);
+        if (response == null) {
+            throw new IdDoesNotExistException("Record with id '" + id + "' not found");
+        }
     }
 
     @Override

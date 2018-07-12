@@ -151,6 +151,20 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
+    @Override
+    public void checkRecordExists(String id) throws OaiPmhException {
+        String recordId = prepareRecordId(id);
+
+        try {
+            FullBean bean = getFullBean(recordId);
+            if (bean == null) {
+                throw new IdDoesNotExistException("Record with identifier " + id + " not found!");
+            }
+        } catch (MongoDBException | MongoRuntimeException e) {
+            LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
+            throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
+        }
+
     @TrackTime
     private FullBean getFullBean(String recordId) throws MongoDBException, MongoRuntimeException {
         return mongoServer.getFullBean(recordId);
