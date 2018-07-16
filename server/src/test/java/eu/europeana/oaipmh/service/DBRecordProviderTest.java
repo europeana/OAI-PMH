@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -89,6 +90,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
         PowerMockito.mockStatic(EdmUtils.class);
         given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
+        given(EdmUtils.toRDF(any(FullBeanImpl.class), Matchers.anyBoolean())).willReturn(rdf);
         EuropeanaAggregationType type = PowerMockito.mock(EuropeanaAggregationType.class);
         List<EuropeanaAggregationType> types = new ArrayList<>();
         types.add(type);
@@ -98,6 +100,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         given(name.getString()).willReturn(TEST_RECORD_SETS[0]);
         given(EdmUtils.toEDM(any(RDF.class))).willReturn(record);
         given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
+        given(EdmUtils.toRDF(any(FullBeanImpl.class), Matchers.anyBoolean())).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
         ReflectionTestUtils.setField(recordProvider, "threadsCount", 1);
