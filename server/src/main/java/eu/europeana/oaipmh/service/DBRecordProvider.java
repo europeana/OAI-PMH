@@ -73,6 +73,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${maxThreadsCount:20}")
     private int maxThreadsCount;
 
+    // This is temporarily required for Metis POC (should be so to true in that case)
+    @Value("${noBaseUrl:false}")
+    private boolean noBaseUrl;
+
     private ExecutorService threadPool;
 
     private EdmMongoServer mongoServer;
@@ -194,7 +198,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @TrackTime
     private RDF getRDF(FullBeanImpl bean) {
-        return EdmUtils.toRDF(bean);
+        return EdmUtils.toRDF(bean, noBaseUrl);
     }
 
     @Override
