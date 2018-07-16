@@ -137,7 +137,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 */
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
-        LOG.info("CF_INSTANCE_IP  = {}", System.getenv("CF_INSTANCE_IP"));
+        LOG.info("CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}", System.getenv("CF_INSTANCE_GUIDIP"), System.getenv("CF_INSTANCE_IP"));
 		try {
 			SocksProxyHelper.injectSocksProxySettings();
 			super.onStartup(servletContext);
