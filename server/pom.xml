@@ -272,6 +272,9 @@
                 <version>${spring-boot.version}</version>
             </plugin>
         </plugins>
+
+        <!-- set static name for easy deployment -->
+        <finalName>oai-pmh2-server</finalName>
     </build>
 
 </project>
