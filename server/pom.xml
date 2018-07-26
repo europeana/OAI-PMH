@@ -5,13 +5,13 @@
     <parent>
         <groupId>eu.europeana</groupId>
         <artifactId>oai-pmh2</artifactId>
-        <version>0.3-SNAPSHOT</version>
+        <version>0.3</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>eu.europeana</groupId>
     <artifactId>oai-pmh2-server</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>war</packaging>
 
     <name>Europeana OAI-PMH2 Server</name>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>oai-pmh2-common</artifactId>
-            <version>0.3-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
 
         <dependency>
@@ -61,6 +61,12 @@
                     <artifactId>spring-boot-starter-logging</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -267,11 +273,25 @@
     <build>
         <plugins>
             <plugin>
+                <!-- add mainclass so we can use it as standalone application -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
+
+        <!-- set static name for easy deployment -->
+        <finalName>oai-pmh2-server</finalName>
     </build>
 
 </project>

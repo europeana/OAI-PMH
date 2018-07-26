@@ -1,5 +1,6 @@
 # Settings for local testing
-server.port: 8084
+server:
+  port: 8084
 
 spring:
   application:
