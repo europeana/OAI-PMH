@@ -1,5 +1,6 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.metis.utils.ExternalRequestUtil;
 import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -61,8 +62,14 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
     @TrackTime
     protected QueryResponse executeQuery(SolrQuery query) throws OaiPmhException {
         try {
-            return client.query(query);
-        } catch (SolrServerException | IOException e) {
+            return ExternalRequestUtil.retryableExternalRequest(() -> {
+                try {
+                    return client.query(query);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (RuntimeException e) {
             throw new OaiPmhException(e.getMessage());
         }
     }
