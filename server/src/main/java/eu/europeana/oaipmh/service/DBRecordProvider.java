@@ -9,6 +9,7 @@ import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
 import eu.europeana.corelib.search.impl.WebMetaInfo;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
+import eu.europeana.metis.utils.ExternalRequestUtil;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
@@ -146,33 +147,34 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
 
-        try {
-            FullBean bean = getFullBean(recordId);
-            return new Record(getHeader(id, bean), prepareRDFMetadata(recordId, (FullBeanImpl) bean));
-        } catch (MongoDBException | MongoRuntimeException e) {
-            LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
-            throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
-        }
+        FullBean bean = getFullBean(recordId);
+        return new Record(getHeader(id, bean), prepareRDFMetadata(recordId, (FullBeanImpl) bean));
     }
 
     @Override
     public void checkRecordExists(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
 
-        try {
-            FullBean bean = getFullBean(recordId);
-            if (bean == null) {
-                throw new IdDoesNotExistException("Record with identifier " + id + " not found!");
-            }
-        } catch (MongoDBException | MongoRuntimeException e) {
-            LOG.error(String.format(RECORD_WITH_ID, id) + " could not be retrieved.", e);
-            throw new InternalServerErrorException(String.format(RECORD_WITH_ID, id) + " could not be retrieved due to database problems.");
+        FullBean bean = getFullBean(recordId);
+        if (bean == null) {
+            throw new IdDoesNotExistException("Record with identifier " + id + " not found!");
         }
     }
 
     @TrackTime
-    private FullBean getFullBean(String recordId) throws MongoDBException, MongoRuntimeException {
-        return mongoServer.getFullBean(recordId);
+    private FullBean getFullBean(String recordId) throws InternalServerErrorException {
+        try {
+            return ExternalRequestUtil.retryableExternalRequest(() -> {
+                try {
+                    return mongoServer.getFullBean(recordId);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        } catch (Exception e) {
+            LOG.error(String.format(RECORD_WITH_ID, recordId) + " could not be retrieved.", e);
+            throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be retrieved due to database problems.");
+        }
     }
 
     private RDFMetadata prepareRDFMetadata(String recordId, FullBeanImpl bean) throws OaiPmhException {
@@ -362,14 +364,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             List<Record> records = new ArrayList<>();
 
             for (Header header : identifiers) {
-                try {
-                    String recordId = prepareRecordId(header.getIdentifier());
-                    FullBean bean = mongoServer.getFullBean(recordId);
-                    records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
-                } catch (MongoDBException | MongoRuntimeException e) {
-                    LOG.error(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved.", e);
-                    throw new InternalServerErrorException(String.format(RECORD_WITH_ID, header.getIdentifier()) + " could not be retrieved due to database problems.");
-                }
+                String recordId = prepareRecordId(header.getIdentifier());
+                FullBean bean = getFullBean(recordId);
+                records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
             }
             return new CollectRecordsResult(threadId, records);
         }
