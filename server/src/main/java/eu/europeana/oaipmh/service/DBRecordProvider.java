@@ -317,9 +317,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @TrackTime
     private String removeXMLHeader(String xml) {
-        String[] split = xml.split("\\?>");
-        if (split.length == 2) {
-            return split[1];
+        int index = xml.indexOf("?>");
+        if (index != -1) {
+            return xml.substring(index + "?>".length());
         }
         return xml;
     }
