@@ -1,12 +1,12 @@
 package eu.europeana.oaipmh.profile;
 
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableLoadTimeWeaving;
 
 @Configuration
-@ConditionalOnExpression("${profiling.enabled:false}")
+@ConditionalOnProperty(prefix="profiling", name="enabled", havingValue = "true")
 @EnableLoadTimeWeaving(aspectjWeaving = EnableLoadTimeWeaving.AspectJWeaving.ENABLED)
 public class AspectJConfig {
     @Pointcut("execution(* eu.europeana.oaipmh.service.*.*(..))")
