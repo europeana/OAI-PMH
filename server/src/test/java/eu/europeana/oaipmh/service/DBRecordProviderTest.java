@@ -8,6 +8,7 @@ import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
+import eu.europeana.corelib.web.exception.EuropeanaException;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
@@ -70,7 +71,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     }
 
     @Test
-    public void getRecord() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+    public void getRecord() throws IOException, EuropeanaException, OaiPmhException {
         // given
         String record = loadRecord();
         prepareTest(record);
@@ -84,7 +85,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         assertRecordEquals(retrievedRecord, preparedRecord);
     }
 
-    private void prepareTest(String record) throws MongoDBException, MongoRuntimeException {
+    private void prepareTest(String record) throws EuropeanaException {
         FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
         RDF rdf = PowerMockito.mock(RDF.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
@@ -143,7 +144,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     }
 
     @Test
-    public void listRecords() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+    public void listRecords() throws IOException, EuropeanaException, OaiPmhException {
         // given
         String record = loadRecord();
         prepareTest(record);
@@ -162,7 +163,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     }
 
     @Test
-    public void checkRecordExists() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+    public void checkRecordExists() throws EuropeanaException, OaiPmhException {
         // given
         FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
@@ -175,7 +176,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     }
 
     @Test(expected = IdDoesNotExistException.class)
-    public void checkRecordExistsWithWrongIdentifier() throws IOException, MongoRuntimeException, MongoDBException, OaiPmhException {
+    public void checkRecordExistsWithWrongIdentifier() throws EuropeanaException, OaiPmhException {
         // given
         given(mongoServer.getFullBean(anyString())).willReturn(null);
 
