@@ -14,6 +14,9 @@ public class OAIPMH2Client implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (args == null || args.length == 0) {
+            throw new IllegalArgumentException("Please specify a verb as first argument (e.g. ListIdentifiers, ListRecords)");
+        }
         oaipmhServiceClient.execute(args[0]);
     }
 

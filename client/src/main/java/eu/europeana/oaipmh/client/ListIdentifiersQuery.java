@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
 
 @Component
 public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
@@ -98,6 +99,7 @@ public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
                 logger.setTotalItems(responseObject.getHeaders().size());
             }
             collectIdentifiers(responseObject.getHeaders(), identifiers);
+            //writeDataToLogFile(responseObject);
 
             while (responseObject.getResumptionToken() != null) {
                 request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
@@ -109,11 +111,24 @@ public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
                 counter += responseObject.getHeaders().size();
                 logger.logProgress(counter);
                 collectIdentifiers(responseObject.getHeaders(), identifiers);
+              //  writeDataToLogFile(responseObject);
             }
         }
 
         LOG.info("ListIdentifiers for set " + setName + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
                 ". Harvested " + counter + " identifiers.");
+    }
+
+    /**
+     * Temporarily added for testing/debugging purposes
+     */
+    private void writeDataToLogFile(ListIdentifiers responseObject) {
+        // write data to file
+        ListIterator<Header> it = responseObject.getHeaders().listIterator();
+        while (it.hasNext()) {
+            Header header = it.next();
+            LogFile.OUT.info(header.getSetSpec().get(0) +" "+header.getIdentifier());
+        }
     }
 
     private void collectIdentifiers(List<Header> headers, List<String> identifiers) {

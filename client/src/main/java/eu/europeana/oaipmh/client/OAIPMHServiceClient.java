@@ -70,6 +70,7 @@ public class OAIPMHServiceClient {
     public void execute(String verb) throws OaiPmhException {
         OAIPMHQuery verbToExecute = queries.get(verb);
         if (verbToExecute != null) {
+            //LogFile.setFileName(verbToExecute.getVerbName());
             verbToExecute.execute(this);
         }
     }
