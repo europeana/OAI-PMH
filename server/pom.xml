@@ -90,7 +90,9 @@
             <optional>true</optional>
         </dependency>
 
-        <dependency>
+        <!-- Removed SNAPSHOT dependency temporarily so we can make a release. The only class we use from this
+             dependency (ExternalRequestUtil.class) has been included into the project -->
+        <!-- <dependency>
             <groupId>eu.europeana.metis</groupId>
             <artifactId>metis-common</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -140,7 +142,7 @@
                     <artifactId>junit</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
 
         <!-- for parsing record json -->
         <dependency>
