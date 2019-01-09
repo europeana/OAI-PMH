@@ -20,7 +20,9 @@
     <properties>
         <spring.boot.mainclass>eu.europeana.oaipmh.OaiPmhApplication</spring.boot.mainclass>
 
-        <solrj.version>5.2.1</solrj.version>
+        <mongoDriver.version>3.6.4</mongoDriver.version>
+        <morphia.version>1.3.2</morphia.version>
+        <solrj.version>6.6.5</solrj.version>
         <aspectj.version>1.8.13</aspectj.version>
     </properties>
 
@@ -88,6 +90,24 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Mongo and Morphia dependencies added so we get the desired version -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>${mongoDriver.version}</version>
+        </dependency>
+        <!-- Compression for mongo driver -->
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb.morphia</groupId>
+            <artifactId>morphia</artifactId>
+            <version>${morphia.version}</version>
         </dependency>
 
         <!-- Removed SNAPSHOT dependency temporarily so we can make a release. The only class we use from this
@@ -236,10 +256,6 @@
                 <exclusion>
                     <artifactId>crf-fake-tags</artifactId>
                     <groupId>eu.europeana</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>corelib-media-storage</artifactId>
-                    <groupId>eu.europeana.corelib</groupId>
                 </exclusion>
                 <exclusion>
                     <artifactId>jackson-xc</artifactId>

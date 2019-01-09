@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
  * Created on 27-02-2018
  */
 @RestController
-@RequestMapping(value = "/oai")
+@RequestMapping(value = {"/oai", "/oaicat/OAIHandler"})
 public class VerbController {
 
     @Value("${baseURL}")
