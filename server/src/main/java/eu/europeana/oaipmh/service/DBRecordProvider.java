@@ -197,15 +197,20 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             for (Future<CollectRecordsResult> result : results) {
                 collectRecordsResult = result.get();
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Thread no " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
+                    LOG.debug("Thread " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
                 }
                 records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOG.error("Interrupted.", e);
+            LOG.error("Thread interrupted.", e);
         } catch (ExecutionException e) {
-            LOG.error("Problem with task thread execution.", e);
+            // I'm not sure why but on my local machine LOG.error doesn't work (only at this point?) and e.printStackTrace
+            // does work so I'm keeping this for debugging purposes.
+            e.printStackTrace();
+            String msg = "Error retrieving data";
+            LOG.error(msg, e);
+            throw new InternalServerErrorException(msg);
         }
 
         if (records.isEmpty()) {
@@ -274,7 +279,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
 
     private class CollectRecordsTask implements Callable<CollectRecordsResult> {
-        private final Logger LOG = LogManager.getLogger(CollectRecordsTask.class);
 
         private int threadId;
 
@@ -283,6 +287,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         CollectRecordsTask(List<Header> identifiers, int threadId) {
             this.identifiers = identifiers;
             this.threadId = threadId;
+            LOG.trace("Create thread {}", threadId);
         }
 
         @Override
@@ -306,6 +311,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         CollectRecordsResult(int threadId, List<Record> records) {
             this.threadId = threadId;
             this.records = records;
+            LOG.trace("Thread {} returning {} records", threadId, records.size());
         }
 
         int getThreadId() {
