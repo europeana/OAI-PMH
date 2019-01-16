@@ -1,9 +1,11 @@
 package eu.europeana.oaipmh.service;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientURI;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
 import eu.europeana.corelib.definitions.jibx.*;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
-import eu.europeana.corelib.edm.exceptions.MongoRuntimeException;
 import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
@@ -25,11 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -44,23 +41,11 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     private static final int MAX_THREADS_THRESHOLD = 20;
 
-    @Value("${mongo.host}")
-    private String host;
+    @Value("${mongodb.connectionUrl}")
+    private String connectionUrl;
 
-    @Value("${mongo.port}")
-    private String port;
-
-    @Value("${mongo.username}")
-    private String username;
-
-    @Value("${mongo.password}")
-    private String password;
-
-    @Value("${mongo.record.dbname}")
+    @Value("${mongodb.record.dbname}")
     private String recordDBName;
-
-    @Value("${mongo.registry.dbname}")
-    private String registryDBName;
 
     @Value("${enhanceWithTechnicalMetadata:true}")
     private boolean enhanceWithTechnicalMetadata;
@@ -74,27 +59,25 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${maxThreadsCount:20}")
     private int maxThreadsCount;
 
-    // This is temporarily required for Metis POC (should be so to true in that case)
-    @Value("${noBaseUrl:false}")
-    private boolean noBaseUrl;
-
     private ExecutorService threadPool;
 
     private EdmMongoServer mongoServer;
 
-    private Set<String> fullTextIds = new HashSet<>();
-
     @PostConstruct
     private void init() throws InternalServerErrorException {
         initMongo();
-        loadFullTextIds();
         initThreadPool();
-
     }
 
     private void initMongo() throws InternalServerErrorException {
         try {
-            mongoServer = new EdmMongoServerImpl(host, port, recordDBName, username, password);
+            MongoClientOptions.Builder options = MongoClientOptions.builder();
+            options.connectTimeout(5000);
+            options.socketTimeout(45000);
+            MongoClient client = new MongoClient(new MongoClientURI(connectionUrl, options));
+
+            mongoServer = new EdmMongoServerImpl(client, recordDBName);
+            LOG.info("Connected to mongo database {}", recordDBName);
         } catch (MongoDBException e) {
             LOG.error("Could not connect to Mongo DB.", e);
             throw new InternalServerErrorException(e.getMessage());
@@ -122,18 +105,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         threadPool = Executors
                 .newFixedThreadPool(threadsCount);
     }
-
-    private void loadFullTextIds() {
-        if (expandWithFullText) {
-            try {
-                Path path = Paths.get(getClass().getClassLoader().getResource("is_fulltext.csv").toURI());
-                fullTextIds.addAll(Files.readAllLines(path));
-            } catch (IOException | URISyntaxException e) {
-                LOG.error("Problem with loading is_fulltext.csv file.", e);
-            }
-        }
-    }
-
 
     /**
      * Retrieves record from MongoDB and prepares EDM metadata.
@@ -184,8 +155,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             if (rdf == null) {
                 throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be converted to EDM.");
             }
-            expandWithFullText(rdf, recordId);
-            updatePreview(rdf);
             updateDatasetName(rdf);
             String edm = getEDM(rdf);
             return new RDFMetadata(removeXMLHeader(edm));
@@ -200,7 +169,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @TrackTime
     private RDF getRDF(FullBeanImpl bean) {
-        return EdmUtils.toRDF(bean, noBaseUrl);
+        return EdmUtils.toRDF(bean);
     }
 
     @Override
@@ -227,7 +196,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             CollectRecordsResult collectRecordsResult;
             for (Future<CollectRecordsResult> result : results) {
                 collectRecordsResult = result.get();
-                LOG.info("Thread no " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Thread no " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
+                }
                 records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
             }
         } catch (InterruptedException e) {
@@ -241,7 +212,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             throw new NoRecordsMatchException("No records found!");
         }
 
-        LOG.info("ListRecords using " + threadsCount + " threads finished in " + (System.currentTimeMillis() - start) + " ms.");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ListRecords using " + threadsCount + " threads finished in " + (System.currentTimeMillis() - start) + " ms.");
+        }
 
         ListRecords result = new ListRecords();
         result.setRecords(records);
@@ -260,58 +233,11 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     @TrackTime
-    private void updatePreview(RDF rdf) {
-        String resource = null;
-
-        for (Aggregation aggregation : rdf.getAggregationList()) {
-            if (aggregation.getObject() != null) {
-                resource = aggregation.getObject().getResource();
-            } else if (aggregation.getIsShownBy() != null) {
-                resource = aggregation.getIsShownBy().getResource();
-            }
-            if (resource != null) {
-                break;
-            }
-        }
-        if (resource != null && !rdf.getEuropeanaAggregationList().isEmpty()) {
-            EuropeanaAggregationType europeanaAggregationType = rdf.getEuropeanaAggregationList().get(0);
-            Preview preview = europeanaAggregationType.getPreview();
-            if (preview == null) {
-                preview = new Preview();
-                europeanaAggregationType.setPreview(preview);
-            }
-            preview.setResource(resource);
-        }
-    }
-
-    @TrackTime
     private void enhanceWithTechnicalMetadata(FullBean bean) {
         long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
             WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
             LOG.debug("Technical metadata injected in " + String.valueOf(System.currentTimeMillis() - start) + " ms.");
-        }
-    }
-
-    /**
-     * @deprecated
-     *
-     * This functionality will be removed in the next version. It was introduced only for migration.
-     * @param rdf rdf to expand
-     */
-    @Deprecated
-    @TrackTime
-    private void expandWithFullText(RDF rdf, String id) {
-        if (expandWithFullText && fullTextIds.contains(id)) {
-            // expand with full text only when this option is turned on in the configuration
-            for (WebResourceType resourceType : rdf.getWebResourceList()) {
-                if (resourceType.getHasMimeType() != null && resourceType.getHasMimeType().getHasMimeType().equals("application/pdf")) {
-                    Type1 type = new Type1();
-                    type.setResource("http://www.europeana.eu/schemas/edm/FullTextResource");
-                    resourceType.setType(type);
-                    break;
-                }
-            }
         }
     }
 

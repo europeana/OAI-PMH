@@ -7,7 +7,6 @@ import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.LBHttpSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -23,20 +22,14 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
     @Value("${resumptionTokenTTL}")
     private int resumptionTokenTTL;
 
-    @Value("${solr.hosts}")
-    private String solrHosts;
+    @Value("${solr.url}")
+    private String solrUrl;
 
-    @Value("${solr.zookeeperURL}")
+    @Value("${zookeeper.url}")
     private String zookeeperURL;
 
     @Value("${solr.core}")
     private String solrCore;
-
-    @Value("${solr.username}")
-    private String username;
-
-    @Value("${solr.password}")
-    private String password;
 
     private CloudSolrClient client;
 
@@ -45,18 +38,20 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
      */
     @PostConstruct
     private void init() throws InternalServerErrorException {
+        LOG.info("Connecting to Solr cluster", solrUrl);
         LBHttpSolrClient lbTarget;
         try {
-            lbTarget = new LBHttpSolrClient(solrHosts.split(","));
+            lbTarget = new LBHttpSolrClient(solrUrl.split(","));
         } catch (MalformedURLException e) {
-            LOG.error("Solr Server is not constructed!", e);
+            LOG.error("Solr cluster is not constructed!", e);
             throw new InternalServerErrorException(e.getMessage());
         }
-        LOG.info("Using Zookeeper {} to connect to Solr cluster", zookeeperURL, solrHosts);
-        client = new CloudSolrClient(zookeeperURL, lbTarget);
+
+        LOG.info("Setting up Zookeeper {}", zookeeperURL);
+        client = new CloudSolrClient.Builder().withZkHost(zookeeperURL).withLBHttpSolrClient(lbTarget).build();
         client.setDefaultCollection(solrCore);
         client.connect();
-        LOG.info("Connected to Solr {}", solrHosts);
+        LOG.info("Connected to Solr {}", solrUrl);
     }
 
     @TrackTime
