@@ -5,13 +5,13 @@
     <parent>
         <groupId>eu.europeana</groupId>
         <artifactId>oai-pmh2</artifactId>
-        <version>0.4-SNAPSHOT</version>
+        <version>0.5-beta-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>eu.europeana</groupId>
     <artifactId>oai-pmh2-server</artifactId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.5-beta-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Europeana OAI-PMH2 Server</name>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>oai-pmh2-common</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <version>0.5-beta-SNAPSHOT</version>
         </dependency>
 
         <dependency>
