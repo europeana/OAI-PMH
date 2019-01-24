@@ -5,13 +5,13 @@
     <parent>
         <groupId>eu.europeana</groupId>
         <artifactId>oai-pmh2</artifactId>
-        <version>0.5-beta</version>
+        <version>0.6-beta-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>eu.europeana</groupId>
     <artifactId>oai-pmh2-client</artifactId>
-    <version>0.5-beta</version>
+    <version>0.6-beta-SNAPSHOT</version>
     <name>Europeana OAI-PMH2 Client</name>
     <packaging>jar</packaging>
 
