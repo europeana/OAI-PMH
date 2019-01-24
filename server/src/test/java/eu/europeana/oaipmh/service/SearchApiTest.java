@@ -10,6 +10,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,6 +27,7 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
+@Ignore // Temporary disabled, see ticket EA-1482
 public class SearchApiTest extends SolrBasedProviderTestCase {
     private static final int IDENTIFIERS_PER_PAGE = 300;
 
