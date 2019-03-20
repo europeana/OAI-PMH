@@ -3,6 +3,7 @@ package eu.europeana.oaipmh;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
 import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.SocksProxyHelper;
+import eu.europeana.oaipmh.util.SwaggerProvider;
 import eu.europeana.oaipmh.web.VerbController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,8 +113,14 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 */
 	@Bean
 	public VerbController verbController() {
-		return new VerbController(oaiPmhService());
+		return new VerbController(oaiPmhService(), swaggerProvider());
 	}
+
+
+    @Bean
+    public SwaggerProvider swaggerProvider() {
+        return new SwaggerProvider();
+    }
 
 	/**
 	 * This method is called when starting as a Spring-Boot application (e.g. when running this class from your IDE, or

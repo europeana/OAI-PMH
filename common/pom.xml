@@ -9,9 +9,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>eu.europeana</groupId>
     <artifactId>oai-pmh2-common</artifactId>
     <name>Europeana OAI-PMH2 Common</name>
+    <version>0.6-beta-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <dependencies>
