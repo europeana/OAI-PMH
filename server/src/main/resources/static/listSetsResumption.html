@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Europeana OAI-PMH ListSets (Resumption) Request Form</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="shortcut icon" href="favicon.png" />
+    <link href="oai.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div id="container">
+        <!--#include virtual="header.shtml" -->
+        <div id="main">
+            <table>
+                <tr valign="top">
+                    <td><a href="identify.html">Identify</a>&nbsp;<span class="divider">|</span>&nbsp;<a href="getRecord.html">GetRecord</a>&nbsp;<span class="divider">|</span>&nbsp;<a href="listIdentifiers.html">ListIdentifiers</a>&nbsp;(<a href="listIdentifiersResumption.html">Resumption</a>)&nbsp;<span class="divider">|</span>&nbsp;<a href="listMetadataFormats.html">ListMetadataFormats</a>&nbsp;<span class="divider">|</span>&nbsp;<a href="listRecords.html">ListRecords</a>&nbsp;(<a href="listRecordsResumption.html">Resumption</a>)&nbsp;<span class="divider">|</span>&nbsp;<a href="listSets.html">ListSets</a>&nbsp;(<a href="listSetsResumption.html">Resumption</a>)</td>
+                </tr>
+                <tr valign="top">
+                    <td>
+                        <h2>OAI-PMH ListSets (Resumption) Request Form</h2>
+                        <form class="nospace" action="https://api.europeana.eu/oai/record" method="GET">
+                            <input type="hidden" name="verb" value="ListSets">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="4">
+                                <tr valign="top">
+                                    <td width="150"><strong>ResumptionToken:</strong></td>
+                                    <td><input type="text" name="resumptionToken" required><sup>*</sup></td>
+                                </tr>
+                                <tr><td></td><td><sup>* = required field</sup></td></tr>
+                                <tr valign="top">
+                                    <td width="150">&nbsp;</td>
+                                    <td><input type="submit"></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--#include virtual="footer.shtml" -->
+    </div>
+</body>
+</html>
