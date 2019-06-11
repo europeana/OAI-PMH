@@ -35,8 +35,6 @@ public class VerbController {
 
     private OaiPmhService       ops;
     private SwaggerProvider     swaggerProvider;
-    private static final String CORS_ANY    = "*";
-    private static final String CORS_ORIGIN = "Access-Control-Allow-Origin";
 
     public VerbController(OaiPmhService oaiPmhService, SwaggerProvider swaggerProvider) {
         this.ops = oaiPmhService;
@@ -54,7 +52,6 @@ public class VerbController {
     public Object handleIdentify(HttpServletRequest request,
                                  HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.getIdentify(OaiPmhRequestFactory.createIdentifyRequest(baseUrl));
     }
 
@@ -73,7 +70,6 @@ public class VerbController {
                                   HttpServletRequest request,
                                   HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.getRecord(OaiPmhRequestFactory.createGetRecordRequest(baseUrl, metadataPrefix, identifier));
     }
 
@@ -90,7 +86,6 @@ public class VerbController {
                                              HttpServletRequest request,
                                              HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listIdentifiers(OaiPmhRequestFactory.createListIdentifiersRequest(baseUrl, resumptionToken));
     }
 
@@ -113,7 +108,6 @@ public class VerbController {
                                         HttpServletRequest request,
                                         HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listIdentifiers(OaiPmhRequestFactory.createListIdentifiersRequest(baseUrl, metadataPrefix, set, from, until));
     }
 
@@ -136,7 +130,6 @@ public class VerbController {
                                     HttpServletRequest request,
                                     HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listRecords(OaiPmhRequestFactory.createListRecordsRequest(baseUrl, metadataPrefix, set, from, until));
     }
 
@@ -153,7 +146,6 @@ public class VerbController {
                                          HttpServletRequest request,
                                          HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listRecords(OaiPmhRequestFactory.createListRecordsRequest(baseUrl, resumptionToken));
     }
 
@@ -170,7 +162,6 @@ public class VerbController {
                                             HttpServletRequest request,
                                             HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listMetadataFormats(OaiPmhRequestFactory.createListMetadataFormatsRequest(baseUrl, identifier));
     }
 
@@ -185,7 +176,6 @@ public class VerbController {
     public String handleListSets(HttpServletRequest request,
                                  HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, null));
     }
 
@@ -202,7 +192,6 @@ public class VerbController {
                                       HttpServletRequest request,
                                       HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
-        response.setHeader(CORS_ORIGIN, CORS_ANY);
         return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, resumptionToken));
     }
 

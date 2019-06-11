@@ -16,6 +16,9 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -37,6 +40,21 @@ import java.lang.reflect.InvocationTargetException;
 public class OaiPmhApplication extends SpringBootServletInitializer {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
+
+	/**
+	 * Setup CORS for all requests
+	 * @return
+	 */
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins("*").maxAge(1000)
+						.exposedHeaders("Allow, Vary, ETag, Last-Modified");
+			}
+		};
+	}
 
 	@Value("${recordProviderClass}")
 	private String recordProviderClass;
