@@ -50,11 +50,6 @@ public class SwaggerProvider {
     @Value("${appVersion}")
     private String appVersion;
 
-
-    private static final String ANY           = "*";
-    private static final String ALLOWED       = "GET, HEAD";
-    private static final String ALLOWHEADERS  = "If-Match, If-None-Match, If-Modified-Since";
-    private static final String EXPOSEHEADERS = "Allow, ETag, Last-Modified, Link";
     private static final Logger LOG           = LogManager.getLogger(VerbController.class);
 
     private static final String HOST2BE       = "@@HOST@@";
@@ -89,15 +84,5 @@ public class SwaggerProvider {
 
     public String getApiDocs() {
         return apiDocs;
-    }
-
-    public HttpHeaders generateSwaggerHeaders(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Access-Control-Allow-Origin", ANY);
-        headers.add("Access-Control-Allow-Methods", ALLOWED);
-        headers.add("Access-Control-Allow-Headers", ALLOWHEADERS);
-        headers.add("Access-Control-Expose-Headers", EXPOSEHEADERS);
-        headers.add("Access-Control-Max-Age", "600");
-        return headers;
     }
 }

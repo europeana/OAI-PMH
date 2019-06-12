@@ -227,9 +227,7 @@ public class VerbController {
      */
     @GetMapping(value = "/api-docs",
                 produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> swaggerDocs() throws OaiPmhException {
-        return new ResponseEntity<>(swaggerProvider.getApiDocs(),
-                                    swaggerProvider.generateSwaggerHeaders(),
-                                    HttpStatus.OK);
+    public String swaggerDocs() {
+        return swaggerProvider.getApiDocs();
     }
 }
