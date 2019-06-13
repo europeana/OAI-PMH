@@ -3,6 +3,7 @@ package eu.europeana.oaipmh;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
 import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.SocksProxyHelper;
+import eu.europeana.oaipmh.util.SwaggerProvider;
 import eu.europeana.oaipmh.web.VerbController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,9 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -36,6 +40,21 @@ import java.lang.reflect.InvocationTargetException;
 public class OaiPmhApplication extends SpringBootServletInitializer {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
+
+	/**
+	 * Setup CORS for all requests
+	 * @return
+	 */
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+		return new WebMvcConfigurerAdapter() {
+			@Override
+			public void addCorsMappings(CorsRegistry registry) {
+				registry.addMapping("/**").allowedOrigins("*").maxAge(1000)
+						.exposedHeaders("Allow, Vary, ETag, Last-Modified");
+			}
+		};
+	}
 
 	@Value("${recordProviderClass}")
 	private String recordProviderClass;
@@ -112,8 +131,14 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 	 */
 	@Bean
 	public VerbController verbController() {
-		return new VerbController(oaiPmhService());
+		return new VerbController(oaiPmhService(), swaggerProvider());
 	}
+
+
+    @Bean
+    public SwaggerProvider swaggerProvider() {
+        return new SwaggerProvider();
+    }
 
 	/**
 	 * This method is called when starting as a Spring-Boot application (e.g. when running this class from your IDE, or
