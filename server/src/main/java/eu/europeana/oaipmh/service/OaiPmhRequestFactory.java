@@ -255,14 +255,18 @@ public class OaiPmhRequestFactory {
         String[] arguments = request.split("&");
         for (String argument : arguments) {
             String[] paramValue = argument.split("=");
-            if (paramValue.length == 2) {
-                validateNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
-            } else if (paramValue.length == 1) {
-                validateParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
-            } else {
-                String value = argument.substring(argument.indexOf('=') + 1);
-                validateNormalParameter(ignoreErrors, parameters, paramValue[0], value);
-            }
+
+                if (paramValue.length == 2) {
+                    validateNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
+                } else if (paramValue.length == 1) {
+                    validateParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
+                } else {
+                    String value = argument.substring(argument.indexOf('=') + 1);
+                    //validateNormalParameter(ignoreErrors, parameters, paramValue[0], value);
+                    validateParameterWithoutValue(ignoreErrors, parameters, value);
+
+                }
+
         }
 
         return parameters;
