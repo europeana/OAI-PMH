@@ -6,13 +6,11 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.powermock.api.mockito.PowerMockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -58,7 +56,6 @@ public class DefaultIdentifyProviderTest extends SolrBasedProviderTestCase {
         ReflectionTestUtils.setField(defaultIdentifyProvider, "compression", new String[] {COMPRESSION}, String[].class);
     }
 
-    @Ignore // Temporary disabled, see ticket EA-1482
     @Test
     public void provideIdentify() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = getResponse(IDENTIFY);
