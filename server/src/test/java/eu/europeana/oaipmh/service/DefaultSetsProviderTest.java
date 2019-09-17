@@ -37,7 +37,6 @@ public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
     @InjectMocks
     private DefaultSetsProvider setsProvider;
 
-    @Ignore // Temporary disabled, see ticket EA-1482
     @Test
     public void listSets() throws IOException, SolrServerException, OaiPmhException {
         QueryResponse response = getResponse(LIST_SETS);
@@ -63,7 +62,7 @@ public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
         }
     }
 
-    @Ignore // Temporary disabled, see ticket EA-1482
+
     @Test
     public void listSetsWithResumptionToken() throws IOException, SolrServerException, OaiPmhException {
         QueryResponse response = getResponse(LIST_SETS_WITH_RESUMPTION_TOKEN_SECOND_PAGE);
