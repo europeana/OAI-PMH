@@ -29,6 +29,7 @@ public class GlobalExceptionHandler extends BaseService {
     private String baseUrl;
 
     private static final Logger LOG = LogManager.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Checks if we should log an error and serializes the error response
      * @param e
@@ -78,16 +79,6 @@ public class GlobalExceptionHandler extends BaseService {
     public String handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, SerializationException {
         return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request);
     }
-    /**
-     * Checks if we should log an error and serializes the error response
-     * @param e
-     * @throws OaiPmhException
-     */
-    @ExceptionHandler(NoRecordsMatchException.class)
-    @ResponseStatus(HttpStatus.OK)
-    public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException {
-        return handleException(e, request);
-    }
 
     private String handleException(OaiPmhException e, HttpServletRequest request) throws BadArgumentException, SerializationException {
         if (e.doLog()) {
@@ -98,4 +89,14 @@ public class GlobalExceptionHandler extends BaseService {
         return serialize(error.getResponse(originalRequest));
     }
 
+    /**
+     * Checks if we should log an error and serializes the error response
+     * @param e
+     * @throws OaiPmhException
+     */
+    @ExceptionHandler(NoRecordsMatchException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException {
+        return handleException(e, request);
+    }
 }
