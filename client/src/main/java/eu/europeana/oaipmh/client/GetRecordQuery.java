@@ -49,14 +49,14 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
         if (responseObject != null) {
             Record record = responseObject.getRecord();
             if (record == null) {
-                LOG.error("No record in GetRecordResponse for identifier " + currentIdentifier);
+                LOG.error("No record in GetRecordResponse for identifier {}", currentIdentifier);
                 return;
             }
             Header header = record.getHeader();
             if (header != null && currentIdentifier.equals(header.getIdentifier())) {
                 RDFMetadata metadata = record.getMetadata();
                 if (metadata == null || metadata.getMetadata() == null || metadata.getMetadata().isEmpty()) {
-                    LOG.error("Empty metadata for identifier " + currentIdentifier);
+                    LOG.error("Empty metadata for identifier {}", currentIdentifier);
                 }
             }
         }

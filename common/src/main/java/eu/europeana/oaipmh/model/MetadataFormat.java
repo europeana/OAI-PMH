@@ -20,7 +20,7 @@ public class MetadataFormat implements Serializable {
     private String metadataNamespace;
 
     @JsonIgnore
-    private MetadataFormatConverter converter;
+    private transient MetadataFormatConverter converter;
 
     public MetadataFormat() {
         // empty constructor to allow deserialization

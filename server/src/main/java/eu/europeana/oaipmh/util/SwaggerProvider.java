@@ -17,14 +17,10 @@
 
 package eu.europeana.oaipmh.util;
 
-import eu.europeana.oaipmh.web.VerbController;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
@@ -50,7 +46,7 @@ public class SwaggerProvider {
     @Value("${appVersion}")
     private String appVersion;
 
-    private static final Logger LOG           = LogManager.getLogger(VerbController.class);
+    private static final Logger LOG           = LogManager.getLogger(SwaggerProvider.class);
 
     private static final String HOST2BE       = "@@HOST@@";
     private static final String BASEPATH2BE   = "@@BASEPATH@@";
@@ -66,9 +62,9 @@ public class SwaggerProvider {
             file = ResourceUtils.getFile("classpath:api-docs.json");
             apiDocs = new String(Files.readAllBytes(file.toPath()));
         } catch (FileNotFoundException e) {
-            LOG.error("Static Swagger config file not found: " + e.getMessage());
+            LOG.error("Static Swagger config file not found: {}", e.getMessage());
         } catch (IOException e) {
-            LOG.error("Error reading static Swagger config file: " + e.getMessage());
+            LOG.error("Error reading static Swagger config file: {}", e.getMessage());
         }
         if (StringUtils.isNotBlank(swaggerHost)){
             apiDocs = StringUtils.replace(apiDocs, HOST2BE, swaggerHost);
