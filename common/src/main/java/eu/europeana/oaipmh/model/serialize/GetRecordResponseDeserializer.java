@@ -93,7 +93,7 @@ public class GetRecordResponseDeserializer extends StdDeserializer<GetRecordResp
         // identifier should never be null, but better safe than sorry
         JsonNode id = header.get(IDENTIFIER);
         if (id == null) {
-            LogManager.getLogger(GetRecordResponseDeserializer.class).error("No id found in header! " + header.textValue());
+            LogManager.getLogger(GetRecordResponseDeserializer.class).error("No id found in header! {}", header.textValue());
         } else {
             headerObject.setIdentifier(header.get(IDENTIFIER).asText());
         }

@@ -60,7 +60,7 @@ public class OAIPMHServiceClient {
         module.addDeserializer(RDFMetadata.class, new RDFMetadataDeserializer());
         module.addDeserializer(ListRecordsResponse.class, new ListRecordsResponseDeserializer());
         mapper.registerModule(module);
-        LOG.info("Using OAI-PMH server at " + oaipmhServer);
+        LOG.info("Using OAI-PMH server at {}", oaipmhServer);
     }
 
     public String getOaipmhServer() {

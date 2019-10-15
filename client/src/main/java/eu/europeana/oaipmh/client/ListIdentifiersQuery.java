@@ -127,7 +127,7 @@ public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
         ListIterator<Header> it = responseObject.getHeaders().listIterator();
         while (it.hasNext()) {
             Header header = it.next();
-            LogFile.OUT.info(header.getSetSpec().get(0) +" "+header.getIdentifier());
+            LogFile.OUT.info("{} {}", header.getSetSpec().get(0), header.getIdentifier());
         }
     }
 

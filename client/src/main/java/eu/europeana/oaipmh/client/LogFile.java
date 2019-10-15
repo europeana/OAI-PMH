@@ -14,7 +14,11 @@ import java.time.format.DateTimeFormatter;
  */
 public class LogFile {
 
-    public static final Logger OUT = LogManager.getLogger("logFile");
+    private LogFile(){
+        throw new IllegalStateException("Utility class");
+    }
+
+    static final Logger OUT = LogManager.getLogger("logFile");
 
     public static void setFileName(String path) {
         // note that this will only work on Linux systems

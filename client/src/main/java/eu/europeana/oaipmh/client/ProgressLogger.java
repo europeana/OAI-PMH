@@ -44,7 +44,7 @@ public class ProgressLogger {
         Duration d = new Duration(lastLogTime, System.currentTimeMillis());
         if (logAfterSeconds > 0 && d.getMillis() / 1000 > logAfterSeconds) {
             if (totalItems > 0) {
-                Double itemsPerMS = itemsDone * 1d / (System.currentTimeMillis() - startTime);
+                double itemsPerMS = itemsDone * 1d / (System.currentTimeMillis() - startTime);
                 if (itemsPerMS * 1000 > 1.0) {
                     LOG.info("Retrieved {} items of {} ({} records/sec). Expected time remaining is {}", itemsDone, totalItems,
                             Math.round(itemsPerMS * 1000), getDurationText(Math.round((totalItems - itemsDone) / itemsPerMS)));
@@ -53,7 +53,7 @@ public class ProgressLogger {
                             Math.round(itemsPerMS * 1000 * 60), getDurationText(Math.round((totalItems - itemsDone) / itemsPerMS)));
                 }
             } else {
-                LOG.info("Retrieved {} items");
+                LOG.info("Retrieved {} items", itemsDone);
             }
             lastLogTime = System.currentTimeMillis();
         }

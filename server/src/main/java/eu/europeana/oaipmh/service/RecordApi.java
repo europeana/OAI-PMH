@@ -59,7 +59,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         // construct url
         String requestUrl = constructRequestUrl(recordId.substring(1));
 
-        LOG.debug("Request is " + requestUrl);
+        LOG.debug("Request is {}", requestUrl);
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setErrorHandler(new ApiResponseErrorHandler());
         ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);

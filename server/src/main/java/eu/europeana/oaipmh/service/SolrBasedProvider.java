@@ -44,7 +44,7 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
      */
     @PostConstruct
     private void init() throws InternalServerErrorException {
-        LOG.info("Connecting to Solr cluster", solrUrl);
+        LOG.info("Connecting to Solr cluster: {}", solrUrl);
         LBHttpSolrClient lbTarget;
         try {
             lbTarget = new LBHttpSolrClient(solrUrl.split(","));
@@ -68,7 +68,7 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
                     return client.query(query);
                 }
                 catch(SolrException e){
-                    LOG.debug("SolrException ::", e.getMessage());
+                    LOG.debug("SolrException {}", e.getMessage());
                     throw new SolrException(SolrException.ErrorCode.BAD_REQUEST, truncateExceptionMessage(e.getMessage()));
                 }
                 catch (SolrServerException e) {
@@ -87,7 +87,7 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
         }
     }
 
-    protected int getResumptionTokenTTL() {
+    int getResumptionTokenTTL() {
         return resumptionTokenTTL;
     }
 
