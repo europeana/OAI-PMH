@@ -16,7 +16,9 @@ public class OaiPmhRequestFactoryTest {
 
     private static final String BASE_URL = "http://localhost";
 
-    private static final String EMPTY_PARAMETER_REQUEST = "verb=ListIdentifiers&set=";
+    private static final String EMPTY_PARAMETER_VALUE_REQUEST = "verb=ListIdentifiers&set=";
+
+    private static final String EMPTY_PARAMETER_NAME_REQUEST = "verb=ListIdentifiers&=";
 
     private static final String INVALID_PARAMETER_NAME_REQUEST = "verbs=ListIdentifiers";
 
@@ -80,7 +82,12 @@ public class OaiPmhRequestFactoryTest {
 
     @Test(expected = BadArgumentException.class)
     public void validateParameterNamesEmptyOrNull() throws BadArgumentException, BadVerbException {
-        OaiPmhRequestFactory.validateParameterNames(EMPTY_PARAMETER_REQUEST);
+        OaiPmhRequestFactory.validateParameterNames(EMPTY_PARAMETER_NAME_REQUEST);
+    }
+
+    @Test(expected = BadArgumentException.class)
+    public void validateParameterValueEmptyOrNull() throws BadArgumentException, BadVerbException {
+        OaiPmhRequestFactory.validateParameterNames(EMPTY_PARAMETER_VALUE_REQUEST);
     }
 
     @Test(expected = BadArgumentException.class)
