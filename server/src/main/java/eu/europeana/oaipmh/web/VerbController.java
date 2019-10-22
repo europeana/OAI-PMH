@@ -8,10 +8,12 @@ import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.SwaggerProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Pattern;
 
 /**
  * Rest controller that handles incoming OAI-PMH requests (identify, get record, list identifiers, list metadata formats,
@@ -19,9 +21,13 @@ import javax.servlet.http.HttpServletResponse;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
+@Validated
 @RestController
 @RequestMapping(value = {"/oai", "/oaicat/OAIHandler"})
 public class VerbController {
+
+    private static final Logger LOG = LogManager.getLogger(VerbController.class);
+    private static final String INVALID_SET_ID_MESSAGE = "Set id is invalid";
 
     @Value("${baseURL}")
     private String baseUrl;
@@ -97,7 +103,7 @@ public class VerbController {
     public String handleListIdentifiers(@RequestParam(value = "metadataPrefix") String metadataPrefix,
                                         @RequestParam(value = "from", required = false) String from,
                                         @RequestParam(value = "until", required = false) String until,
-                                        @RequestParam(value = "set", required = false) String set,
+                                        @RequestParam(value = "set", required = false) @Pattern(regexp = "^[a-zA-Z0-9_]*$", message = INVALID_SET_ID_MESSAGE) String set,
                                         HttpServletRequest request,
                                         HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
@@ -119,7 +125,7 @@ public class VerbController {
     public String handleListRecords(@RequestParam(value = "metadataPrefix") String metadataPrefix,
                                     @RequestParam(value = "from", required = false) String from,
                                     @RequestParam(value = "until", required = false) String until,
-                                    @RequestParam(value = "set", required = false) String set,
+                                    @RequestParam(value = "set", required = false ) @Pattern(regexp = "^[a-zA-Z0-9_]*$", message = INVALID_SET_ID_MESSAGE) String set,
                                     HttpServletRequest request,
                                     HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
