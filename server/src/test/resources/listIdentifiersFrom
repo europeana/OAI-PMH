@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+
+<lst name="responseHeader">
+  <bool name="zkConnected">true</bool>
+  <int name="status">0</int>
+  <int name="QTime">975</int>
+  <lst name="params">
+    <str name="q">*:*</str>
+    <str name="indent">on</str>
+    <str name="fl">timestamp_update,europeana_id,edm_datasetName</str>
+    <str name="fq">timestamp_update:[* TO 2017-08-02T22:00:00Z] [* TO 2017-08-02T22:00:00Z]</str>
+    <str name="sort">timestamp_update asc,europeana_id asc</str>
+    <str name="rows">10</str>
+    <str name="wt">xml</str>
+    <str name="_">1568645743822</str>
+  </lst>
+</lst>2017-08-03
+<result name="response" numFound="3" start="0">
+  <doc>
+    <str name="europeana_id">/00101/008DC6AA6923F4DCCA219B9AF6B455F6FDA9BF8C</str>
+    <arr name="edm_datasetName">
+      <str>00101_M_PT_Gulbenkian_biblioteca_digital</str>
+    </arr>
+    <date name="timestamp_update">2017-09-03T15:03:00Z</date></doc>
+  <doc>
+    <str name="europeana_id">/00101/009B2D15BC7AF24EF46FE65AA082E6CA1205A647</str>
+    <arr name="edm_datasetName">
+      <str>00101_M_PT_Gulbenkian_biblioteca_digital</str>
+    </arr>
+    <date name="timestamp_update">2017-10-03T15:05:00Z</date></doc>
+  <doc>
+    <str name="europeana_id">/00101/00A527E5BF415DD61ABC2A8C178AA6FDC308B20D</str>
+    <arr name="edm_datasetName">
+      <str>00101_M_PT_Gulbenkian_biblioteca_digital</str>
+    </arr>
+    <date name="timestamp_update">2017-09-03T15:00:00Z</date></doc>
+</result>
+</response>

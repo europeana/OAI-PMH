@@ -44,6 +44,8 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
 
     private static final String LIST_IDENTIFIERS = "listIdentifiers";
 
+    private static final String LIST_IDENTIFIERS_FROM = "listIdentifiersFrom";
+
     private static final String LIST_IDENTIFIERS_FROM_UNTIL = "listIdentifiersFromUntil";
 
     private static final String LIST_IDENTIFIERS_FROM_UNTIL_SET = "listIdentifiersFromUntilSet";
@@ -71,6 +73,16 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
 
         ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, null, null, SET_1, IDENTIFIERS_PER_PAGE);
         assertResults(result, null, null, SET_1);
+    }
+
+    @Test
+    public void listIdentifiersFrom() throws OaiPmhException, IOException, SolrServerException {
+        QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM);
+        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
+        Date from = DateConverter.fromIsoDateTime(DATE_1);
+
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, null, null, IDENTIFIERS_PER_PAGE);
+        assertResults(result, from, null, null);
     }
 
     @Test
