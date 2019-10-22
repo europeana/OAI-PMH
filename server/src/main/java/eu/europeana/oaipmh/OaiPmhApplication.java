@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -32,11 +31,10 @@ import java.lang.reflect.InvocationTargetException;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-@SpringBootApplication
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, MongoAutoConfiguration.class})
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
-@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class, MongoAutoConfiguration.class})
 public class OaiPmhApplication extends SpringBootServletInitializer {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
