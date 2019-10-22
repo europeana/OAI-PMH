@@ -3,7 +3,7 @@ package eu.europeana.oaipmh.model;
 /**
  * General interface for metadata format converters
  */
-public interface MetadataFormatConverter {
+public interface MetadataFormatConverter{
 
     /**
      * Convert record to the specific format

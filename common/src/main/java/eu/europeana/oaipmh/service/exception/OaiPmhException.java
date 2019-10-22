@@ -11,10 +11,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class OaiPmhException extends Exception {
 
-    private ErrorCode errorCode;
+    private final ErrorCode errorCode;
 
     public OaiPmhException(String msg, Throwable t) {
         super(msg, t);
+        errorCode = null;
     }
 
     public OaiPmhException(String msg, ErrorCode errorCode) {
@@ -24,6 +25,7 @@ public class OaiPmhException extends Exception {
 
     public OaiPmhException(String msg) {
         super(msg);
+        errorCode = null;
     }
 
     /**

@@ -82,7 +82,7 @@ public class OaiPmhRequestFactory {
         validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
         validVerbParameters.put(ListRecords.class.getSimpleName(), validParameters);
 
-        exclusiveParameters = new HashMap<>();
+        exclusiveParameters = new EnumMap<>(OaiParameterName.class);
         // metadataPrefix
         Set<OaiParameterName> exclusiveForParam = new HashSet<>();
         exclusiveForParam.add(OaiParameterName.RESUMPTION_TOKEN);
@@ -250,7 +250,7 @@ public class OaiPmhRequestFactory {
      * @throws BadArgumentException
      */
     private static Map<OaiParameterName, String> prepareParameters(String request, boolean ignoreErrors) throws BadArgumentException {
-        Map<OaiParameterName, String> parameters = new HashMap<>();
+        Map<OaiParameterName, String> parameters = new EnumMap<>(OaiParameterName.class);
 
         if (request == null) {
             return parameters;

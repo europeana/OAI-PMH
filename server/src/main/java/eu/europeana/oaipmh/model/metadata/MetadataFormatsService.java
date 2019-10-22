@@ -58,8 +58,7 @@ public class MetadataFormatsService implements MetadataFormatsProvider {
     private MetadataFormatConverter createConverter(String className) {
         try {
             Class converterClass = Class.forName(className);
-
-            return (MetadataFormatConverter) converterClass.getConstructor(new Class[] {}).newInstance(new Object[] {});
+            return (MetadataFormatConverter) converterClass.getConstructor(new Class[] {}).newInstance();
         } catch (ClassNotFoundException |
                 NoSuchMethodException |
                 IllegalAccessException |
