@@ -1,10 +1,14 @@
 package eu.europeana.oaipmh.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 class BaseProvider {
     @Value("${identifierPrefix}")
     private String identifierPrefix;
+
+    private static final Logger LOG = LogManager.getLogger(OaiPmhService.class);
 
     String prepareRecordId(String fullId) {
         if (fullId.startsWith(identifierPrefix)) {
@@ -31,6 +35,17 @@ class BaseProvider {
         if (index == -1) {
             return setName;
         }
+        if(ifSetNameEndsWithLetter(setName.charAt(index-1))){
+            LOG.info("Set name with alphabet {}" , setName);
+            return setName.substring(0, index-1);
+        }
         return setName.substring(0, index);
+    }
+
+    boolean ifSetNameEndsWithLetter(char c){
+        if(Character.isLetter(c)) {
+            return true;
+        }
+        return false;
     }
 }
