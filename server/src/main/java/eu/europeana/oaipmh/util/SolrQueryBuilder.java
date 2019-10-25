@@ -16,7 +16,7 @@ import static org.apache.solr.common.params.StatsParams.STATS_CALC_DISTINCT;
  */
 public class SolrQueryBuilder {
 
-    private static final String FQ_TEMPLATE = "%s:*/%s/*";
+    private static final String FQ_TEMPLATE = "%s:%s_*";
 
     private static final String DATE_RANGE_TEMPLATE = "%s:[%s TO %s]";
 
@@ -57,7 +57,7 @@ public class SolrQueryBuilder {
      */
     private static void addFilters(SolrQuery query, String set, Date from, Date until) {
         if (set != null && !set.isEmpty()) {
-            query.addFilterQuery(String.format(FQ_TEMPLATE, EUROPEANA_ID, set));
+            query.addFilterQuery(String.format(FQ_TEMPLATE, DATASET_NAME, set));
         }
 
         if (from != null || until != null) {
