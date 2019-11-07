@@ -4,6 +4,7 @@ import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormat;
 import eu.europeana.oaipmh.service.exception.NoMetadataFormatsException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -18,6 +19,8 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 
+// TODO remove Powermock and switch to Mockito (and optionally Wiremock)
+@Ignore
 @RunWith(PowerMockRunner.class)
 @SpringBootTest
 public class MetadataFormatsTest {
