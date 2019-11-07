@@ -22,6 +22,7 @@ import java.io.IOException;
 public class GetRecordResponseDeserializer extends StdDeserializer<GetRecordResponse> {
 
     private static final String IDENTIFIER = "identifier";
+    private static final long serialVersionUID = -7632541972408801034L;
 
     public GetRecordResponseDeserializer() {
         this(null);

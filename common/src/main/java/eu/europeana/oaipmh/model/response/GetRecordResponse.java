@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class GetRecordResponse extends OAIResponse {
 
+    private static final long serialVersionUID = 8080651725678978075L;
+
     private GetRecord getRecord;
 
     public GetRecordResponse() {}

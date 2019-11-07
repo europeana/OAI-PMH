@@ -167,8 +167,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         // when
         recordProvider.checkRecordExists(TEST_RECORD_ID);
 
-        // then
-        Assert.assertTrue(true);
+        // then if no error is thrown everything is fine
     }
 
     @Test(expected = IdDoesNotExistException.class)

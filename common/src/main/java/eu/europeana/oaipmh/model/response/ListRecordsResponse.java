@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class ListRecordsResponse extends OAIResponse {
 
+    private static final long serialVersionUID = -447267674059893746L;
+
     private ListRecords listRecords;
 
     public ListRecordsResponse() {}

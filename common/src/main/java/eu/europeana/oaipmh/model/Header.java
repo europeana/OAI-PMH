@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class Header implements Serializable {
 
+    private static final long serialVersionUID = 4303710121544438193L;
+
     @XmlElement
     private String identifier;
 

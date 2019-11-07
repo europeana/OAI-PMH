@@ -6,6 +6,9 @@ import javax.xml.bind.annotation.XmlAttribute;
  * This class represents the ListSets verb request.
  */
 public class ListSetsRequest extends OAIRequest {
+
+    private static final long serialVersionUID = -5685606349123941183L;
+
     @XmlAttribute
     private String resumptionToken;
 

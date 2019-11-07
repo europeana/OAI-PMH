@@ -8,6 +8,8 @@ import java.io.Serializable;
  */
 public class Set implements Serializable {
 
+    private static final long serialVersionUID = -8390878458067204309L;
+
     @XmlElement
     private String setSpec;
 

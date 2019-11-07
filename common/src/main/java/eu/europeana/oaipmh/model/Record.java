@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 
 public class Record implements Serializable {
+
+    private static final long serialVersionUID = 4269209744172447773L;
+
     @XmlElement
     private Header header;
 

@@ -21,6 +21,7 @@ import java.util.List;
 public class ListRecordsResponseDeserializer extends StdDeserializer<ListRecordsResponse> {
 
     private static final String RESUMPTION_TOKEN = "resumptionToken";
+    private static final long serialVersionUID = -5020158570695784042L;
 
     public ListRecordsResponseDeserializer() {
         this(null);

@@ -12,6 +12,8 @@ import static eu.europeana.oaipmh.model.RDFMetadata.METADATA_TAG;
 
 public class RDFMetadataDeserializer extends StdDeserializer<RDFMetadata> {
 
+    private static final long serialVersionUID = 2626769524735903468L;
+
     public RDFMetadataDeserializer() {
         this(null);
     }
