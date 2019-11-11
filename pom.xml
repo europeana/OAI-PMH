@@ -10,7 +10,7 @@
 
 	<groupId>eu.europeana</groupId>
     <artifactId>oai-pmh2</artifactId>
-    <version>0.6-beta-SNAPSHOT</version>
+    <version>0.6</version>
 	<packaging>pom</packaging>
 
 	<properties>
