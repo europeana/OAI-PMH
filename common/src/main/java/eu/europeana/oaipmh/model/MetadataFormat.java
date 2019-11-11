@@ -10,6 +10,8 @@ import java.io.Serializable;
  */
 public class MetadataFormat implements Serializable {
 
+    private static final long serialVersionUID = 2145947131425894852L;
+
     @XmlElement
     private String metadataPrefix;
 
@@ -20,7 +22,7 @@ public class MetadataFormat implements Serializable {
     private String metadataNamespace;
 
     @JsonIgnore
-    private MetadataFormatConverter converter;
+    private transient MetadataFormatConverter converter;
 
     public MetadataFormat() {
         // empty constructor to allow deserialization

@@ -1,10 +1,14 @@
 package eu.europeana.oaipmh.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 
 class BaseProvider {
     @Value("${identifierPrefix}")
     private String identifierPrefix;
+
+    private static final Logger LOG = LogManager.getLogger(OaiPmhService.class);
 
     String prepareRecordId(String fullId) {
         if (fullId.startsWith(identifierPrefix)) {
@@ -33,4 +37,5 @@ class BaseProvider {
         }
         return setName.substring(0, index);
     }
+
 }

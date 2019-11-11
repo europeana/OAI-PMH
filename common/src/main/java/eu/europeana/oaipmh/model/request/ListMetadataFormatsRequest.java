@@ -6,6 +6,9 @@ import javax.xml.bind.annotation.XmlAttribute;
  * This class represents the ListMetadataFormats verb request.
  */
 public class ListMetadataFormatsRequest extends OAIRequest {
+
+    private static final long serialVersionUID = -3245074909546527770L;
+
     @XmlAttribute
     private String identifier;
 

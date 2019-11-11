@@ -118,7 +118,8 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
             ListRecordsResult listRecordsResult;
             for (Future<ListRecordsResult> result : results) {
                 listRecordsResult = result.get();
-                LOG.info("Executor finished with " + listRecordsResult.getErrors() + " errors in " + listRecordsResult.getTime() + " sec.");
+                LOG.info("Executor finished with {} errors in {} sec.",
+                         listRecordsResult.getErrors(), listRecordsResult.getTime());
                 counter += perThread;
                 logger.logProgress(counter);
             }

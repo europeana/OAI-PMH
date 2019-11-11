@@ -6,6 +6,9 @@ import javax.xml.bind.annotation.XmlAttribute;
  * This class represents the ListIdentifiers verb request.
  */
 public class ListIdentifiersRequest extends OAIRequest {
+
+    private static final long serialVersionUID = 2761469193591873856L;
+
     @XmlAttribute
     private String metadataPrefix;
 

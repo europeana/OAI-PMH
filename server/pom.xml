@@ -5,13 +5,12 @@
     <parent>
         <groupId>eu.europeana</groupId>
         <artifactId>oai-pmh2</artifactId>
-        <version>0.5-beta</version>
+        <version>0.6</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>eu.europeana</groupId>
     <artifactId>oai-pmh2-server</artifactId>
-    <version>0.5-beta</version>
+    <version>0.6</version>
     <packaging>war</packaging>
 
     <name>Europeana OAI-PMH2 Server</name>
@@ -19,11 +18,6 @@
 
     <properties>
         <spring.boot.mainclass>eu.europeana.oaipmh.OaiPmhApplication</spring.boot.mainclass>
-
-        <mongoDriver.version>3.6.4</mongoDriver.version>
-        <morphia.version>1.3.2</morphia.version>
-        <solrj.version>6.6.5</solrj.version>
-        <aspectj.version>1.8.13</aspectj.version>
     </properties>
 
     <repositories>
@@ -50,7 +44,7 @@
         <dependency>
             <groupId>eu.europeana</groupId>
             <artifactId>oai-pmh2-common</artifactId>
-            <version>0.5-beta</version>
+            <version>0.6</version>
         </dependency>
 
         <dependency>
@@ -102,7 +96,7 @@
         <dependency>
             <groupId>org.xerial.snappy</groupId>
             <artifactId>snappy-java</artifactId>
-            <version>1.1.7.2</version>
+            <version>${snappy-java.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb.morphia</groupId>
@@ -110,65 +104,11 @@
             <version>${morphia.version}</version>
         </dependency>
 
-        <!-- Removed SNAPSHOT dependency temporarily so we can make a release. The only class we use from this
-             dependency (ExternalRequestUtil.class) has been included into the project -->
-        <!-- <dependency>
-            <groupId>eu.europeana.metis</groupId>
-            <artifactId>metis-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.mongodb</groupId>
-                    <artifactId>mongo-java-driver</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-databind</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>de.flapdoodle.embed</groupId>
-                    <artifactId>de.flapdoodle.embed.mongo</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-lang3</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-web</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>redis.clients</groupId>
-                    <artifactId>jedis</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>jackson-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.mockito</groupId>
-                    <artifactId>mockito-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>junit</groupId>
-                    <artifactId>junit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency> -->
-
         <!-- for parsing record json -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
-            <version>2.4.0</version>
+            <version>${json-path.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-api</artifactId>
@@ -188,7 +128,7 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <version>2.6</version>
+            <version>${commons-lang.version}</version>
         </dependency>
 
         <dependency>
@@ -225,7 +165,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-instrument</artifactId>
-            <version>4.3.17.RELEASE</version>
+            <version>${spring-instrument.version}</version>
         </dependency>
 
         <dependency>
@@ -234,6 +174,7 @@
             <version>${aspectj.version}</version>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
@@ -272,14 +213,14 @@
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-api-mockito</artifactId>
-            <version>1.7.1</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
-            <version>1.7.1</version>
+            <version>${powermock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -296,8 +237,8 @@
                             <version>1.7</version>
                             <configuration>
                                 <showWeaveInfo>false</showWeaveInfo>
-                                <source>1.8</source>
-                                <target>1.8</target>
+                                <source>${java.version}</source>
+                                <target>${java.version}</target>
                                 <Xlint>ignore</Xlint>
                                 <complianceLevel>1.8</complianceLevel>
                                 <encoding>UTF-8</encoding>

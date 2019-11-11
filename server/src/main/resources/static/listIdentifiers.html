@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Europeana OAI-PMH ListIdentifiers Request Form</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="shortcut icon" href="favicon.png" />
+    <link href="oai.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <div id="container">
+        <!--#include virtual="header.shtml" -->
+        <div id="main">
+            <table>
+                <tr valign="top">
+                    <td><a href="identify.html">Identify</a>&nbsp;<span class="divider">|</span>&nbsp;<a href="getRecord.html">GetRecord</a>&nbsp;<span class="divider">|</span>&nbsp;<a href="listIdentifiers.html">ListIdentifiers</a>&nbsp;(<a href="listIdentifiersResumption.html">Resumption</a>)&nbsp;<span class="divider">|</span>&nbsp;<a href="listMetadataFormats.html">ListMetadataFormats</a>&nbsp;<span class="divider">|</span>&nbsp;<a href="listRecords.html">ListRecords</a>&nbsp;(<a href="listRecordsResumption.html">Resumption</a>)&nbsp;<span class="divider">|</span>&nbsp;<a href="listSets.html">ListSets</a>&nbsp;(<a href="listSetsResumption.html">Resumption</a>)</td>
+                </tr>
+                <tr valign="top">
+                    <td>
+                        <h2>OAI-PMH ListIdentifiers Request Form</h2>
+                        <form id="listIdentifiers" class="nospace" action="https://api.europeana.eu/oai/record" method="GET">
+                            <input type="hidden" name="verb" value="ListIdentifiers">
+                            <table width="100%" border="0" cellspacing="0" cellpadding="4">
+                                <tr valign="top">
+                                    <td width="150"><strong>from:</strong></td>
+                                    <td><input type="text" name="from"></td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="150"><strong>until:</strong></td>
+                                    <td><input type="text" name="until"></td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="150"><strong>set:</strong></td>
+                                    <td><input type="text" name="set"></td>
+                                </tr>
+                                <tr valign="top">
+                                    <td width="150"><strong>metadataPrefix:</strong></td>
+                                    <td><input type="text" name="metadataPrefix" value="edm" required><sup>*</sup></td>
+                                </tr>
+                                <tr><td></td><td><sup>* = required field</sup></td></tr>
+                                <tr valign="top">
+                                    <td width="150">&nbsp;</td>
+                                    <td><input type="submit"></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </td>
+            </table>
+        </div>
+        <!--#include virtual="footer.shtml" -->
+    </div>
+
+<script>
+    var myForm = document.getElementById('listIdentifiers');
+
+    myForm.addEventListener('submit', function () {
+        var allInputs = myForm.getElementsByTagName('input');
+
+        for (var i = 0; i < allInputs.length; i++) {
+            var input = allInputs[i];
+
+            if (input.name && !input.value) {
+                input.name = '';
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

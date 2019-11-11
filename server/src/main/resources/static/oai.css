@@ -1,0 +1,123 @@
+ADDRESS {
+    FONT-SIZE: small;
+    FONT-FAMILY: Geneva, Verdana, Helvetica, Arial, sans-serif;
+}
+
+BODY {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-size: medium;
+    FONT-FAMILY: Arial, Helvetica, Geneva, Verdana, sans-serif;
+}
+
+BUTTON {
+    CURSOR: auto;
+}
+
+H2 {
+    FONT: bold 18px helvetica, arial, sans-serif;
+    COLOR: #00527c;
+}
+
+HR {
+    COLOR: #669933;
+    HEIGHT: 1px;
+}
+
+INPUT {
+    CURSOR: auto;
+    COLOR: #000000;
+}
+
+SELECT {
+    FONT-SIZE: small;
+    COLOR: #000000;
+    FONT-FAMILY: Arial, Helvetica, Geneva, Verdana, sans-serif;
+}
+
+TD {
+    FONT-SIZE: small;
+    MARGIN-LEFT: 0px;
+    FONT-FAMILY: Arial, Helvetica, Geneva, Verdana, sans-serif;
+}
+
+TEXTAREA {
+    CURSOR: text;
+    COLOR: #000000;
+    BACKGROUND-COLOR: #ffffff;
+}
+
+TH {
+    FONT-WEIGHT: bold;
+    FONT-SIZE: small;
+    MARGIN-LEFT: 0px;
+    FONT-FAMILY: Arial, Helvetica, Geneva, Verdana, sans-serif;
+    TEXT-ALIGN: center;
+}
+
+A.footer:link {
+    COLOR: #336600;
+    TEXT-DECORATION: none;
+}
+
+A.footer:link {
+    COLOR: #336600;
+    TEXT-DECORATION: none;
+}
+
+A.footer:visited {
+    COLOR: #669933;
+    TEXT-DECORATION: none;
+}
+
+A.footer:active {
+    COLOR: #99cc33;
+    TEXT-DECORATION: none;
+}
+
+A.footer:hover {
+    COLOR: #ff0000;
+    TEXT-DECORATION: underline;
+}
+
+.divider {
+    COLOR: #999999;
+}
+
+.nospace {
+    MARGIN-TOP: 0px;
+    MARGIN-BOTTOM: 0px;
+}
+
+#container {
+    min-height: 90%;
+    position: relative;
+    padding: 10px;
+}
+
+#header {
+    height: 70px;
+    padding: 0px;
+}
+
+    #header img {
+        height: 60px;
+        width: auto;
+    }
+
+#main {
+    min-height: 300px;
+    overflow: auto;
+}
+
+#footer {
+    height: 120px; /* Height of the footer */
+    position: relative;
+    bottom: 0;
+}
+
+    #footer img {
+        height: 60px;
+        width: auto;
+    }

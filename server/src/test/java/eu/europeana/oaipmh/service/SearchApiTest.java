@@ -27,7 +27,6 @@ import static org.junit.Assert.*;
 @RunWith(MockitoJUnitRunner.class)
 @PropertySources(value = {})
 @SpringBootTest
-@Ignore // Temporary disabled, see ticket EA-1482
 public class SearchApiTest extends SolrBasedProviderTestCase {
     private static final int IDENTIFIERS_PER_PAGE = 300;
 

@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import java.util.stream.Collectors;
 
 /**
  * Global exception handler that catches all errors and logs the interesting ones
@@ -29,6 +32,8 @@ public class GlobalExceptionHandler extends BaseService {
     private String baseUrl;
 
     private static final Logger LOG = LogManager.getLogger(GlobalExceptionHandler.class);
+    private static final String BAD_REQUEST = "BAD_REQUEST";
+
 
     /**
      * Checks if we should log an error and serializes the error response
@@ -98,5 +103,18 @@ public class GlobalExceptionHandler extends BaseService {
     @ResponseStatus(HttpStatus.OK)
     public String handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public final String handleConstraintViolation(
+            ConstraintViolationException ex,
+            HttpServletRequest request) throws BadArgumentException, SerializationException
+    {
+        String details = String.join(" ," ,ex.getConstraintViolations()
+                .parallelStream()
+                .map(e -> e.getMessage())
+                .collect(Collectors.toList()));
+        return handleException(new BadArgumentException(details),request);
     }
 }

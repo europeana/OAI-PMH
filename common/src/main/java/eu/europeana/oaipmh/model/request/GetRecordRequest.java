@@ -3,6 +3,9 @@ package eu.europeana.oaipmh.model.request;
 import javax.xml.bind.annotation.XmlAttribute;
 
 public class GetRecordRequest extends OAIRequest {
+
+    private static final long serialVersionUID = -2916674752350963926L;
+
     @XmlAttribute
     private String metadataPrefix;
 

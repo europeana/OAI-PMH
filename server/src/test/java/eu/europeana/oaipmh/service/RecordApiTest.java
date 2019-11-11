@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -66,25 +67,24 @@ public class RecordApiTest extends BaseApiTestCase {
         given(recordApi.getRecord("INCORRECT/ID")).willThrow(new IdDoesNotExistException("INCORRECT/ID"));
 
         recordApi.getRecord("INCORRECT/ID");
-        Assert.assertTrue(false);
+
+        fail(); // should not reach this code
     }
 
     @Test
-    public void checkRecordExists() throws OaiPmhException, IOException {
+    public void checkRecordExists() throws OaiPmhException {
         Mockito.doNothing().when(recordApi).checkRecordExists(TEST_RECORD_ID);
 
         recordApi.checkRecordExists(TEST_RECORD_ID);
-
-        Assert.assertTrue(true);
     }
 
 
     @Test(expected = IdDoesNotExistException.class)
-    public void checkRecordExistsWithWrongIdentifier() throws OaiPmhException, IOException {
+    public void checkRecordExistsWithWrongIdentifier() throws OaiPmhException {
         Mockito.doThrow(new IdDoesNotExistException("INCORRECT/ID")).when(recordApi).checkRecordExists("INCORRECT/ID");
 
         recordApi.checkRecordExists("INCORRECT/ID");
 
-        Assert.assertFalse(true);
+        fail(); // should not reach this code
     }
 }

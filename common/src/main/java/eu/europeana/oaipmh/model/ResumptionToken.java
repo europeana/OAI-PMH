@@ -14,6 +14,8 @@ import java.util.Date;
 @XmlType(propOrder = {"completeListSize", "expirationDate", "cursor"})
 public class ResumptionToken implements Serializable {
 
+    private static final long serialVersionUID = -1976239725102126946L;
+
     @XmlAttribute
     private Date expirationDate;
 

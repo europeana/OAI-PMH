@@ -76,6 +76,8 @@ public class VerbControllerTest {
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml")))
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test

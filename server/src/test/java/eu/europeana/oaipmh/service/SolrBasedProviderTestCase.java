@@ -1,11 +1,16 @@
 package eu.europeana.oaipmh.service;
 
+
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.XMLResponseParser;
+
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.util.NamedList;
 import org.mockito.Mock;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -13,10 +18,20 @@ public class SolrBasedProviderTestCase extends BaseApiTestCase {
     @Mock
     protected CloudSolrClient solrClient;
 
-    protected QueryResponse getResponse(String fileName) throws IOException {
+    QueryResponse getResponse(String fileName) throws IOException {
         Path path = Paths.get(resDir + "/" + fileName);
-        byte[] bytes = Files.readAllBytes(path);
-        QueryResponse response = (QueryResponse) QueryResponse.deserialize(bytes);
-        return response;
+        try (InputStream body = new FileInputStream(path.toFile())) {
+            NamedList<Object> result = processResponse(body, null);
+            QueryResponse response = new QueryResponse();
+            response.setResponse(result);
+            return response;
+        }
     }
+
+    private NamedList<Object> processResponse(InputStream body, Object o) {
+        XMLResponseParser parser= new XMLResponseParser();
+        return parser.processResponse(body, "UTF-8");
+    }
+
+
 }

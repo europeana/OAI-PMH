@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class ListMetadataFormatsResponse extends OAIResponse {
 
+    private static final long serialVersionUID = 6016788661722356657L;
+
     private ListMetadataFormats listMetadataFormats;
 
     public ListMetadataFormatsResponse() {}

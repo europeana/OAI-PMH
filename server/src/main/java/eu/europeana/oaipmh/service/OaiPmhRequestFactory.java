@@ -5,6 +5,7 @@ import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.util.DateConverter;
+import org.apache.commons.lang.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -81,7 +82,7 @@ public class OaiPmhRequestFactory {
         validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
         validVerbParameters.put(ListRecords.class.getSimpleName(), validParameters);
 
-        exclusiveParameters = new HashMap<>();
+        exclusiveParameters = new EnumMap<>(OaiParameterName.class);
         // metadataPrefix
         Set<OaiParameterName> exclusiveForParam = new HashSet<>();
         exclusiveForParam.add(OaiParameterName.RESUMPTION_TOKEN);
@@ -219,8 +220,11 @@ public class OaiPmhRequestFactory {
      * @throws BadArgumentException
      */
     private static void validateParameter(String verb, String name, String value) throws BadArgumentException {
+        if (StringUtils.isEmpty(name)) {
+            throw new BadArgumentException("Empty parameter!");
+        }
         if (!OaiParameterName.contains(name)) {
-            throw new BadArgumentException("Parameter name \"" + name + "\" is not supported!");
+            throw new BadArgumentException("Parameter \"" + name + "\" is not supported!");
         }
 
         if (verb != null) {
@@ -229,7 +233,7 @@ public class OaiPmhRequestFactory {
 
         // empty
         if (value == null || value.isEmpty()) {
-            throw new BadArgumentException(String.format(PARAMETER_INFO, name) + "cannot be empty");
+            throw new BadArgumentException(String.format(PARAMETER_INFO, name) + "requires a value");
         }
 
         // specified multiple times
@@ -246,7 +250,7 @@ public class OaiPmhRequestFactory {
      * @throws BadArgumentException
      */
     private static Map<OaiParameterName, String> prepareParameters(String request, boolean ignoreErrors) throws BadArgumentException {
-        Map<OaiParameterName, String> parameters = new HashMap<>();
+        Map<OaiParameterName, String> parameters = new EnumMap<>(OaiParameterName.class);
 
         if (request == null) {
             return parameters;
@@ -255,14 +259,16 @@ public class OaiPmhRequestFactory {
         String[] arguments = request.split("&");
         for (String argument : arguments) {
             String[] paramValue = argument.split("=");
-            if (paramValue.length == 2) {
-                validateNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
-            } else if (paramValue.length == 1) {
-                validateParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
-            } else {
-                String value = argument.substring(argument.indexOf('=') + 1);
-                validateNormalParameter(ignoreErrors, parameters, paramValue[0], value);
-            }
+
+                if (paramValue.length == 2) {
+                    validateNormalParameter(ignoreErrors, parameters, paramValue[0], paramValue[1]);
+                } else if (paramValue.length == 1) {
+                    validateParameterWithoutValue(ignoreErrors, parameters, paramValue[0]);
+                } else {
+                    String value = argument.substring(argument.indexOf('=') + 1);
+                    validateParameterWithoutValue(ignoreErrors, parameters, value);
+                }
+
         }
 
         return parameters;

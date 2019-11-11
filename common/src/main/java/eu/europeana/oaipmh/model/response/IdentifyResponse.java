@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class IdentifyResponse extends OAIResponse {
 
+    private static final long serialVersionUID = -2442426890956173353L;
+
     @XmlElement(name="Identify")
     private Identify responseObject;
 

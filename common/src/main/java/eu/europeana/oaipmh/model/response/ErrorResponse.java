@@ -6,6 +6,9 @@ import eu.europeana.oaipmh.model.request.OAIRequest;
 import javax.xml.bind.annotation.XmlElement;
 
 public class ErrorResponse extends OAIResponse {
+
+    private static final long serialVersionUID = 4176761060044789096L;
+
     @XmlElement
     private OAIError error;
 

@@ -12,6 +12,8 @@ import java.io.Serializable;
  */
 public class OAIRequest implements Serializable {
 
+    private static final long serialVersionUID = 2395818412589427046L;
+
     @XmlAttribute
     private String verb;
 

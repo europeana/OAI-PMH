@@ -10,6 +10,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
 public class OAIError extends OAIPMHVerb {
+
+    private static final long serialVersionUID = 8377284038295398272L;
+
     @XmlAttribute
     private String code;
 

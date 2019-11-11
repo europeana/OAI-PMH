@@ -15,6 +15,8 @@ import java.util.Date;
 @XmlRootElement(name = "OAI-PMH")
 public class OAIResponse implements Serializable {
 
+    private static final long serialVersionUID = -7158631502815022149L;
+
     @XmlAttribute
     private String xmlns="http://www.openarchives.org/OAI/2.0/";
 

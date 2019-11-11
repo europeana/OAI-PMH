@@ -22,6 +22,7 @@ import java.util.List;
 public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIdentifiersResponse> {
 
     private static final String RESUMPTION_TOKEN = "resumptionToken";
+    private static final long serialVersionUID = -1513167966386460815L;
 
     public ListIdentifiersResponseDeserializer() {
         this(null);
@@ -125,7 +126,7 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
 
     private void setIdentifier(JsonNode header, JsonNode identifierNode, Header headerObject, JsonNode id) {
         if (id == null) {
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! "+header.textValue());
+            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! {}", header.textValue());
         } else {
             headerObject.setIdentifier(identifierNode.get("identifier").asText());
         }

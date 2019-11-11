@@ -9,6 +9,8 @@ public class RDFMetadata implements Serializable {
 
     public static final String METADATA_TAG = "metadata";
 
+    private static final long serialVersionUID = -4458812803376020340L;
+
     private String metadata;
 
     public RDFMetadata() {}

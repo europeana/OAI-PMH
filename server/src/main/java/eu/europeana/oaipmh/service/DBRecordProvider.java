@@ -33,13 +33,10 @@ import java.util.concurrent.*;
 @ConfigurationProperties
 public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
-    private static final Logger LOG = LogManager.getLogger(DBRecordProvider.class);
-
-    private static final String RECORD_WITH_ID = "Record with id %s ";
-
-    private static final int THREADS_THRESHOLD = 10;
-
-    private static final int MAX_THREADS_THRESHOLD = 20;
+    private static final Logger LOG                   = LogManager.getLogger(DBRecordProvider.class);
+    private static final String RECORD_WITH_ID        = "Record with id %s ";
+    private static final int    THREADS_THRESHOLD     = 10;
+    private static final int    MAX_THREADS_THRESHOLD = 20;
 
     @Value("${mongodb.connectionUrl}")
     private String connectionUrl;
@@ -60,7 +57,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     private int maxThreadsCount;
 
     private ExecutorService threadPool;
-
     private EdmMongoServer mongoServer;
 
     @PostConstruct
@@ -99,7 +95,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         } else if (threadsCount > THREADS_THRESHOLD && threadsCount <= maxThreadsCount) {
             LOG.warn("Number of threads exceeds " + THREADS_THRESHOLD + " which may narrow the number of clients working in parallel");
         } else if (threadsCount > maxThreadsCount) {
-            LOG.warn("Number of threads exceeds " + maxThreadsCount + " which may highly narrow the number of clients working in parallel. Changing to " + MAX_THREADS_THRESHOLD);
+            LOG.warn("Number of threads exceeds {}, which may highly narrow the number of clients working in parallel. Changing to {}",
+                     maxThreadsCount, MAX_THREADS_THRESHOLD);
             threadsCount = MAX_THREADS_THRESHOLD;
         }
         threadPool = Executors
@@ -197,7 +194,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             for (Future<CollectRecordsResult> result : results) {
                 collectRecordsResult = result.get();
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Thread " + collectRecordsResult.getThreadId() + " collected " + collectRecordsResult.getRecords().size() + " records.");
+                    LOG.debug("Thread {} collected {} records."
+                            , collectRecordsResult.getThreadId(), collectRecordsResult.getRecords().size());
                 }
                 records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
             }
@@ -218,7 +216,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ListRecords using " + threadsCount + " threads finished in " + (System.currentTimeMillis() - start) + " ms.");
+            LOG.debug("ListRecords using {} threads finished in {} ms.",
+                      threadsCount, (System.currentTimeMillis() - start));
         }
 
         ListRecords result = new ListRecords();
@@ -242,7 +241,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
             WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
-            LOG.debug("Technical metadata injected in " + String.valueOf(System.currentTimeMillis() - start) + " ms.");
+            LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
         }
     }
 
@@ -305,19 +304,15 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     private class CollectRecordsResult {
         int threadId;
-
         List<Record> records;
-
         CollectRecordsResult(int threadId, List<Record> records) {
             this.threadId = threadId;
             this.records = records;
             LOG.trace("Thread {} returning {} records", threadId, records.size());
         }
-
         int getThreadId() {
             return threadId;
         }
-
         List<Record> getRecords() {
             return records;
         }
