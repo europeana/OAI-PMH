@@ -161,7 +161,18 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @TrackTime
     private String getEDM(RDF rdf) {
-        return EdmUtils.toEDM(rdf);
+        try {
+            return EdmUtils.toEDM(rdf);
+        } catch (RuntimeException e) {
+            // in the past we've had records that threw a JibX marshalling error because of missing data,
+            // so we catch those to log which record fails
+            String id = "unknown";
+            if (!rdf.getEuropeanaAggregationList().isEmpty()) {
+                id = rdf.getEuropeanaAggregationList().get(0).getAbout();
+            }
+            LOG.error("Error converting RDF to EDM for record {}", id);
+            throw e;
+        }
     }
 
     @TrackTime
