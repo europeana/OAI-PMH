@@ -160,12 +160,12 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     @TrackTime
-    private String getEDM(RDF rdf) {
+    public String getEDM(RDF rdf) {
         return EdmUtils.toEDM(rdf);
     }
 
     @TrackTime
-    private RDF getRDF(FullBeanImpl bean) {
+    public RDF getRDF(FullBeanImpl bean) {
         return EdmUtils.toRDF(bean);
     }
 
@@ -185,7 +185,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         for (int i = 0; i < threadsCount; i++) {
             tasks.add(new CollectRecordsTask(identifiers.subList((int) (i * perThread), (int) ((i + 1) * perThread)), i));
         }
-
         try {
             // invoke a separate thread for each provider
             results = threadPool.invokeAll(tasks);
