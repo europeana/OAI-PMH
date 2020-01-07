@@ -37,8 +37,7 @@
 		<aspectj.version>1.8.13</aspectj.version>
 		<!--<aspectj-maven-plugin.version>1.7</aspectj-maven-plugin.version>-->
 
-		<mockito.version>2.18.0</mockito.version>
-		<powermock.version>1.7.1</powermock.version>
+		<mockito.version>3.2.4</mockito.version>
 	</properties>
 
 	<name>Europeana OAI-PMH2</name>
