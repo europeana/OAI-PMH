@@ -1,7 +1,9 @@
 package eu.europeana.oaipmh.service;
 
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
 import eu.europeana.corelib.definitions.jibx.*;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
@@ -26,11 +28,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.*;
 
 @Configuration
-public class DBRecordProvider extends BaseProvider implements RecordProvider {
+public class DBRecordProvider extends BaseProvider implements RecordProvider, ConnectionPoolListener {
 
     private static final Logger LOG                   = LogManager.getLogger(DBRecordProvider.class);
     private static final String RECORD_WITH_ID        = "Record with id %s ";
@@ -49,11 +52,17 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${expandWithFullText:false}")
     private boolean expandWithFullText;
 
+    // number of threads from configuration
     @Value("${threadsCount:1}")
     private int threadsCount;
 
+    // TODO figure out difference between threadsCount and maxThreadCount.
+    // Looks like both are static numbers from the configuration and never changed (at least not after initialization in initThreadPool method)
     @Value("${maxThreadsCount:20}")
     private int maxThreadsCount;
+
+    // for some reason we always get 2 connections directly after start-up that are not registered by the ConnectionPoolListener
+    private int nrConnections = 2;
 
     private ExecutorService threadPool;
     private EdmMongoServer mongoServer;
@@ -66,7 +75,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     private void initMongo() throws InternalServerErrorException {
         try {
-            MongoClientURI uri  = new MongoClientURI(connectionUrl);
+            // We add a connectionPoolListener so we can keep track of the number of connections
+            MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
+            MongoClientURI uri = new MongoClientURI(connectionUrl, clientOptions);
             mongoServer = new EdmMongoServerImpl(new MongoClient(uri), recordDBName, false);
             LOG.info("Connected to mongo database {} at {}", recordDBName, uri.getHosts());
         } catch (MongoDBException e) {
@@ -94,8 +105,50 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                      maxThreadsCount, MAX_THREADS_THRESHOLD);
             threadsCount = MAX_THREADS_THRESHOLD;
         }
-        threadPool = Executors
-                .newFixedThreadPool(threadsCount);
+        LOG.info("Creating new thread pool with {} threads.", threadsCount);
+        threadPool = Executors.newFixedThreadPool(threadsCount);
+    }
+
+    @Override
+    public void connectionPoolOpened(ConnectionPoolOpenedEvent connectionPoolOpenedEvent) {
+        LOG.debug("Connection pool opened {}", connectionPoolOpenedEvent);
+    }
+
+    @Override
+    public void connectionPoolClosed(ConnectionPoolClosedEvent connectionPoolClosedEvent) {
+        LOG.debug("Connectio pool closed {}", connectionPoolClosedEvent);
+    }
+
+    @Override
+    public void connectionCheckedOut(ConnectionCheckedOutEvent connectionCheckedOutEvent) {
+        // ignore
+    }
+
+    @Override
+    public void connectionCheckedIn(ConnectionCheckedInEvent connectionCheckedInEvent) {
+        // ignore
+    }
+
+    @Override
+    public void waitQueueEntered(ConnectionPoolWaitQueueEnteredEvent connectionPoolWaitQueueEnteredEvent) {
+        // ignore
+    }
+
+    @Override
+    public void waitQueueExited(ConnectionPoolWaitQueueExitedEvent connectionPoolWaitQueueExitedEvent) {
+        // ignore
+    }
+
+    @Override
+    public synchronized void connectionAdded(ConnectionAddedEvent connectionAddedEvent) {
+        nrConnections++;
+        LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionAddedEvent, this.hashCode(), nrConnections);
+    }
+
+    @Override
+    public synchronized void connectionRemoved(ConnectionRemovedEvent connectionRemovedEvent) {
+        nrConnections--;
+        LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionRemovedEvent, this.hashCode(), nrConnections);
     }
 
     /**
@@ -280,9 +333,14 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     @Override
+    @PreDestroy
     public void close() {
+        LOG.info("Shutting down Mongo connections...");
         if (mongoServer != null) {
             mongoServer.close();
+        }
+        if (threadPool != null) {
+            threadPool.shutdown();
         }
     }
 
