@@ -12,9 +12,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -35,7 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
-public class OaiPmhApplication extends SpringBootServletInitializer {
+public class OaiPmhApplication extends SpringBootServletInitializer implements EnvironmentPostProcessor {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
 
@@ -171,4 +173,13 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
         }
     }
 
+    /**
+     * This method is called to set the bean definition overriding as true.
+     * @param environment
+     * @param application
+     */
+    @Override
+    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+        application.setAllowBeanDefinitionOverriding(true);
+    }
 }
