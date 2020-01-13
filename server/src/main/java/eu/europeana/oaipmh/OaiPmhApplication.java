@@ -14,7 +14,11 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -24,6 +28,9 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Main application and configuration.
@@ -41,6 +48,12 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
 
     @Value("${recordProviderClass}")
     private String recordProviderClass;
+
+    @Value("${features.security.enable}")
+    private boolean securityEnable;
+
+    @Value("${security.config.ipRanges}")
+    private String ipRanges;
 
     /**
      * Setup CORS for all requests
@@ -168,6 +181,28 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
             super.onStartup(servletContext);
         } catch (IOException e) {
             throw new ServletException("Error reading properties", e);
+        }
+    }
+
+    @EnableWebSecurity
+    @Configuration
+    class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            if(securityEnable) {
+                http.authorizeRequests()
+                        .antMatchers("/oai/**" , "/oaicat/OAIHandler/**").access(createHasIpRangeExpression());
+            }
+        }
+
+        /**
+         * creates the string for authorizing request for the provided ipRanges
+         */
+        private String createHasIpRangeExpression() {
+            List<String> validIps = Arrays.asList(ipRanges.split("\\s*,\\s*"));
+            return validIps.stream()
+                    .collect(Collectors.joining("') or hasIpAddress('", "hasIpAddress('", "')"));
         }
     }
 
