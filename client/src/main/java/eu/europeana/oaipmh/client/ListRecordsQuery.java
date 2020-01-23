@@ -1,8 +1,10 @@
 package eu.europeana.oaipmh.client;
 
 import eu.europeana.oaipmh.model.ListRecords;
+import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.response.ListRecordsResponse;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +12,15 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.zip.ZipOutputStream;
 
 @Component
 public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
@@ -42,6 +49,13 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
 
     @Value("${LogProgress.interval}")
     private Integer logProgressInterval;
+
+    @Value("${saveToFile}")
+    private String saveToFile;
+
+    @Value("${saveToFolder}")
+    private String directoryLocation;
+
 
     private List<String> sets = new ArrayList<>();
 
@@ -143,27 +157,47 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         ProgressLogger logger = new ProgressLogger(-1, logProgressInterval);
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), setIdentifier);
-
         ListRecordsResponse response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
         ListRecords responseObject = response.getListRecords();
-        if (responseObject != null) {
-            counter += responseObject.getRecords().size();
-            if (responseObject.getResumptionToken() != null) {
-                logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
-            } else {
-                logger.setTotalItems(responseObject.getRecords().size());
-            }
+        try {
+            final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(directoryLocation + setIdentifier + ".zip")));
+            OutputStreamWriter writer = new OutputStreamWriter(zout);
 
-            while (responseObject.getResumptionToken() != null) {
-                request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
-                response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
-                responseObject = response.getListRecords();
-                if (responseObject == null) {
-                    break;
+            if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+                for(Record record : responseObject.getRecords()) {
+                    ZipUtility.writeInZip(zout, writer, record);
                 }
-                counter += responseObject.getRecords().size();
-                logger.logProgress(counter);
             }
+            if (responseObject != null) {
+                counter += responseObject.getRecords().size();
+
+                if (responseObject.getResumptionToken() != null) {
+                    logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
+                } else {
+                    logger.setTotalItems(responseObject.getRecords().size());
+                }
+                while (responseObject.getResumptionToken() != null) {
+
+                    request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
+                    response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
+                    responseObject = response.getListRecords();
+
+                    if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+                        for (Record record : responseObject.getRecords()) {
+                            ZipUtility.writeInZip(zout, writer, record);
+                        }
+                    }
+                    if (responseObject == null) {
+
+                        break;
+                    }
+                    counter += responseObject.getRecords().size();
+                    logger.logProgress(counter);
+                }
+            }
+            zout.close();
+        } catch (IOException e) {
+            LOG.error("Error creating outputStreams ", e);
         }
 
         LOG.info("ListRecords for set " + setIdentifier + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +

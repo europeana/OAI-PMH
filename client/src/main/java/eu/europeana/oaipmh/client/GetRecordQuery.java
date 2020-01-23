@@ -5,10 +5,17 @@ import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.RDFMetadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.response.GetRecordResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.util.zip.ZipOutputStream;
 
 @Component
 public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
@@ -20,6 +27,13 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
 
     @Value("${GetRecord.identifier}")
     private String identifier;
+
+    @Value("${saveToFile}")
+    private String saveToFile;
+
+    @Value("${saveToFolder}")
+    private String directoryLocation;
+
 
     public GetRecordQuery() {
     }
@@ -43,25 +57,34 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
         long start = System.currentTimeMillis();
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), currentIdentifier);
-
         GetRecordResponse response = (GetRecordResponse) oaipmhServer.makeRequest(request, GetRecordResponse.class);
         GetRecord responseObject = response.getGetRecord();
-        if (responseObject != null) {
-            Record record = responseObject.getRecord();
-            if (record == null) {
-                LOG.error("No record in GetRecordResponse for identifier {}", currentIdentifier);
-                return;
-            }
-            Header header = record.getHeader();
-            if (header != null && currentIdentifier.equals(header.getIdentifier())) {
-                RDFMetadata metadata = record.getMetadata();
-                if (metadata == null || metadata.getMetadata() == null || metadata.getMetadata().isEmpty()) {
-                    LOG.error("Empty metadata for identifier {}", currentIdentifier);
+        try {
+            final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(directoryLocation + ZipUtility.getDirectoryName(currentIdentifier) + ".zip")));
+            OutputStreamWriter writer = new OutputStreamWriter(zout);
+            if (responseObject != null) {
+                Record record = responseObject.getRecord();
+                if (record == null) {
+                    LOG.error("No record in GetRecordResponse for identifier {}", currentIdentifier);
+                    return;
+                }
+                Header header = record.getHeader();
+                if (header != null && currentIdentifier.equals(header.getIdentifier())) {
+                    RDFMetadata metadata = record.getMetadata();
+                    if (metadata == null || metadata.getMetadata() == null || metadata.getMetadata().isEmpty()) {
+                        LOG.error("Empty metadata for identifier {}", currentIdentifier);
+                    }
+                }
+                if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+                    ZipUtility.writeInZip(zout, writer, record);
                 }
             }
+            zout.close();
+        } catch (IOException e) {
+            LOG.error("Error creating outputStreams ", e);
         }
 
-        LOG.debug("GetRecord for identifier {} executed in {} ms", currentIdentifier, (System.currentTimeMillis() - start));
+        LOG.info("GetRecord for identifier {} executed in {} ms", currentIdentifier, (System.currentTimeMillis() - start));
     }
 
     private String getRequest(String oaipmhServer, String identifier) {
