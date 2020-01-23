@@ -15,6 +15,10 @@ public class ZipUtility {
     private static final Logger LOG = LogManager.getLogger(ZipUtility.class);
     private static final String EXTENSION = ".xml";
 
+    private ZipUtility() {
+        //adding a private constructor to hide implicit public one
+    }
+
     public static void writeInZip(ZipOutputStream zout, OutputStreamWriter writer, Record record) {
         try {
             zout.putNextEntry(new ZipEntry(getEntryName(record)));
