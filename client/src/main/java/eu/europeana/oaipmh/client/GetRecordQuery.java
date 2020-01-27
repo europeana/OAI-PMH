@@ -21,6 +21,8 @@ import java.util.zip.ZipOutputStream;
 public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
 
     private static final Logger LOG = LogManager.getLogger(GetRecordQuery.class);
+    private static final String ZIP_EXTENSION = ".zip";
+    private static final String PATH_SEPERATOR = "/";
 
     @Value("${GetRecord.metadataPrefix}")
     private String metadataPrefix;
@@ -59,9 +61,9 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
         String request = getRequest(oaipmhServer.getOaipmhServer(), currentIdentifier);
         GetRecordResponse response = (GetRecordResponse) oaipmhServer.makeRequest(request, GetRecordResponse.class);
         GetRecord responseObject = response.getGetRecord();
-        try {
-            final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(directoryLocation + ZipUtility.getDirectoryName(currentIdentifier) + ".zip")));
-            OutputStreamWriter writer = new OutputStreamWriter(zout);
+        try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
+                new File(directoryLocation + PATH_SEPERATOR + ZipUtility.getDirectoryName(currentIdentifier) + ZIP_EXTENSION)));
+             OutputStreamWriter writer = new OutputStreamWriter(zout)) {
             if (responseObject != null) {
                 Record record = responseObject.getRecord();
                 if (record == null) {
@@ -79,7 +81,6 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
                     ZipUtility.writeInZip(zout, writer, record);
                 }
             }
-            zout.close();
         } catch (IOException e) {
             LOG.error("Error creating outputStreams ", e);
         }
