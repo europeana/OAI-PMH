@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
 import eu.europeana.corelib.definitions.jibx.*;
 import eu.europeana.corelib.edm.exceptions.MongoDBException;
@@ -24,14 +25,15 @@ import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.*;
 import java.util.concurrent.*;
 
-@ConfigurationProperties
-public class DBRecordProvider extends BaseProvider implements RecordProvider {
+@Configuration
+public class DBRecordProvider extends BaseProvider implements RecordProvider, ConnectionPoolListener {
 
     private static final Logger LOG                   = LogManager.getLogger(DBRecordProvider.class);
     private static final String RECORD_WITH_ID        = "Record with id %s ";
@@ -50,11 +52,17 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     @Value("${expandWithFullText:false}")
     private boolean expandWithFullText;
 
+    // number of threads from configuration
     @Value("${threadsCount:1}")
     private int threadsCount;
 
+    // TODO figure out difference between threadsCount and maxThreadCount.
+    // Looks like both are static numbers from the configuration and never changed (at least not after initialization in initThreadPool method)
     @Value("${maxThreadsCount:20}")
     private int maxThreadsCount;
+
+    // for some reason we always get 2 connections directly after start-up that are not registered by the ConnectionPoolListener
+    private int nrConnections = 2;
 
     private ExecutorService threadPool;
     private EdmMongoServer mongoServer;
@@ -67,13 +75,11 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     private void initMongo() throws InternalServerErrorException {
         try {
-            MongoClientOptions.Builder options = MongoClientOptions.builder();
-            options.connectTimeout(5000);
-            options.socketTimeout(45000);
-            MongoClient client = new MongoClient(new MongoClientURI(connectionUrl, options));
-
-            mongoServer = new EdmMongoServerImpl(client, recordDBName);
-            LOG.info("Connected to mongo database {}", recordDBName);
+            // We add a connectionPoolListener so we can keep track of the number of connections
+            MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
+            MongoClientURI uri = new MongoClientURI(connectionUrl, clientOptions);
+            mongoServer = new EdmMongoServerImpl(new MongoClient(uri), recordDBName, false);
+            LOG.info("Connected to mongo database {} at {}", recordDBName, uri.getHosts());
         } catch (MongoDBException e) {
             LOG.error("Could not connect to Mongo DB.", e);
             throw new InternalServerErrorException(e.getMessage());
@@ -99,8 +105,50 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                      maxThreadsCount, MAX_THREADS_THRESHOLD);
             threadsCount = MAX_THREADS_THRESHOLD;
         }
-        threadPool = Executors
-                .newFixedThreadPool(threadsCount);
+        LOG.info("Creating new thread pool with {} threads.", threadsCount);
+        threadPool = Executors.newFixedThreadPool(threadsCount);
+    }
+
+    @Override
+    public void connectionPoolOpened(ConnectionPoolOpenedEvent connectionPoolOpenedEvent) {
+        LOG.debug("Connection pool opened {}", connectionPoolOpenedEvent);
+    }
+
+    @Override
+    public void connectionPoolClosed(ConnectionPoolClosedEvent connectionPoolClosedEvent) {
+        LOG.debug("Connectio pool closed {}", connectionPoolClosedEvent);
+    }
+
+    @Override
+    public void connectionCheckedOut(ConnectionCheckedOutEvent connectionCheckedOutEvent) {
+        // ignore
+    }
+
+    @Override
+    public void connectionCheckedIn(ConnectionCheckedInEvent connectionCheckedInEvent) {
+        // ignore
+    }
+
+    @Override
+    public void waitQueueEntered(ConnectionPoolWaitQueueEnteredEvent connectionPoolWaitQueueEnteredEvent) {
+        // ignore
+    }
+
+    @Override
+    public void waitQueueExited(ConnectionPoolWaitQueueExitedEvent connectionPoolWaitQueueExitedEvent) {
+        // ignore
+    }
+
+    @Override
+    public synchronized void connectionAdded(ConnectionAddedEvent connectionAddedEvent) {
+        nrConnections++;
+        LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionAddedEvent, this.hashCode(), nrConnections);
+    }
+
+    @Override
+    public synchronized void connectionRemoved(ConnectionRemovedEvent connectionRemovedEvent) {
+        nrConnections--;
+        LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionRemovedEvent, this.hashCode(), nrConnections);
     }
 
     /**
@@ -136,7 +184,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
                 try {
                     return mongoServer.getFullBean(recordId);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    throw new RuntimeException("Error retrieving fullbean for record "+recordId, e);
                 }
             });
         } catch (Exception e) {
@@ -161,7 +209,18 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @TrackTime
     public String getEDM(RDF rdf) {
-        return EdmUtils.toEDM(rdf);
+        try {
+            return EdmUtils.toEDM(rdf);
+        } catch (RuntimeException e) {
+            // in the past we've had records that threw a JibX marshalling error because of missing data,
+            // so we catch those to log which record fails
+            String id = "unknown";
+            if (!rdf.getEuropeanaAggregationList().isEmpty()) {
+                id = rdf.getEuropeanaAggregationList().get(0).getAbout();
+            }
+            LOG.error("Error converting RDF to EDM for record {}", id);
+            throw e;
+        }
     }
 
     @TrackTime
@@ -171,7 +230,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
     @Override
     public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
-        long start = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
         List<Record> records = new ArrayList<>(identifiers.size());
 
@@ -179,11 +238,17 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         List<Future<CollectRecordsResult>> results;
         List<Callable<CollectRecordsResult>> tasks = new ArrayList<>();
 
-        float perThread = (float) identifiers.size() / (float) threadsCount;
+        // when creating threads we round off, any remaining record is added to the last created thread
+        double perThread = identifiers.size() / (double) threadsCount;
+        LOG.debug("{} identifiers and {} threads, so {} records per thread", identifiers.size(), threadsCount, perThread);
 
         // create task for each thread
         for (int i = 0; i < threadsCount; i++) {
-            tasks.add(new CollectRecordsTask(identifiers.subList((int) (i * perThread), (int) ((i + 1) * perThread)), i));
+            int start = (int) (i * perThread);
+            int end = (int) ((i + 1) * perThread);
+            List<Header> headers = identifiers.subList(start, end);
+            LOG.debug("Creating task {} to retrieve records {} to {}", i, start, end);
+            tasks.add(new CollectRecordsTask(headers, i));
         }
         try {
             // invoke a separate thread for each provider
@@ -193,8 +258,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             for (Future<CollectRecordsResult> result : results) {
                 collectRecordsResult = result.get();
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("Thread {} collected {} records."
-                            , collectRecordsResult.getThreadId(), collectRecordsResult.getRecords().size());
+                    LOG.debug("Thread {} collected {} records.",
+                            collectRecordsResult.getThreadId(), collectRecordsResult.getRecords().size());
                 }
                 records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
             }
@@ -202,9 +267,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
             Thread.currentThread().interrupt();
             LOG.error("Thread interrupted.", e);
         } catch (ExecutionException e) {
-            // I'm not sure why but on my local machine LOG.error doesn't work (only at this point?) and e.printStackTrace
-            // does work so I'm keeping this for debugging purposes.
-            e.printStackTrace();
             String msg = "Error retrieving data";
             LOG.error(msg, e);
             throw new InternalServerErrorException(msg);
@@ -215,8 +277,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("ListRecords using {} threads finished in {} ms.",
-                      threadsCount, (System.currentTimeMillis() - start));
+            LOG.debug("ListRecords using {} threads finished in {} ms.", threadsCount, (System.currentTimeMillis() - startTime));
         }
 
         ListRecords result = new ListRecords();
@@ -240,7 +301,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
             WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
-            LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
+            }
         }
     }
 
@@ -269,9 +332,14 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
     }
 
     @Override
+    @PreDestroy
     public void close() {
+        LOG.info("Shutting down Mongo connections...");
         if (mongoServer != null) {
             mongoServer.close();
+        }
+        if (threadPool != null) {
+            threadPool.shutdown();
         }
     }
 
@@ -301,9 +369,11 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider {
         }
     }
 
-    private class CollectRecordsResult {
-        int threadId;
-        List<Record> records;
+    private static class CollectRecordsResult {
+
+        private int threadId;
+        private List<Record> records;
+
         CollectRecordsResult(int threadId, List<Record> records) {
             this.threadId = threadId;
             this.records = records;
