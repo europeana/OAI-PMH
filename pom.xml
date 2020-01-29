@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>europeana-parent-pom</artifactId>
 		<groupId>eu.europeana</groupId>
-		<version>2.0</version>
+		<version>2.1</version>
 	</parent>
 
 	<groupId>eu.europeana</groupId>
@@ -14,10 +14,10 @@
 	<packaging>pom</packaging>
 
 	<properties>
-		<oaipmh2.version>0.6-beta-SNAPSHOT</oaipmh2.version>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
+
 		<spring-boot.version>1.5.22.RELEASE</spring-boot.version>
 		<spring-instrument.version>4.3.25.RELEASE</spring-instrument.version>
 
@@ -37,10 +37,7 @@
 		<aspectj.version>1.8.13</aspectj.version>
 		<!--<aspectj-maven-plugin.version>1.7</aspectj-maven-plugin.version>-->
 
-		<powermock.version>1.7.1</powermock.version>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<mockito.version>3.2.4</mockito.version>
 	</properties>
 
 	<name>Europeana OAI-PMH2</name>

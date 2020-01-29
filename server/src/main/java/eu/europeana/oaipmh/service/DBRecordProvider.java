@@ -208,7 +208,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     }
 
     @TrackTime
-    private String getEDM(RDF rdf) {
+    public String getEDM(RDF rdf) {
         try {
             return EdmUtils.toEDM(rdf);
         } catch (RuntimeException e) {
@@ -224,7 +224,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     }
 
     @TrackTime
-    private RDF getRDF(FullBeanImpl bean) {
+    public RDF getRDF(FullBeanImpl bean) {
         return EdmUtils.toRDF(bean);
     }
 
@@ -250,7 +250,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
             LOG.debug("Creating task {} to retrieve records {} to {}", i, start, end);
             tasks.add(new CollectRecordsTask(headers, i));
         }
-
         try {
             // invoke a separate thread for each provider
             results = threadPool.invokeAll(tasks);

@@ -1,9 +1,9 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.corelib.definitions.edm.beans.FullBean;
 import eu.europeana.corelib.definitions.jibx.CollectionName;
 import eu.europeana.corelib.definitions.jibx.EuropeanaAggregationType;
 import eu.europeana.corelib.definitions.jibx.RDF;
-import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.corelib.web.exception.EuropeanaException;
@@ -17,15 +17,9 @@ import eu.europeana.oaipmh.util.DateConverter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.springframework.test.util.ReflectionTestUtils;
+import static junit.framework.TestCase.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,19 +29,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static junit.framework.TestCase.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest(EdmUtils.class)
-@PowerMockIgnore("javax.management.*")
-@SpringBootTest
 public class DBRecordProviderTest extends BaseApiTestCase {
-    private static final String TEST_RECORD_ID = "http://data.europeana.eu/item/2048432/item_RAUFTMSVPDRDYE67HPNM5FL4G6VALEOJ";
 
-    private static final String TEST_RECORD_FILENAME = "getRecordFromDB.xml";
+    private static final String TEST_RECORD_ID = "http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A";
+
+    private static final String TEST_RECORD_FILENAME = "getRecordFromDB";
 
     private static final Date TEST_RECORD_CREATE_DATE = DateConverter.fromIsoDateTime("2017-04-05T15:04:03Z");
 
@@ -57,15 +48,18 @@ public class DBRecordProviderTest extends BaseApiTestCase {
 
     private static final String DEFAULT_IDENTIFIER_PREFIX = "http://data.europeana.eu/item";
 
-    @Mock
     private EdmMongoServer mongoServer;
 
-    @InjectMocks
     private DBRecordProvider recordProvider;
 
     @Before
     public void initTest() {
-        ReflectionTestUtils.setField(recordProvider, IDENTIFIER_PREFIX_FIELD_NAME, DEFAULT_IDENTIFIER_PREFIX);
+
+        mongoServer = mock(EdmMongoServer.class);
+        recordProvider = spy(DBRecordProvider.class);
+
+        Whitebox.setInternalState(recordProvider, IDENTIFIER_PREFIX_FIELD_NAME, DEFAULT_IDENTIFIER_PREFIX);
+        Whitebox.setInternalState(recordProvider, "mongoServer", mongoServer);
     }
 
     @Test
@@ -76,6 +70,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
 
         // when
         Record preparedRecord = prepareRecord(record);
+
         Record retrievedRecord = recordProvider.getRecord(TEST_RECORD_ID);
 
         // then
@@ -84,24 +79,25 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     }
 
     private void prepareTest(String record) throws EuropeanaException {
-        FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
-        RDF rdf = PowerMockito.mock(RDF.class);
-        given(mongoServer.getFullBean(anyString())).willReturn(bean);
-        PowerMockito.mockStatic(EdmUtils.class);
-        given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
-        EuropeanaAggregationType type = PowerMockito.mock(EuropeanaAggregationType.class);
+        RDF rdf = mock(RDF.class);
+        EuropeanaAggregationType type = mock(EuropeanaAggregationType.class);
+        CollectionName name = mock(CollectionName.class);
+        FullBean bean = mock(FullBeanImpl.class);
+
         List<EuropeanaAggregationType> types = new ArrayList<>();
         types.add(type);
+
+        given(mongoServer.getFullBean(anyString())).willReturn(bean);
         given(rdf.getEuropeanaAggregationList()).willReturn(types);
-        CollectionName name = PowerMockito.mock(CollectionName.class);
         given(type.getCollectionName()).willReturn(name);
+        doReturn(record).when(recordProvider).getEDM(any(RDF.class));
+        doReturn(rdf).when(recordProvider).getRDF(any(FullBeanImpl.class));
         given(name.getString()).willReturn(TEST_RECORD_SETS[0]);
-        given(EdmUtils.toEDM(any(RDF.class))).willReturn(record);
-        given(EdmUtils.toRDF(any(FullBeanImpl.class))).willReturn(rdf);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
-        ReflectionTestUtils.setField(recordProvider, "threadsCount", 1);
-        ReflectionTestUtils.setField(recordProvider, "maxThreadsCount", 20);
+
+        Whitebox.setInternalState(recordProvider, "threadsCount", 1);
+        Whitebox.setInternalState(recordProvider, "maxThreadsCount", 20);
         ReflectionTestUtils.invokeMethod(recordProvider, "initThreadPool");
     }
 
@@ -117,9 +113,9 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         Assert.assertEquals(retrievedHeader.getSetSpec(), preparedHeader.getSetSpec());
 
         String metadata = retrievedRecord.getMetadata().getMetadata();
-        int index = metadata.indexOf("<edm:completeness>0</edm:completeness>");
+        int index = metadata.indexOf("metadata='");
         if (index != -1) {
-            metadata = metadata.substring(0, index) + metadata.substring(index + "<edm:completeness>0</edm:completeness>".length());
+            metadata = metadata.substring(index+"metadata='".length());
         }
         Assert.assertEquals(metadata, preparedRecord.getMetadata().getMetadata());
     }
@@ -161,7 +157,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     @Test
     public void checkRecordExists() throws EuropeanaException, OaiPmhException {
         // given
-        FullBeanImpl bean = PowerMockito.mock(FullBeanImpl.class);
+        FullBeanImpl bean = mock(FullBeanImpl.class);
         given(mongoServer.getFullBean(anyString())).willReturn(bean);
 
         // when
