@@ -2,6 +2,7 @@ package eu.europeana.oaipmh.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.PropertySource;
@@ -21,6 +22,6 @@ public class OAIPMH2Client implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder().sources(OAIPMH2Client.class).web(false).run(args);
+        new SpringApplicationBuilder().sources(OAIPMH2Client.class).web(WebApplicationType.NONE).run(args);
     }
 }
