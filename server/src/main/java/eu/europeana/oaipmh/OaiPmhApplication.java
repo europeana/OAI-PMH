@@ -37,7 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
-public class OaiPmhApplication extends SpringBootServletInitializer implements EnvironmentPostProcessor {
+public class OaiPmhApplication extends SpringBootServletInitializer  {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
 
@@ -116,31 +116,6 @@ public class OaiPmhApplication extends SpringBootServletInitializer implements E
     public SetsProvider setsProvider() { return new DefaultSetsProvider(); }
 
     /**
-     * OAI-PMH service that does the actual work
-     * @return
-     */
-    @Bean
-    public OaiPmhService oaiPmhService() {
-        return new OaiPmhService(recordProvider(), identifierProvider(), identifyProvider(), metadataFormats(), setsProvider());
-    }
-
-
-    /**
-     * Rest controller that handles all requests
-     * @return
-     */
-    @Bean
-    public VerbController verbController() {
-        return new VerbController(oaiPmhService(), swaggerProvider());
-    }
-
-
-    @Bean
-    public SwaggerProvider swaggerProvider() {
-        return new SwaggerProvider();
-    }
-
-    /**
      * This method is called when starting as a Spring-Boot application (e.g. when running this class from your IDE, or
      * when using Cloud Foundry Java Main i.c.m. the Tomcat embedded by Spring-Boot)
      * @param args
@@ -172,14 +147,5 @@ public class OaiPmhApplication extends SpringBootServletInitializer implements E
             throw new ServletException("Error reading properties", e);
         }
     }
-
-    /**
-     * This method is called to set the bean definition overriding as true.
-     * @param environment
-     * @param application
-     */
-    @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-        application.setAllowBeanDefinitionOverriding(true);
-    }
 }
+
