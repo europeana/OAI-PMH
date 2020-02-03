@@ -12,9 +12,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -35,7 +37,7 @@ import java.lang.reflect.InvocationTargetException;
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
-public class OaiPmhApplication extends SpringBootServletInitializer {
+public class OaiPmhApplication extends SpringBootServletInitializer  {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhApplication.class);
 
@@ -114,31 +116,6 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
     public SetsProvider setsProvider() { return new DefaultSetsProvider(); }
 
     /**
-     * OAI-PMH service that does the actual work
-     * @return
-     */
-    @Bean
-    public OaiPmhService oaiPmhService() {
-        return new OaiPmhService(recordProvider(), identifierProvider(), identifyProvider(), metadataFormats(), setsProvider());
-    }
-
-
-    /**
-     * Rest controller that handles all requests
-     * @return
-     */
-    @Bean
-    public VerbController verbController() {
-        return new VerbController(oaiPmhService(), swaggerProvider());
-    }
-
-
-    @Bean
-    public SwaggerProvider swaggerProvider() {
-        return new SwaggerProvider();
-    }
-
-    /**
      * This method is called when starting as a Spring-Boot application (e.g. when running this class from your IDE, or
      * when using Cloud Foundry Java Main i.c.m. the Tomcat embedded by Spring-Boot)
      * @param args
@@ -170,5 +147,5 @@ public class OaiPmhApplication extends SpringBootServletInitializer {
             throw new ServletException("Error reading properties", e);
         }
     }
-
 }
+
