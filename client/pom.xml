@@ -5,12 +5,12 @@
     <parent>
         <groupId>eu.europeana</groupId>
         <artifactId>oai-pmh2</artifactId>
-        <version>0.6</version>
+        <version>0.7-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>oai-pmh2-client</artifactId>
-    <version>0.6</version>
+    <groupId>eu.europeana.oai-pmh2</groupId>
+    <artifactId>client</artifactId>
     <name>Europeana OAI-PMH2 Client</name>
     <packaging>jar</packaging>
 
@@ -33,8 +33,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europeana</groupId>
-            <artifactId>oai-pmh2-common</artifactId>
+            <groupId>eu.europeana.oai-pmh2</groupId>
+            <artifactId>common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 

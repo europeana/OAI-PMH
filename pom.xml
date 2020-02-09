@@ -8,9 +8,8 @@
 		<version>2.1</version>
 	</parent>
 
-	<groupId>eu.europeana</groupId>
-  <artifactId>oai-pmh2</artifactId>
-  <version>0.6</version>
+  	<artifactId>oai-pmh2</artifactId>
+	<version>0.7-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<properties>
