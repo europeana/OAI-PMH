@@ -32,7 +32,7 @@ public class ListSetsQuery extends BaseQuery implements OAIPMHQuery  {
     @Value("${saveToFolder}")
     private String directoryLocation;
 
-    @Value("${ListRecords.threads}")
+    @Value("${ListSets.threads}")
     private int threads;
 
     private ExecutorService threadPool;
@@ -90,7 +90,7 @@ public class ListSetsQuery extends BaseQuery implements OAIPMHQuery  {
         List<Future<ListRecordsResult>> results = null;
         List<Callable<ListRecordsResult>> tasks = new ArrayList<>();
 
-        int perThread = sets.size() / threads;  //threads=50   2229/50 = 44
+        int perThread = sets.size() / threads;
 
         // create task for each resource provider
         for (int i = 0; i < threads; i++) {

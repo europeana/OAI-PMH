@@ -56,7 +56,7 @@ public class ListSetsExecutor implements Callable<ListRecordsResult> {
             try {
                 new ListRecordsQuery(metadataPrefix, set, directoryLocation, saveToFile, logProgressInterval).execute(oaipmhServer);
             } catch (Exception e) {
-                LOG.error("Error retrieving record {}", e);
+                LOG.error("Error retrieving set {} {}", set,  e);
                 errors++;
                 // if there are too many errors, just abort
                 if (errors > MAX_ERRORS_PER_THREAD) {
