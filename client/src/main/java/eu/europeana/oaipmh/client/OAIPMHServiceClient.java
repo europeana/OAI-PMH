@@ -3,14 +3,8 @@ package eu.europeana.oaipmh.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import eu.europeana.oaipmh.model.RDFMetadata;
-import eu.europeana.oaipmh.model.response.GetRecordResponse;
-import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
-import eu.europeana.oaipmh.model.response.ListRecordsResponse;
-import eu.europeana.oaipmh.model.response.OAIResponse;
-import eu.europeana.oaipmh.model.serialize.GetRecordResponseDeserializer;
-import eu.europeana.oaipmh.model.serialize.ListIdentifiersResponseDeserializer;
-import eu.europeana.oaipmh.model.serialize.ListRecordsResponseDeserializer;
-import eu.europeana.oaipmh.model.serialize.RDFMetadataDeserializer;
+import eu.europeana.oaipmh.model.response.*;
+import eu.europeana.oaipmh.model.serialize.*;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,6 +39,9 @@ public class OAIPMHServiceClient {
     @Autowired
     private ListRecordsQuery listRecordsQuery;
 
+    @Autowired
+    private ListSetsQuery listSetsQuery;
+
     private Map<String, OAIPMHQuery> queries = new HashMap<>();
 
     @PostConstruct
@@ -52,6 +49,7 @@ public class OAIPMHServiceClient {
         queries.put("ListIdentifiers", listIdentifiersQuery);
         queries.put("GetRecord", getRecordQuery);
         queries.put("ListRecords", listRecordsQuery);
+        queries.put("ListSets", listSetsQuery);
 
         mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -59,6 +57,7 @@ public class OAIPMHServiceClient {
         module.addDeserializer(GetRecordResponse.class, new GetRecordResponseDeserializer());
         module.addDeserializer(RDFMetadata.class, new RDFMetadataDeserializer());
         module.addDeserializer(ListRecordsResponse.class, new ListRecordsResponseDeserializer());
+        module.addDeserializer(ListSetsResponse.class, new ListSetResponseDeserializer());
         mapper.registerModule(module);
         LOG.info("Using OAI-PMH server at {}", oaipmhServer);
     }
@@ -84,7 +83,6 @@ public class OAIPMHServiceClient {
         } catch (IOException e) {
             LOG.error("Exception when deserializing response.", e);
         }
-
         return response;
     }
 }

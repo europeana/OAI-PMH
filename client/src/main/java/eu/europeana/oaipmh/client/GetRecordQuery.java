@@ -40,9 +40,11 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
     public GetRecordQuery() {
     }
 
-    public GetRecordQuery(String metadataPrefix, String identifier) {
+    public GetRecordQuery(String metadataPrefix, String identifier, String directoryLocation, String saveToFile) {
         this.metadataPrefix = metadataPrefix;
         this.identifier = identifier;
+        this.directoryLocation = directoryLocation;
+        this.saveToFile = saveToFile;
     }
 
     @Override
@@ -52,6 +54,7 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
 
     @Override
     public void execute(OAIPMHServiceClient oaipmhServer) {
+
         execute(oaipmhServer, identifier);
     }
 
@@ -78,6 +81,7 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
                     }
                 }
                 if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+
                     ZipUtility.writeInZip(zout, writer, record);
                 }
             }

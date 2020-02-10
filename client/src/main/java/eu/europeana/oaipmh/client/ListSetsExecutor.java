@@ -6,28 +6,29 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-public class ListRecordsExecutor implements Callable<ListRecordsResult> {
+public class ListSetsExecutor implements Callable<ListRecordsResult> {
 
-    private static final Logger LOG = LogManager.getLogger(ListRecordsExecutor.class);
+    private static final Logger LOG = LogManager.getLogger(ListSetsExecutor.class);
 
-    private static final int MAX_ERRORS_PER_THREAD = 5;
+    private static final int MAX_ERRORS_PER_THREAD = 2;
 
     private static ProgressLogger logger = null;
     private static long loggerThreadId;
     private int logProgressInterval;
 
-    private List<String> identifiers;
-
-    private String metadataPrefix;
+    private List<String> sets;
 
     private String directoryLocation;
 
     private String saveToFile;
 
+    private String metadataPrefix;
+
+
     private OAIPMHServiceClient oaipmhServer;
 
-    public ListRecordsExecutor(List<String> identifiers, String metadataPrefix, String directoryLocation, String saveToFile, OAIPMHServiceClient oaipmhServer, int logProgressInterval) {
-        this.identifiers = identifiers;
+    public ListSetsExecutor(List<String> sets, String metadataPrefix, String directoryLocation, String saveToFile, OAIPMHServiceClient oaipmhServer, int logProgressInterval) {
+        this.sets = sets;
         this.metadataPrefix = metadataPrefix;
         this.directoryLocation = directoryLocation;
         this.saveToFile = saveToFile;
@@ -45,18 +46,17 @@ public class ListRecordsExecutor implements Callable<ListRecordsResult> {
         // this callable will log progress. This is to avoid too much logging from all threads.
         synchronized(this) {
             if (logger == null) {
-                logger = new ProgressLogger(identifiers.size(), logProgressInterval);
+                logger = new ProgressLogger(sets.size(), logProgressInterval);
                 loggerThreadId = Thread.currentThread().getId();
                 LOG.debug("Created new progress logger for thread {} - {} items, logging interval {} ms",
-                        loggerThreadId, identifiers.size(), logProgressInterval);
+                        loggerThreadId, sets.size(), logProgressInterval);
             }
         }
-
-        for (String identifier : identifiers) {
+        for(String set : sets ) {
             try {
-                new GetRecordQuery(metadataPrefix, identifier, directoryLocation, saveToFile).execute(oaipmhServer);
+                new ListRecordsQuery(metadataPrefix, set, directoryLocation, saveToFile, logProgressInterval).execute(oaipmhServer);
             } catch (Exception e) {
-                LOG.error("Error retrieving record {}", identifier, e);
+                LOG.error("Error retrieving record {}", e);
                 errors++;
                 // if there are too many errors, just abort
                 if (errors > MAX_ERRORS_PER_THREAD) {
@@ -72,5 +72,6 @@ public class ListRecordsExecutor implements Callable<ListRecordsResult> {
         }
         return new ListRecordsResult((System.currentTimeMillis() - start) / 1000F, errors);
     }
+
 
 }

@@ -61,6 +61,19 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
 
     private List<String> sets = new ArrayList<>();
 
+    public ListRecordsQuery() {
+    }
+
+    public ListRecordsQuery(String metadataPrefix, String set, String directoryLocation, String saveToFile, int logProgressInterval) {
+        this.metadataPrefix = metadataPrefix;
+        this.set = set;
+        this.directoryLocation = directoryLocation;
+        this.saveToFile = saveToFile;
+        this.logProgressInterval = logProgressInterval;
+        initSets();
+    }
+
+
     @PostConstruct
     public void initSets() {
         if (set != null && !set.isEmpty()) {
@@ -76,6 +89,7 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         threadPool = Executors
                 .newFixedThreadPool(threads);
     }
+
 
     @Override
     public String getVerbName() {
@@ -124,7 +138,7 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
             if (i == threads - 1) {
                 toIndex = identifiers.size();
             }
-            tasks.add(new ListRecordsExecutor(identifiers.subList(fromIndex, toIndex), metadataPrefix, oaipmhServer, logProgressInterval));
+            tasks.add(new ListRecordsExecutor(identifiers.subList(fromIndex, toIndex), metadataPrefix, directoryLocation, saveToFile, oaipmhServer, logProgressInterval));
         }
 
         try {
@@ -229,7 +243,6 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         if (set != null) {
             sb.append(String.format(SET_PARAMETER, setIdentifier));
         }
-
         return sb.toString();
     }
 
