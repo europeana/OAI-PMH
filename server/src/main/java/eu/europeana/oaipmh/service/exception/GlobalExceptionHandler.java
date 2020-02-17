@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
@@ -77,11 +76,13 @@ public class GlobalExceptionHandler extends BaseService {
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request) throws BadArgumentException, SerializationException {
+    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request)
+            throws OaiPmhException {
         return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request, HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<String> handleException(OaiPmhException e, HttpServletRequest request, HttpStatus httpStatus) throws BadArgumentException, SerializationException {
+    private ResponseEntity<String> handleException(OaiPmhException e, HttpServletRequest request, HttpStatus httpStatus)
+            throws OaiPmhException {
         if (e.doLog()) {
             LOG.error(e.getMessage(), e);
         }
@@ -103,10 +104,8 @@ public class GlobalExceptionHandler extends BaseService {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public final ResponseEntity<String> handleConstraintViolation(
-            ConstraintViolationException ex,
-            HttpServletRequest request) throws BadArgumentException, SerializationException
-    {
+    public final ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request)
+            throws OaiPmhException {
         String details = String.join(" ," ,ex.getConstraintViolations()
                 .parallelStream()
                 .map(e -> e.getMessage())
