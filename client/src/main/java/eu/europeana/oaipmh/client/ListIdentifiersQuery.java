@@ -56,7 +56,7 @@ public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
 
     @Override
     public String getVerbName() {
-        return "ListIdentifiers";
+        return Constants.LIST_IDENTIFIERS_VERB;
     }
 
     @Override

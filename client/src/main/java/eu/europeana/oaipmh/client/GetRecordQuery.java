@@ -21,8 +21,6 @@ import java.util.zip.ZipOutputStream;
 public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
 
     private static final Logger LOG = LogManager.getLogger(GetRecordQuery.class);
-    private static final String ZIP_EXTENSION = ".zip";
-    private static final String PATH_SEPERATOR = "/";
 
     @Value("${GetRecord.metadataPrefix}")
     private String metadataPrefix;
@@ -47,7 +45,7 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
 
     @Override
     public String getVerbName() {
-        return "GetRecord";
+        return Constants.GET_RECORD_VERB;
     }
 
     @Override
@@ -59,10 +57,10 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
         long start = System.currentTimeMillis();
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), currentIdentifier);
-        GetRecordResponse response = (GetRecordResponse) oaipmhServer.makeRequest(request, GetRecordResponse.class);
+        GetRecordResponse response = oaipmhServer.getGetRecordRequest(request);
         GetRecord responseObject = response.getGetRecord();
         try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
-                new File(directoryLocation + PATH_SEPERATOR + ZipUtility.getDirectoryName(currentIdentifier) + ZIP_EXTENSION)));
+                new File(directoryLocation + Constants.PATH_SEPERATOR + ZipUtility.getDirectoryName(currentIdentifier) + Constants.ZIP_EXTENSION)));
              OutputStreamWriter writer = new OutputStreamWriter(zout)) {
             if (responseObject != null) {
                 Record record = responseObject.getRecord();
@@ -77,7 +75,7 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
                         LOG.error("Empty metadata for identifier {}", currentIdentifier);
                     }
                 }
-                if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+                if (StringUtils.equalsIgnoreCase(saveToFile, Constants.TRUE)) {
                     ZipUtility.writeInZip(zout, writer, record);
                 }
             }

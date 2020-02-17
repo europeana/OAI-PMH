@@ -49,9 +49,9 @@ public class OAIPMHServiceClient {
 
     @PostConstruct
     public void init() {
-        queries.put("ListIdentifiers", listIdentifiersQuery);
-        queries.put("GetRecord", getRecordQuery);
-        queries.put("ListRecords", listRecordsQuery);
+        queries.put(Constants.LIST_IDENTIFIERS_VERB, listIdentifiersQuery);
+        queries.put(Constants.GET_RECORD_VERB, getRecordQuery);
+        queries.put(Constants.LIST_RECORDS_VERB, listRecordsQuery);
 
         mapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
@@ -84,7 +84,16 @@ public class OAIPMHServiceClient {
         } catch (IOException e) {
             LOG.error("Exception when deserializing response.", e);
         }
-
         return response;
+    }
+
+    public GetRecordResponse getGetRecordRequest(String request) {
+        String responseAsString = restTemplate.getForObject(request, String.class);
+        return XMLResponseParser.parseGetRecordResponse(responseAsString);
+    }
+
+    public ListRecordsResponse getListRecordRequest(String request) {
+        String responseAsString = restTemplate.getForObject(request, String.class);
+        return XMLResponseParser.parseListRecordResponse(responseAsString);
     }
 }

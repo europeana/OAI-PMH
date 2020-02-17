@@ -26,8 +26,6 @@ import java.util.zip.ZipOutputStream;
 public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
 
     private static final Logger LOG = LogManager.getLogger(ListRecordsQuery.class);
-    private static final String ZIP_EXTENSION = ".zip";
-    private static final String PATH_SEPERATOR = "/";
 
     @Value("${ListRecords.metadataPrefix}")
     private String metadataPrefix;
@@ -79,7 +77,7 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
 
     @Override
     public String getVerbName() {
-        return useGetRecord ? "ListIdentifiers" : "ListRecords";
+        return useGetRecord ? Constants.LIST_IDENTIFIERS_VERB : Constants.LIST_RECORDS_VERB;
     }
 
     @Override
@@ -159,12 +157,12 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         ProgressLogger logger = new ProgressLogger(-1, logProgressInterval);
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), setIdentifier);
-        ListRecordsResponse response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
+        ListRecordsResponse response = oaipmhServer.getListRecordRequest(request);
         ListRecords responseObject = response.getListRecords();
-        try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(directoryLocation + PATH_SEPERATOR + setIdentifier + ZIP_EXTENSION)));
+        try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(directoryLocation + Constants.PATH_SEPERATOR + setIdentifier + Constants.ZIP_EXTENSION)));
              OutputStreamWriter writer = new OutputStreamWriter(zout)) {
 
-            if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+            if (StringUtils.equalsIgnoreCase(saveToFile, Constants.TRUE)) {
                 for(Record record : responseObject.getRecords()) {
                     ZipUtility.writeInZip(zout, writer, record);
                 }
@@ -180,10 +178,10 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
                 while (responseObject.getResumptionToken() != null) {
 
                     request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
-                    response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
+                    response =  oaipmhServer.getListRecordRequest(request);
                     responseObject = response.getListRecords();
 
-                    if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
+                    if (StringUtils.equalsIgnoreCase(saveToFile, Constants.TRUE)) {
                         for (Record record : responseObject.getRecords()) {
                             ZipUtility.writeInZip(zout, writer, record);
                         }

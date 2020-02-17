@@ -13,7 +13,7 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtility {
 
     private static final Logger LOG = LogManager.getLogger(ZipUtility.class);
-    private static final String EXTENSION = ".xml";
+
 
     private ZipUtility() {
         //adding a private constructor to hide implicit public one
@@ -33,12 +33,11 @@ public class ZipUtility {
 
     private static String getEntryName(Record record) {
         String id = record.getHeader().getIdentifier();
-        return StringUtils.substringAfterLast(id,"/") + EXTENSION ;
+        return StringUtils.substringAfterLast(id,Constants.PATH_SEPERATOR) + Constants.EXTENSION ;
     }
 
     public static String getDirectoryName( String identifier) {
-        String id = StringUtils.remove(identifier, "http://data.europeana.eu/item/");
-        return id.split("/")[0];
+        String id = StringUtils.remove(identifier, Constants.BASE_URL);
+        return id.split(Constants.PATH_SEPERATOR)[0];
     }
-
 }
