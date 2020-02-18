@@ -13,6 +13,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.*;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,12 +26,12 @@ public class XMLResponseParser {
 
     private static final Logger LOG = LogManager.getLogger(XMLResponseParser.class);
 
-
     public static GetRecordResponse parseGetRecordResponse(String responseAsString) {
         GetRecordResponse recordResponse = new GetRecordResponse();
-        InputStream targetStream = new ByteArrayInputStream(responseAsString.getBytes());
         XMLInputFactory factory = XMLInputFactory.newInstance();
-        try {
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+
+        try (InputStream targetStream = new ByteArrayInputStream(responseAsString.getBytes())){
             XMLEventReader eventReader = factory.createXMLEventReader(targetStream);
 
             GetRecord getRecord = new GetRecord();
@@ -40,14 +41,7 @@ public class XMLResponseParser {
                 XMLEvent xmlEvent = eventReader.nextEvent();
                 if (xmlEvent.isStartElement()) {
                     StartElement startElement = xmlEvent.asStartElement();
-                    switch (startElement.getName().getLocalPart()) {
-                        case Constants.HEADER_TAG:
-                            parseHeaderResource(eventReader, record);
-                            break;
-                        case Constants.MEATADATA_TAG:
-                            paraseMetadataString(responseAsString, record.getHeader().getIdentifier(), record);
-                            break;
-                    }
+                    getTagsAndParse(eventReader, startElement,record, responseAsString);
                 }
             }
             getRecord.setRecord(record);
@@ -56,17 +50,18 @@ public class XMLResponseParser {
             LOG.debug("Error parsing GetRecordResponse {} ", e);
         } catch (ParseException e) {
             LOG.debug("Error parsing Datestamp {} ", e);
+        } catch (IOException e) {
+            LOG.debug("Error creating the input stream {} ", e);
         }
         return recordResponse;
     }
 
-
     public static ListRecordsResponse parseListRecordResponse(String responseAsString) {
         ListRecordsResponse recordResponse = new ListRecordsResponse();
-        InputStream targetStream = new ByteArrayInputStream(responseAsString.getBytes());
-
         XMLInputFactory factory = XMLInputFactory.newInstance();
-        try {
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+
+        try(InputStream targetStream = new ByteArrayInputStream(responseAsString.getBytes())) {
             XMLEventReader eventReader = factory.createXMLEventReader(targetStream);
 
             ListRecords listRecords = new ListRecords();
@@ -82,15 +77,7 @@ public class XMLResponseParser {
                     if (Constants.RECORD_TAG.equalsIgnoreCase(startElement.getName().getLocalPart())) {
                         record = new Record();
                     }
-                    //get the header and metadata tag values
-                    switch (startElement.getName().getLocalPart()) {
-                        case Constants.HEADER_TAG:
-                            parseHeaderResource(eventReader, record);
-                            break;
-                        case Constants.MEATADATA_TAG:
-                            paraseMetadataString(responseAsString, record.getHeader().getIdentifier(), record);
-                            break;
-                    }
+                    getTagsAndParse(eventReader, startElement,record, responseAsString);
                     //get the resumption token value
                     if (Constants.RESUMPTIONTOKEN_TAG.equalsIgnoreCase(startElement.getName().getLocalPart())) {
                         resumptionToken = new ResumptionToken();
@@ -111,10 +98,24 @@ public class XMLResponseParser {
             LOG.debug("Error parsing ListRecordResponse {} ", e);
         } catch (ParseException e) {
             LOG.debug("Error parsing Datestamp {} ", e);
+        } catch (IOException e) {
+            LOG.debug("Error creating the input stream {} ", e);
         }
         return recordResponse;
     }
 
+    private static void getTagsAndParse(XMLEventReader eventReader, StartElement startElement, Record record, String response) throws XMLStreamException, ParseException {
+        //get the header and metadata tag values
+        switch (startElement.getName().getLocalPart()) {
+            case Constants.HEADER_TAG:
+                parseHeaderResource(eventReader, record);
+                break;
+            case Constants.MEATADATA_TAG:
+                paraseMetadataString(response, record.getHeader().getIdentifier(), record);
+                break;
+            default: // do nothing
+        }
+    }
     private static void parseHeaderResource(XMLEventReader xmlEventReader, Record record) throws XMLStreamException, ParseException {
         Header header = new Header();
         record.setHeader(header);
@@ -137,6 +138,7 @@ public class XMLResponseParser {
                     case Constants.SETSPEC_TAG:
                         header.setSetSpec(xmlEventReader.getElementText());
                         break;
+                    default: // do nothing
                 }
             }
             if (e.isEndElement() && StringUtils.equalsIgnoreCase(e.asEndElement().getName().getLocalPart(), Constants.HEADER_TAG)) {
