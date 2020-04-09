@@ -5,8 +5,9 @@ import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
 import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.definitions.jibx.*;
-import eu.europeana.corelib.edm.exceptions.MongoDBException;
+import eu.europeana.corelib.definitions.jibx.DatasetName;
+import eu.europeana.corelib.definitions.jibx.EuropeanaAggregationType;
+import eu.europeana.corelib.definitions.jibx.RDF;
 import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
@@ -29,7 +30,8 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 
 @Configuration
@@ -68,22 +70,17 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     private EdmMongoServer mongoServer;
 
     @PostConstruct
-    private void init() throws InternalServerErrorException {
+    private void init() {
         initMongo();
         initThreadPool();
     }
 
-    private void initMongo() throws InternalServerErrorException {
-        try {
-            // We add a connectionPoolListener so we can keep track of the number of connections
-            MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
-            MongoClientURI uri = new MongoClientURI(connectionUrl, clientOptions);
-            mongoServer = new EdmMongoServerImpl(new MongoClient(uri), recordDBName, false);
-            LOG.info("Connected to mongo database {} at {}", recordDBName, uri.getHosts());
-        } catch (MongoDBException e) {
-            LOG.error("Could not connect to Mongo DB.", e);
-            throw new InternalServerErrorException(e.getMessage());
-        }
+    private void initMongo() {
+        // We add a connectionPoolListener so we can keep track of the number of connections
+        MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
+        MongoClientURI uri = new MongoClientURI(connectionUrl, clientOptions);
+        mongoServer = new EdmMongoServerImpl(new MongoClient(uri), recordDBName, false);
+        LOG.info("Connected to mongo database {} at {}", recordDBName, uri.getHosts());
     }
 
     /**
@@ -300,7 +297,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     private void enhanceWithTechnicalMetadata(FullBean bean) {
         long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer);
+            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer, null, null);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
             }
