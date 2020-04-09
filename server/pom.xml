@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -9,8 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>eu.europeana.oai-pmh2</groupId>
-    <artifactId>server</artifactId>
+    <artifactId>oai-pmh2-server</artifactId>
     <packaging>war</packaging>
 
     <name>Europeana OAI-PMH2 Server</name>
@@ -19,13 +19,6 @@
     <properties>
         <spring.boot.mainclass>eu.europeana.oaipmh.OaiPmhApplication</spring.boot.mainclass>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>central-repo</id>
-            <url>https://mvnrepository.com/repos/central</url>
-        </repository>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -42,8 +35,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.europeana.oai-pmh2</groupId>
-            <artifactId>common</artifactId>
+            <groupId>eu.europeana</groupId>
+            <artifactId>oai-pmh2-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
@@ -219,6 +212,37 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>central-repo</id>
+            <url>https://mvnrepository.com/repos/central</url>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- add mainclass so we can use it as standalone application -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+                <configuration>
+                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+        <!-- set static name for easy deployment -->
+        <finalName>oai-pmh2-server</finalName>
+    </build>
+
     <profiles>
         <profile>
             <id>profiling</id>
@@ -275,28 +299,5 @@
         </profile>
     </profiles>
 
-    <build>
-        <plugins>
-            <plugin>
-                <!-- add mainclass so we can use it as standalone application -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
-                <configuration>
-                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-
-        <!-- set static name for easy deployment -->
-        <finalName>oai-pmh2-server</finalName>
-    </build>
 
 </project>

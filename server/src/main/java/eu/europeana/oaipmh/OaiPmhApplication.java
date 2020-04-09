@@ -53,7 +53,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
         return new WebMvcConfigurerAdapter() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("*").maxAge(1000)
+                registry.addMapping("/oai/**").allowedOrigins("*").maxAge(1000)
                         .exposedHeaders("Allow, Vary, ETag, Last-Modified");
             }
         };
