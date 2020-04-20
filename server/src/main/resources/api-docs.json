@@ -4,13 +4,13 @@
       "description":"This Swagger API console provides an overview of the Europeana OAI-PMH service. For more help and information, head over to our comprehensive <a href=\"https://pro.europeana.eu/page/intro\">online documentation</a>.<br>Note that all methods can be called using HTTP GET or POST requests: the 'resumption token' versions are listed as POST in order to work around a limitation of Swagger.",
       "version":"@@VERSION@@",
       "title":"Europeana OAI-PMH service",
-      "termsOfService":"https://www.europeana.eu/portal/en/rights/api.html",
+      "termsOfService":"https://www.europeana.eu/en/rights/api-terms-of-use",
       "contact":{  
          "name":"https://pro.europeana.eu/page/intro#general"
       },
       "license":{  
          "name":"API terms of use",
-         "url":"https://www.europeana.eu/portal/en/rights/api.html"
+         "url":"https://www.europeana.eu/en/rights/api-terms-of-use"
       }
    },
    "host":"@@HOST@@",
