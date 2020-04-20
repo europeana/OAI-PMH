@@ -497,7 +497,7 @@
         <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/90402/BK_1978_399"/>
         <edm:collectionName>90402_M_NL_Rijksmuseum</edm:collectionName>
         <edm:country>Netherlands</edm:country>
-        <edm:landingPage rdf:resource="http://europeana.eu/portal/record/90402/BK_1978_399.html"/>
+        <edm:landingPage rdf:resource="https://www.europeana.eu/item/90402/BK_1978_399"/>
         <edm:language>nl</edm:language>
         <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
     </edm:EuropeanaAggregation>
