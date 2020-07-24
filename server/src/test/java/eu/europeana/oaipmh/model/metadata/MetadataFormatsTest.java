@@ -90,7 +90,7 @@ public class MetadataFormatsTest {
     }
 
     @Test
-    public void listMetadataFormats() throws NoMetadataFormatsException {
+    public void listMetadataFormats() {
         ListMetadataFormats formats = createListMetadataFormats();
         ListMetadataFormats retrieved = testedMetadataFormats.listMetadataFormats();
 

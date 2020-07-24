@@ -4,7 +4,6 @@ import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.profile.TrackTime;
-import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
@@ -101,10 +100,6 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
     private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark, int pageSize) throws OaiPmhException {
         QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, pageSize));
         ListIdentifiers result = responseToListIdentifiers(response);
-        if (result.getHeaders().isEmpty()) {
-            throw new NoRecordsMatchException("No records found!");
-        }
-
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(DateConverter.toIsoDate(from),
                     DateConverter.toIsoDate(until),

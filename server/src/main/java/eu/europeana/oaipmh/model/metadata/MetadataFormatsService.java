@@ -3,7 +3,6 @@ package eu.europeana.oaipmh.model.metadata;
 import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormat;
 import eu.europeana.oaipmh.model.MetadataFormatConverter;
-import eu.europeana.oaipmh.service.exception.NoMetadataFormatsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -83,12 +82,11 @@ public class MetadataFormatsService implements MetadataFormatsProvider {
     }
 
     @Override
-    public ListMetadataFormats listMetadataFormats() throws NoMetadataFormatsException {
-        if (metadataFormats.isEmpty()) {
-            throw new NoMetadataFormatsException("There are no metadata formats available.");
-        }
+    public ListMetadataFormats listMetadataFormats() {
         ListMetadataFormats result = new ListMetadataFormats();
-        result.setMetadataFormats(new ArrayList<>(metadataFormats.values()));
+        if (! metadataFormats.isEmpty()) {
+            result.setMetadataFormats(new ArrayList<>(metadataFormats.values()));
+        }
         return result;
     }
 }

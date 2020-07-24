@@ -21,7 +21,6 @@ import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
-import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -267,10 +266,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
             String msg = "Error retrieving data";
             LOG.error(msg, e);
             throw new InternalServerErrorException(msg);
-        }
-
-        if (records.isEmpty()) {
-            throw new NoRecordsMatchException("No records found!");
         }
 
         if (LOG.isDebugEnabled()) {

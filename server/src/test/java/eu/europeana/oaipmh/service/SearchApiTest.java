@@ -106,7 +106,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         assertResults(result, from, until, null);
     }
 
-    @Test(expected = NoRecordsMatchException.class)
+    @Test
     public void listIdentifiersWithEmptyResult() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = Mockito.mock(QueryResponse.class);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
@@ -114,7 +114,8 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
-        searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
+        assertTrue(result.getHeaders().isEmpty());
     }
 
     @Test
