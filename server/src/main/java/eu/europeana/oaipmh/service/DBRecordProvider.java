@@ -11,7 +11,7 @@ import eu.europeana.corelib.definitions.jibx.RDF;
 import eu.europeana.corelib.edm.utils.EdmUtils;
 import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
-import eu.europeana.corelib.search.impl.WebMetaInfo;
+import eu.europeana.corelib.record.api.WebMetaInfo;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.metis.utils.ExternalRequestUtil;
 import eu.europeana.oaipmh.model.Header;
@@ -292,7 +292,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     private void enhanceWithTechnicalMetadata(FullBean bean) {
         long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer, null, null);
+            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer, null);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
             }

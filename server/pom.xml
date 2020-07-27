@@ -59,11 +59,6 @@
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-jersey</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
@@ -78,22 +73,31 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Mongo and Morphia dependencies added so we get the desired version -->
+        <!-- We also use Mongo, Morphia, Snappy and SolrJ dependencies from Corelib -->
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongo-java-driver</artifactId>
-            <version>${mongoDriver.version}</version>
+            <groupId>eu.europeana.corelib</groupId>
+            <artifactId>corelib-record</artifactId>
+            <version>${corelib.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>metis-common</artifactId>
+                    <groupId>eu.europeana.metis</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>object-storage</artifactId>
+                    <groupId>eu.europeana</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!-- Compression for mongo driver -->
+
         <dependency>
-            <groupId>org.xerial.snappy</groupId>
-            <artifactId>snappy-java</artifactId>
-            <version>${snappy-java.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.mongodb.morphia</groupId>
-            <artifactId>morphia</artifactId>
-            <version>${morphia.version}</version>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
         </dependency>
 
         <!-- for parsing record json -->
@@ -107,13 +111,6 @@
                     <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!-- for serializing -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
 
         <!-- StringUtils -->
@@ -132,6 +129,10 @@
                     <artifactId>slf4j-api</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>stax2-api</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -142,11 +143,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>eu.europeana.corelib</groupId>
-            <artifactId>corelib-search</artifactId>
-            <version>${corelib.version}</version>
-        </dependency>
 
         <!-- Profiling using Spring AOP -->
         <dependency>
@@ -171,35 +167,7 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>eu.europeana.corelib</groupId>
-            <artifactId>corelib-storage</artifactId>
-            <version>${corelib.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>harvester-client</artifactId>
-                    <groupId>eu.europeana</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>harvester-persistence</artifactId>
-                    <groupId>eu.europeana</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>crf-fake-tags</artifactId>
-                    <groupId>eu.europeana</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-xc</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>wstx-asl</artifactId>
-                    <groupId>org.codehaus.woodstox</groupId>
-                </exclusion>
-
-            </exclusions>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
@@ -280,20 +248,12 @@
                         </plugin>
                     </plugins>
                 </pluginManagement>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>2.5.1</version>
-                        <configuration>
-                            <source>11</source>
-                            <target>11</target>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>aspectj-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
+<!--                <plugins>-->
+<!--                    <plugin>-->
+<!--                        <groupId>org.codehaus.mojo</groupId>-->
+<!--                        <artifactId>aspectj-maven-plugin</artifactId>-->
+<!--                    </plugin>-->
+<!--                </plugins>-->
             </build>
         </profile>
     </profiles>
