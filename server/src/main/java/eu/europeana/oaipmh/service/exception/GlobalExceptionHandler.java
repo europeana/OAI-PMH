@@ -93,16 +93,6 @@ public class GlobalExceptionHandler extends BaseService {
         return new ResponseEntity<>(serialize(error.getResponse(originalRequest)), responseHeaders, httpStatus);
     }
 
-    /**
-     * Checks if we should log an error and serializes the error response
-     * @param e
-     * @throws OaiPmhException
-     */
-    @ExceptionHandler(NoRecordsMatchException.class)
-    public ResponseEntity<String> handleNoRecordsMatchException(NoRecordsMatchException e, HttpServletRequest request) throws OaiPmhException {
-        return handleException(e, request, HttpStatus.OK);
-    }
-
     @ExceptionHandler(ConstraintViolationException.class)
     public final ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request)
             throws OaiPmhException {
