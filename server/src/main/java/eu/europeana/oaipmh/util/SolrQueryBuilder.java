@@ -94,13 +94,16 @@ public class SolrQueryBuilder {
      * number of all facet values.
      *
      * @param limit items per page
+     * @param from starting date
+     * @param until ending Date
      * @param offset start from specific facet
      * @return Solr query used for listing sets
      */
-    public static SolrQuery listSets(int limit, long offset) {
+    public static SolrQuery listSets(int limit, Date from, Date until, long offset) {
         SolrQuery query = new SolrQuery("*:*");
         query.setRows(0);
         query.setFields(DATASET_NAME);
+        addFilters(query,null, from, until);
         query.addFacetField(DATASET_NAME);
         query.setFacet(true);
         query.setFacetLimit(limit);

@@ -4,11 +4,11 @@ import eu.europeana.oaipmh.model.ListSets;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.model.Set;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,13 +26,16 @@ import static org.junit.Assert.*;
 @PropertySources(value = {})
 @SpringBootTest
 public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
-    private static final String LIST_SETS = "listSets";
+    private static final String LIST_SETS       = "listSets";
+    private static final String LIST_SETS_FROM  = "listSetsFrom";
 
     private static final String LIST_SETS_WITH_RESUMPTION_TOKEN_SECOND_PAGE = "listSetsWithResumptionTokenSecondPage";
 
     private static final long RESUMPTION_TOKEN_TTL = 86400000;
 
     private static final long COMPLETE_LIST_SIZE = 500;
+
+    private static final String DATE_1 = "2018-11-01T00:00:00.00Z";
 
     @InjectMocks
     private DefaultSetsProvider setsProvider;
@@ -42,7 +45,16 @@ public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
         QueryResponse response = getResponse(LIST_SETS);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
 
-        ListSets result = setsProvider.listSets();
+        ListSets result = setsProvider.listSets(null, null);
+        assertResults(result);
+    }
+
+    @Test
+    public void listSetsFrom() throws IOException, SolrServerException, OaiPmhException {
+        QueryResponse response = getResponse(LIST_SETS_FROM);
+        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
+        Date from = DateConverter.fromIsoDateTime(DATE_1);
+        ListSets result = setsProvider.listSets(from, null);
         assertResults(result);
     }
 

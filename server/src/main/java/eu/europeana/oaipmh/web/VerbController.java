@@ -190,6 +190,8 @@ public class VerbController {
 
     /**
      * Handles all list sets requests
+     * @param from
+     * @param until
      * @return
      * @throws OaiPmhException when there's a problem processing request parameters, retrieving data or serializing the response
      */
@@ -198,10 +200,12 @@ public class VerbController {
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = "verb=ListSets",
                     produces = MediaType.TEXT_XML_VALUE)
-    public String handleListSets(HttpServletRequest request, HttpServletResponse response) throws OaiPmhException {
+    public String handleListSets( @RequestParam(value = "from", required = false) String from,
+                                  @RequestParam(value = "until", required = false) String until,
+                                  HttpServletRequest request, HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         response.setContentType(MEDIA_TYPE_TEXT_XML);
-        return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, null));
+        return ops.listSets(OaiPmhRequestFactory.createListSetsRequest(baseUrl, from, until));
     }
 
     /**

@@ -29,8 +29,8 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      * @throws OaiPmhException
      */
     @Override
-    public ListSets listSets() throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, 0));
+    public ListSets listSets(Date from, Date until) throws OaiPmhException {
+        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, from, until, 0));
         FieldStatsInfo info = response.getFieldStatsInfo().get(DATASET_NAME);
         if (info == null) {
             throw new InternalServerErrorException("An error occurred while retrieving information from the index.");
@@ -89,7 +89,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      */
     @Override
     public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, resumptionToken.getCursor() + setsPerPage));
+        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, null, null, resumptionToken.getCursor() + setsPerPage));
         return responseToListSets(response, resumptionToken.getCursor() + setsPerPage, resumptionToken.getCompleteListSize());
     }
 }

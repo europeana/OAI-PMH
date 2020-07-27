@@ -3,10 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
 import eu.europeana.oaipmh.model.request.*;
-import eu.europeana.oaipmh.service.exception.BadResumptionToken;
-import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
-import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
-import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.service.exception.*;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
@@ -152,9 +149,14 @@ public class OaiPmhService extends BaseService {
             ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
             responseObject = setsProvider.listSets(validated);
         } else {
-            responseObject = setsProvider.listSets();
+            responseObject = setsProvider.listSets(DateConverter.fromIsoDateTime(request.getFrom()),
+                    DateConverter.fromIsoDateTime(request.getUntil()));
         }
-        return serialize(responseObject.getResponse(request));
+        if (! responseObject.getSets().isEmpty()) {
+            return serialize(responseObject.getResponse(request));
+        }
+        OAIError error = new OAIError(ErrorCode.NO_SETS_MATCH, "No sets exist!");
+        return serialize(error.getResponse(request));
     }
 
     /**

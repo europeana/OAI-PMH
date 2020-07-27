@@ -4,13 +4,15 @@ import eu.europeana.oaipmh.model.ListSets;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 
+import java.util.Date;
+
 public interface SetsProvider {
     /**
      * Returns the list of sets containing set identifier, set name and optionally description.
      * @return object with the list of Header objects containing necessary information
      * @throws OaiPmhException when there is a problem retrieving the information (e.g. IdDoesNotExistException)
      */
-    ListSets listSets() throws OaiPmhException;
+    ListSets listSets(Date from, Date until) throws OaiPmhException;
 
     /**
      * Returns next page of list sets. ResumptionToken is an object which is decoded from a valid string retrieved by calling no argument version of listSets.
