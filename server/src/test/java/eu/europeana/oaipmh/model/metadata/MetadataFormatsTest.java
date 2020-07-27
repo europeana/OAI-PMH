@@ -3,7 +3,6 @@ package eu.europeana.oaipmh.model.metadata;
 import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormat;
 import eu.europeana.oaipmh.model.MetadataFormatConverter;
-import eu.europeana.oaipmh.service.exception.NoMetadataFormatsException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.internal.util.reflection.Whitebox;
@@ -90,7 +89,7 @@ public class MetadataFormatsTest {
     }
 
     @Test
-    public void listMetadataFormats() throws NoMetadataFormatsException {
+    public void listMetadataFormats() {
         ListMetadataFormats formats = createListMetadataFormats();
         ListMetadataFormats retrieved = testedMetadataFormats.listMetadataFormats();
 

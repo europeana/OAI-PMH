@@ -2,7 +2,6 @@ package eu.europeana.oaipmh.model.metadata;
 
 import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormatConverter;
-import eu.europeana.oaipmh.service.exception.NoMetadataFormatsException;
 
 /**
  * All classes that provide metadata format must implement this interface. It is used to check whether provider is able
@@ -13,5 +12,5 @@ public interface MetadataFormatsProvider {
 
     MetadataFormatConverter getConverter(String metadataFormat);
 
-    ListMetadataFormats listMetadataFormats() throws NoMetadataFormatsException;
+    ListMetadataFormats listMetadataFormats() ;
 }

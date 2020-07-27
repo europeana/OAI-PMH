@@ -3,14 +3,12 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
-import eu.europeana.oaipmh.service.exception.NoRecordsMatchException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -106,7 +104,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         assertResults(result, from, until, null);
     }
 
-    @Test(expected = NoRecordsMatchException.class)
+    @Test
     public void listIdentifiersWithEmptyResult() throws OaiPmhException, IOException, SolrServerException {
         QueryResponse response = Mockito.mock(QueryResponse.class);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
@@ -114,7 +112,8 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
-        searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
+        ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
+        assertTrue(result.getHeaders().isEmpty());
     }
 
     @Test

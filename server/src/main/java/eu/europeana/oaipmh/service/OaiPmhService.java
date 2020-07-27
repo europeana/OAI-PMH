@@ -3,10 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
 import eu.europeana.oaipmh.model.request.*;
-import eu.europeana.oaipmh.service.exception.BadResumptionToken;
-import eu.europeana.oaipmh.service.exception.CannotDisseminateFormatException;
-import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
-import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import eu.europeana.oaipmh.service.exception.*;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
@@ -172,11 +169,16 @@ public class OaiPmhService extends BaseService {
                 request.getSet(),
                 request.getResumptionToken(),
                 recordsPerPage);
-        ListRecords responseObject = recordProvider.listRecords(identifiers.getHeaders());
-        responseObject.setResumptionToken(identifiers.getResumptionToken());
-        return serialize(responseObject.getResponse(request));
+        if (! identifiers.getHeaders().isEmpty()) {
+            ListRecords responseObject = recordProvider.listRecords(identifiers.getHeaders());
+            if (! responseObject.getRecords().isEmpty()) {
+                responseObject.setResumptionToken(identifiers.getResumptionToken());
+                return serialize(responseObject.getResponse(request));
+            }
+        }
+        OAIError error = new OAIError(ErrorCode.NO_RECORDS_MATCH, "No records found!");
+        return serialize(error.getResponse(request));
     }
-
 
     /**
      * Validate resumption token passed by the client. The base64 string is decoded and is checked against the expiration date.
@@ -212,6 +214,10 @@ public class OaiPmhService extends BaseService {
             recordProvider.checkRecordExists(request.getIdentifier());
         }
         ListMetadataFormats responseObject = metadataFormats.listMetadataFormats();
-        return serialize(responseObject.getResponse(request));
+        if (! responseObject.getMetadataFormats().isEmpty()) {
+            return serialize(responseObject.getResponse(request));
+        }
+        OAIError error = new OAIError(ErrorCode.NO_METADATA_FORMATS, "There are no metadata formats available.");
+        return serialize(error.getResponse(request));
     }
 }
