@@ -106,7 +106,11 @@ public class OaiPmhService extends BaseService {
                 request.getSet(),
                 request.getResumptionToken(),
                 identifiersPerPage);
-        return serialize(responseObject.getResponse(request));
+        if (! responseObject.getHeaders().isEmpty()) {
+            return serialize(responseObject.getResponse(request));
+        }
+        OAIError error = new OAIError(ErrorCode.NO_RECORDS_MATCH, "No records found!");
+        return serialize(error.getResponse(request));
     }
 
     /**
