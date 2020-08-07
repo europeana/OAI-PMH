@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-@Configuration
 public class DBRecordProvider extends BaseProvider implements RecordProvider, ConnectionPoolListener {
 
     private static final Logger LOG                   = LogManager.getLogger(DBRecordProvider.class);
