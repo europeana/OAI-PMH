@@ -75,7 +75,6 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- We also use Mongo, Morphia, Snappy and SolrJ dependencies from Corelib -->
         <dependency>
             <groupId>eu.europeana.corelib</groupId>
             <artifactId>corelib-record</artifactId>
@@ -94,6 +93,19 @@
                     <groupId>org.codehaus.woodstox</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <!-- required to load WebMetaInfo in Corelib record
+             (for now, can be removed after we switch to Corelib 2.10.2 or later) -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>29.0-jre</version>
+        </dependency>
+        <!-- Compression for mongo driver -->
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>${snappy.version}</version>
         </dependency>
 
         <!-- for parsing record json -->
