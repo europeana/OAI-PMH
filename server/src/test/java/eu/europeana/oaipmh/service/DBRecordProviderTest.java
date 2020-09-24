@@ -17,7 +17,6 @@ import eu.europeana.oaipmh.util.DateConverter;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.springframework.test.util.ReflectionTestUtils;
 import static junit.framework.TestCase.fail;
 
@@ -30,8 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class DBRecordProviderTest extends BaseApiTestCase {
@@ -58,8 +55,8 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         mongoServer = mock(EdmMongoServer.class);
         recordProvider = spy(DBRecordProvider.class);
 
-        Whitebox.setInternalState(recordProvider, IDENTIFIER_PREFIX_FIELD_NAME, DEFAULT_IDENTIFIER_PREFIX);
-        Whitebox.setInternalState(recordProvider, "mongoServer", mongoServer);
+        ReflectionTestUtils.setField(recordProvider, IDENTIFIER_PREFIX_FIELD_NAME, DEFAULT_IDENTIFIER_PREFIX);
+        ReflectionTestUtils.setField(recordProvider, "mongoServer", mongoServer);
     }
 
     @Test
@@ -96,8 +93,8 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
 
-        Whitebox.setInternalState(recordProvider, "threadsCount", 1);
-        Whitebox.setInternalState(recordProvider, "maxThreadsCount", 20);
+        ReflectionTestUtils.setField(recordProvider, "threadsCount", 1);
+        ReflectionTestUtils.setField(recordProvider, "maxThreadsCount", 20);
         ReflectionTestUtils.invokeMethod(recordProvider, "initThreadPool");
     }
 

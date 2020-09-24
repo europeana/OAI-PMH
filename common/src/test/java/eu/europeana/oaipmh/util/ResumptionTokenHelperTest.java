@@ -3,7 +3,7 @@ package eu.europeana.oaipmh.util;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Base64;
