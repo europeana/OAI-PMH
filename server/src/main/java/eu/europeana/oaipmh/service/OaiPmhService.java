@@ -153,9 +153,14 @@ public class OaiPmhService extends BaseService {
             ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
             responseObject = setsProvider.listSets(validated);
         } else {
-            responseObject = setsProvider.listSets();
+            responseObject = setsProvider.listSets(DateConverter.fromIsoDateTime(request.getFrom()),
+                    DateConverter.fromIsoDateTime(request.getUntil()));
         }
-        return serialize(responseObject.getResponse(request));
+        if (! responseObject.getSets().isEmpty()) {
+            return serialize(responseObject.getResponse(request));
+        }
+        OAIError error = new OAIError(ErrorCode.NO_SETS_MATCH, "No sets exist!");
+        return serialize(error.getResponse(request));
     }
 
     /**

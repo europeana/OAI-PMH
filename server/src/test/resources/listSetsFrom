@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response>
+
+<lst name="responseHeader">
+  <bool name="zkConnected">true</bool>
+  <int name="status">0</int>
+  <int name="QTime">10</int>
+  <lst name="params">
+    <str name="q">*:*</str>
+    <str name="facet.field">edm_datasetName</str>
+    <str name="indent">on</str>
+    <str name="fq">timestamp_update :[2018-11-01T00:00:00.00Z TO *]</str>
+    <str name="rows">0</str>
+    <str name="facet">on</str>
+    <str name="wt">xml</str>
+    <str name="_">1595844700052</str>
+  </lst>
+</lst>
+<result name="response" numFound="4" start="0" maxScore="1.0">
+</result>
+<lst name="facet_counts">
+  <lst name="facet_queries"/>
+  <lst name="facet_fields">
+    <lst name="edm_datasetName">
+      <int name="2048211_Ag_EU_EuropeanaFashion_1019">55413</int>
+      <int name="13_EKT_Onassis">7980</int>
+      <int name="3_EKT_Kazantzakis">2772</int>
+      <int name="11631_Ag_EU_OpenUp_MOOSATLAS">817</int>
+    </lst>
+  </lst>
+  <lst name="facet_ranges"/>
+  <lst name="facet_intervals"/>
+  <lst name="facet_heatmaps"/>
+</lst>
+<lst name="stats">
+  <lst name="stats_fields">
+    <lst name="edm_datasetName">
+      <str name="min">00101_M_PT_Gulbenkian_biblioteca_digital</str>
+      <str name="max">99_RoL_NLScotland_RareBooksDigitalGallery_pdf</str>
+      <long name="count">57279026</long>
+      <long name="missing">0</long>
+      <arr name="distinctValues">
+        <str>00101_M_PT_Gulbenkian_biblioteca_digital</str>
+        <str>00718_A_DE_Landesarchiv_ese_1_0000005584</str>
+        <str>00719_A_DE_Landesarchiv_ese_1_0000001697</str>
+        <str>00720_A_DE_Landesarchiv_ese_1_0000002606</str>
+        <str>00721_A_DE_Landesarchiv_ese_1_0000509056</str>
+        <str>00722_A_DE_Landesarchiv_ese_1_0000007103</str>
+        <str>00723_A_DE_Landesarchiv_ese_1_0000002951</str>
+        <str>00724_A_DE_Landesarchiv_ese_2_0000006123</str>
+        <str>00725_A_DE_Landesarchiv_ese_2_0000002676</str>
+        <str>00732_A_DE_Landesarchiv_ese_5_0000013064</str>
+      </arr>
+      <long name="countDistinct">10</long>
+    </lst>
+  </lst>
+</lst>
+
+</response>

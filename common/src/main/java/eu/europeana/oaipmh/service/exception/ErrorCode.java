@@ -13,6 +13,7 @@ public enum ErrorCode {
     CANNOT_DISSEMINATE_FORMAT("cannotDisseminateFormat"),
     ID_DOES_NOT_EXIST("idDoesNotExist"),
     NO_RECORDS_MATCH("noRecordsMatch"),
+    NO_SETS_MATCH("noSetsMatch"),
     NO_METADATA_FORMATS("noMetadataFormats"),
     NO_SET_HIERARCHY("noSetHierarchy"),
     BAD_METHOD("badMethod"),

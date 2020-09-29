@@ -67,6 +67,8 @@ public class OaiPmhRequestFactory {
         validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
         // ListSets
         validParameters = new HashSet<>();
+        validParameters.add(OaiParameterName.FROM);
+        validParameters.add(OaiParameterName.UNTIL);
         validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
         validVerbParameters.put(ListSets.class.getSimpleName(), validParameters);
         // ListMetadataFormats
@@ -358,7 +360,7 @@ public class OaiPmhRequestFactory {
         }
 
         if (ListSets.class.getSimpleName().equals(verb)) {
-            return createListSetsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+            return createListSetsRequest(baseUrl, parameters);
         }
 
         if (ListMetadataFormats.class.getSimpleName().equals(verb)) {
@@ -376,11 +378,26 @@ public class OaiPmhRequestFactory {
         return new OAIRequest(verb, baseUrl);
     }
 
-    public static ListSetsRequest createListSetsRequest(String baseUrl, String resumptionToken) {
-        if (resumptionToken != null) {
-            return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, resumptionToken);
+    private static ListSetsRequest createListSetsRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
+        if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
+            return createListSetsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
         }
-        return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl);
+        if (parameters.containsKey(OaiParameterName.METADATA_PREFIX)) {
+            return createListSetsRequest(baseUrl,
+                    parameters.get(OaiParameterName.FROM),
+                    parameters.get(OaiParameterName.UNTIL));
+        }
+        // when key parameters are missing return a basic list records request object
+        return new ListSetsRequest(parameters.get(OaiParameterName.VERB), baseUrl);
+    }
+
+    public static ListSetsRequest createListSetsRequest(String baseUrl, String resumptionToken) {
+       return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, resumptionToken);
+
+    }
+
+    public static ListSetsRequest createListSetsRequest(String baseUrl, String from, String until) {
+        return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, from, until);
     }
 
     private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
