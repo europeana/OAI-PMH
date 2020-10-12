@@ -1,8 +1,7 @@
 package eu.europeana.oaipmh.service;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClients;
 import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
 import eu.europeana.corelib.definitions.jibx.DatasetName;
@@ -25,7 +24,6 @@ import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -75,10 +73,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
 
     private void initMongo() {
         // We add a connectionPoolListener so we can keep track of the number of connections
-        MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
-        MongoClientURI uri = new MongoClientURI(connectionUrl, clientOptions);
-        mongoServer = new EdmMongoServerImpl(new MongoClient(uri), recordDBName, false);
-        LOG.info("Connected to mongo database {} at {}", recordDBName, uri.getHosts());
+        // MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
+        mongoServer = new EdmMongoServerImpl(MongoClients.create(connectionUrl), recordDBName, false);
+        LOG.info("Connected to mongo database {} at {}", recordDBName, new MongoClientURI(connectionUrl).getHosts());
     }
 
     /**
@@ -111,7 +108,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
 
     @Override
     public void connectionPoolClosed(ConnectionPoolClosedEvent connectionPoolClosedEvent) {
-        LOG.debug("Connectio pool closed {}", connectionPoolClosedEvent);
+        LOG.debug("Connection pool closed {}", connectionPoolClosedEvent);
     }
 
     @Override
@@ -121,16 +118,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
 
     @Override
     public void connectionCheckedIn(ConnectionCheckedInEvent connectionCheckedInEvent) {
-        // ignore
-    }
-
-    @Override
-    public void waitQueueEntered(ConnectionPoolWaitQueueEnteredEvent connectionPoolWaitQueueEnteredEvent) {
-        // ignore
-    }
-
-    @Override
-    public void waitQueueExited(ConnectionPoolWaitQueueExitedEvent connectionPoolWaitQueueExitedEvent) {
         // ignore
     }
 

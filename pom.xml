@@ -34,7 +34,7 @@
 
         <commons-lang.version>2.6</commons-lang.version>
         <!--<commons-lang3.version>3.8.1</commons-lang3.version>-->
-        <corelib.version>2.10.1</corelib.version>
+        <corelib.version>2.11.0</corelib.version>
         <snappy.version>1.1.7.6</snappy.version>
         <solrj.version>6.6.5</solrj.version>
         <log4j2.version>2.12.1</log4j2.version>
