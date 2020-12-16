@@ -2,22 +2,25 @@ package eu.europeana.oaipmh.web;
 
 import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.OaiPmhService;
-import eu.europeana.oaipmh.util.SwaggerProvider;
+import eu.europeana.oaipmh.service.exception.GlobalExceptionHandler;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.spy;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,8 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Patrick Ehlert
  * Created on 28-02-2018
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebMvcTest(VerbController.class)
+@RunWith(MockitoJUnitRunner.class)
 public class VerbControllerTest {
 
     private static final String IDENTIFY_RESPONSE = "<OAI-PMH><responseDate>2018-03-16T10:10:32Z</responseDate><request verb=\"Identify\">\"https://oai.europeana.eu/oai\"</request><Identify><repositoryName>Europeana Repository</repositoryName><earliestDateStamp>2013-02-15T13:04:50Z</earliestDateStamp><deletedRecord>no</deletedRecord><adminEmail>api@europeana.eu</adminEmail></Identify></OAI-PMH>";
@@ -54,15 +56,23 @@ public class VerbControllerTest {
     private static final String LIST_RECORDS_CORRUPTED_TOKEN = "ZWRtX19fQW9KMnI4N2oxdDBDUHc4dk1qQTBPRFF6TWk5cGRHVnRYMFZJTlZKUFJrNVlRaljBSQ1NrVkhUMW96V1VnMQ==";
 
     private static final String MEDIA_TYPE_TEXT_XML = "text/xml;charset=UTF-8";
-
-    @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Mock
     private OaiPmhService ops;
 
-    @MockBean
-    private SwaggerProvider swaggerProvider;
+    @InjectMocks
+    private VerbController verbController;
+
+    /**
+     * Loads the entire webapplication as mock server
+     */
+    @Before
+    public void setup() {
+        GlobalExceptionHandler globalExceptionHandler = spy(GlobalExceptionHandler.class);
+        mockMvc = MockMvcBuilders.standaloneSetup(verbController).setControllerAdvice(globalExceptionHandler).build();
+        assertThat(this.mockMvc).isNotNull();
+    }
 
     @Test
     public void testIdentify() throws Exception {
@@ -90,8 +100,6 @@ public class VerbControllerTest {
 
     @Test
     public void testListMetadataFormatsWrongArgument() throws Exception {
-        given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willCallRealMethod();
-
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats&resumptionToken=XXX").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
@@ -99,8 +107,6 @@ public class VerbControllerTest {
 
     @Test
     public void testListMetadataFormatsWrongMethod() throws Exception {
-        given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willCallRealMethod();
-
         this.mockMvc.perform(MockMvcRequestBuilders.put("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isMethodNotAllowed())
                 .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
@@ -347,31 +353,5 @@ public class VerbControllerTest {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017-02-02T01:03:00Z&to=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
-    }
-
-
-    @Test
-    public void testCorsGet() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml"))
-                .header(HttpHeaders.ORIGIN, "https://test.com"))
-                .andExpect(status().isOk())
-                .andExpect(header().exists(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN))
-                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*"));
-
-    }
-
-    /**
-     * A pre-flight request is an OPTIONS request using three HTTP request headers:
-     * Access-Control-Request-Method, Access-Control-Request-Headers, and the Origin header.
-     */
-    @Test
-    public void testCorsPreFlight() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.options("/oai?verb=Identify")
-                .header(HttpHeaders.ORIGIN, "https://test.com")
-                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
-                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, HttpHeaders.AUTHORIZATION))
-                .andExpect(header().exists(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN))
-                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, containsString("GET")))
-                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "*"));
     }
 }
