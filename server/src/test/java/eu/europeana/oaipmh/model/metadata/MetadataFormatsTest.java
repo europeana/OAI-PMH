@@ -5,14 +5,17 @@ import eu.europeana.oaipmh.model.MetadataFormat;
 import eu.europeana.oaipmh.model.MetadataFormatConverter;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.util.reflection.Whitebox;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MetadataFormatsTest {
     private static final String METADATA_FORMAT_PREFIX = "format_prefix";
@@ -50,11 +53,11 @@ public class MetadataFormatsTest {
            metadataFormat = new MetadataFormat(METADATA_FORMAT_PREFIX, schemas.get(METADATA_FORMAT_PREFIX), namespaces.get(METADATA_FORMAT_PREFIX), metadataFormatConverter);
            metadataFormats.put(METADATA_FORMAT_PREFIX,metadataFormat);
 
-           Whitebox.setInternalState(testedMetadataFormats, "prefixes", prefixes);
-           Whitebox.setInternalState(testedMetadataFormats, "converters", converters);
-           Whitebox.setInternalState(testedMetadataFormats, "schemas", schemas);
-           Whitebox.setInternalState(testedMetadataFormats, "namespaces", namespaces);
-           Whitebox.setInternalState(testedMetadataFormats, "metadataFormats", metadataFormats);
+        ReflectionTestUtils.setField(testedMetadataFormats, "prefixes", prefixes);
+        ReflectionTestUtils.setField(testedMetadataFormats, "converters", converters);
+        ReflectionTestUtils.setField(testedMetadataFormats, "schemas", schemas);
+        ReflectionTestUtils.setField(testedMetadataFormats, "namespaces", namespaces);
+        ReflectionTestUtils.setField(testedMetadataFormats, "metadataFormats", metadataFormats);
     }
 
     @Test
