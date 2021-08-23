@@ -129,7 +129,8 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
      */
     @SuppressWarnings("squid:S2095") // to avoid sonarqube false positive (see https://stackoverflow.com/a/37073154/741249)
     public static void main(String[] args)  {
-        LOG.info("Main start - CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}", System.getenv("CF_INSTANCE_GUID"), System.getenv("CF_INSTANCE_IP"));
+        LOG.info("Main - CF_INSTANCE_INDEX  = {}, CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}",
+                System.getenv("CF_INSTANCE_INDEX"), System.getenv("CF_INSTANCE_GUID"), System.getenv("CF_INSTANCE_IP"));
         try {
             SocksProxyHelper.injectSocksProxySettings();
             SpringApplication.run(OaiPmhApplication.class, args);
@@ -146,7 +147,8 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
      */
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        LOG.info("CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}", System.getenv("CF_INSTANCE_GUID"), System.getenv("CF_INSTANCE_IP"));
+        LOG.info("Startup - CF_INSTANCE_INDEX  = {}, CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}",
+                System.getenv("CF_INSTANCE_INDEX"), System.getenv("CF_INSTANCE_GUID"), System.getenv("CF_INSTANCE_IP"));
         try {
             SocksProxyHelper.injectSocksProxySettings();
             super.onStartup(servletContext);
