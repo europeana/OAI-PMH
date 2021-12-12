@@ -1,17 +1,17 @@
 package eu.europeana.oaipmh.service;
 
 import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoClient;
 import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.definitions.jibx.DatasetName;
-import eu.europeana.corelib.definitions.jibx.EuropeanaAggregationType;
-import eu.europeana.corelib.definitions.jibx.RDF;
 import eu.europeana.corelib.edm.utils.EdmUtils;
-import eu.europeana.corelib.mongo.server.EdmMongoServer;
-import eu.europeana.corelib.mongo.server.impl.EdmMongoServerImpl;
 import eu.europeana.corelib.record.api.WebMetaInfo;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
+import eu.europeana.metis.mongo.connection.MongoClientProvider;
+import eu.europeana.metis.mongo.dao.RecordDao;
+import eu.europeana.metis.schema.jibx.DatasetName;
+import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
+import eu.europeana.metis.schema.jibx.RDF;
 import eu.europeana.metis.utils.ExternalRequestUtil;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
@@ -63,7 +63,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     private int nrConnections = 2;
 
     private ExecutorService threadPool;
-    private EdmMongoServer mongoServer;
+    private MongoClient mongoClient;
+    private RecordDao recordDao;
+
 
     @PostConstruct
     private void init() {
@@ -74,7 +76,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     private void initMongo() {
         // We add a connectionPoolListener so we can keep track of the number of connections
         // MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
-        mongoServer = new EdmMongoServerImpl(MongoClients.create(connectionUrl), recordDBName, false);
+        this.mongoClient = MongoClientProvider.create(connectionUrl).createMongoClient();
+        this.recordDao = new RecordDao(mongoClient, recordDBName, false);
         LOG.info("Connected to mongo database {} at {}", recordDBName, new MongoClientURI(connectionUrl).getHosts());
     }
 
@@ -164,7 +167,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
         try {
             return ExternalRequestUtil.retryableExternalRequest(() -> {
                 try {
-                    return mongoServer.getFullBean(recordId);
+                    return recordDao.getFullBean(recordId);
                 } catch (Exception e) {
                     throw new RuntimeException("Error retrieving fullbean for record "+recordId, e);
                 }
@@ -278,7 +281,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     private void enhanceWithTechnicalMetadata(FullBean bean) {
         long start = System.currentTimeMillis();
         if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfoBatch(bean, mongoServer, null);
+            WebMetaInfo.injectWebMetaInfoBatch(bean, recordDao, null);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
             }
@@ -313,8 +316,8 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     @PreDestroy
     public void close() {
         LOG.info("Shutting down Mongo connections...");
-        if (mongoServer != null) {
-            mongoServer.close();
+        if (mongoClient != null) {
+            mongoClient.close();
         }
         if (threadPool != null) {
             threadPool.shutdown();

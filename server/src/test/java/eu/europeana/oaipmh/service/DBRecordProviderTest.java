@@ -1,12 +1,12 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.definitions.jibx.CollectionName;
-import eu.europeana.corelib.definitions.jibx.EuropeanaAggregationType;
-import eu.europeana.corelib.definitions.jibx.RDF;
-import eu.europeana.corelib.mongo.server.EdmMongoServer;
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.corelib.web.exception.EuropeanaException;
+import eu.europeana.metis.mongo.dao.RecordDao;
+import eu.europeana.metis.schema.jibx.CollectionName;
+import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
+import eu.europeana.metis.schema.jibx.RDF;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.RDFMetadata;
@@ -18,7 +18,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
-import static junit.framework.TestCase.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static junit.framework.TestCase.fail;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
@@ -45,18 +45,18 @@ public class DBRecordProviderTest extends BaseApiTestCase {
 
     private static final String DEFAULT_IDENTIFIER_PREFIX = "http://data.europeana.eu/item";
 
-    private EdmMongoServer mongoServer;
+    private RecordDao recordDao;
 
     private DBRecordProvider recordProvider;
 
     @Before
     public void initTest() {
 
-        mongoServer = mock(EdmMongoServer.class);
+        recordDao = mock(RecordDao.class);
         recordProvider = spy(DBRecordProvider.class);
 
         ReflectionTestUtils.setField(recordProvider, IDENTIFIER_PREFIX_FIELD_NAME, DEFAULT_IDENTIFIER_PREFIX);
-        ReflectionTestUtils.setField(recordProvider, "mongoServer", mongoServer);
+        ReflectionTestUtils.setField(recordProvider, "recordDao", recordDao);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         List<EuropeanaAggregationType> types = new ArrayList<>();
         types.add(type);
 
-        given(mongoServer.getFullBean(anyString())).willReturn(bean);
+        given(recordDao.getFullBean(anyString())).willReturn(bean);
         given(rdf.getEuropeanaAggregationList()).willReturn(types);
         given(type.getCollectionName()).willReturn(name);
         doReturn(record).when(recordProvider).getEDM(any(RDF.class));
@@ -155,7 +155,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     public void checkRecordExists() throws EuropeanaException, OaiPmhException {
         // given
         FullBeanImpl bean = mock(FullBeanImpl.class);
-        given(mongoServer.getFullBean(anyString())).willReturn(bean);
+        given(recordDao.getFullBean(anyString())).willReturn(bean);
 
         // when
         recordProvider.checkRecordExists(TEST_RECORD_ID);
@@ -166,7 +166,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     @Test(expected = IdDoesNotExistException.class)
     public void checkRecordExistsWithWrongIdentifier() throws EuropeanaException, OaiPmhException {
         // given
-        given(mongoServer.getFullBean(anyString())).willReturn(null);
+        given(recordDao.getFullBean(anyString())).willReturn(null);
 
         // when
         recordProvider.checkRecordExists(TEST_RECORD_ID);
