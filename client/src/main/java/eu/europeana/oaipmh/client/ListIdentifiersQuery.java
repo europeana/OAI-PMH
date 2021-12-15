@@ -115,21 +115,21 @@ public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
             }
         }
 
-        LOG.info("ListIdentifiers for set " + setName + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
-                ". Harvested " + counter + " identifiers.");
+        LOG.info("ListIdentifiers for set {} executed in {}. Harvested {} identifiers.",
+                setName, ProgressLogger.getDurationText(System.currentTimeMillis() - start), counter);
     }
 
     /**
      * Temporarily added for testing/debugging purposes
      */
-    private void writeDataToLogFile(ListIdentifiers responseObject) {
-        // write data to file
-        ListIterator<Header> it = responseObject.getHeaders().listIterator();
-        while (it.hasNext()) {
-            Header header = it.next();
-            LogFile.OUT.info("{} {}", header.getSetSpec().get(0), header.getIdentifier());
-        }
-    }
+//    private void writeDataToLogFile(ListIdentifiers responseObject) {
+//        // write data to file
+//        ListIterator<Header> it = responseObject.getHeaders().listIterator();
+//        while (it.hasNext()) {
+//            Header header = it.next();
+//            LogFile.OUT.info("{} {}", header.getSetSpec().get(0), header.getIdentifier());
+//        }
+//    }
 
     private void collectIdentifiers(List<Header> headers, List<String> identifiers) {
         if (identifiers != null) {

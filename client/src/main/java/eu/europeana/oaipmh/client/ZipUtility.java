@@ -10,7 +10,7 @@ import java.io.OutputStreamWriter;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ZipUtility {
+public final class ZipUtility {
 
     private static final Logger LOG = LogManager.getLogger(ZipUtility.class);
     private static final String EXTENSION = ".xml";

@@ -57,7 +57,7 @@ public class ListSetsResponseDeserializer extends StdDeserializer<ListSetsRespon
         JsonNode errorNode = mainNode.get("error");
         if (errorNode != null) {
             // return basic response so harvest can continue (in case there are other sets to harvest)
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("Error message: {}", errorNode);
+            LogManager.getLogger(ListSetsResponseDeserializer.class).error("Error message: {}", errorNode);
             return listSetsResponse;
         }
 

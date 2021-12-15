@@ -59,7 +59,9 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
         JsonNode errorNode = mainNode.get("error");
         if (errorNode != null) {
             // return basic response so harvest can continue (in case there are other sets to harvest)
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("Error message: {}", errorNode);
+            if (LogManager.getLogger(ListIdentifiersResponseDeserializer.class).isErrorEnabled()) {
+                LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("Error message: {}", errorNode);
+            }
             return listIdentifiersResponse;
         }
 
@@ -126,7 +128,9 @@ public class ListIdentifiersResponseDeserializer extends StdDeserializer<ListIde
 
     private void setIdentifier(JsonNode header, JsonNode identifierNode, Header headerObject, JsonNode id) {
         if (id == null) {
-            LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! {}", header.textValue());
+            if (LogManager.getLogger(ListIdentifiersResponseDeserializer.class).isErrorEnabled()) {
+                LogManager.getLogger(ListIdentifiersResponseDeserializer.class).error("No id found in header! {}", header.textValue());
+            }
         } else {
             headerObject.setIdentifier(identifierNode.get("identifier").asText());
         }

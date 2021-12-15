@@ -14,6 +14,17 @@ public class XML2EDMConverter implements MetadataFormatConverter {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof XML2EDMConverter;
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        return this.getClass() == obj.getClass();
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }

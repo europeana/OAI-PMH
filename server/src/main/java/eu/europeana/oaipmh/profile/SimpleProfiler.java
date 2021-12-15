@@ -1,6 +1,7 @@
 package eu.europeana.oaipmh.profile;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +14,7 @@ import org.springframework.util.StopWatch.TaskInfo;
 @Aspect
 public class SimpleProfiler {
 
-    Logger LOG = Logger.getLogger(getClass());
+    private static final Logger LOG = LogManager.getLogger(SimpleProfiler.class);
 
     /**
      * Profiling method. Use pointcuts defined in AspectJConfig. The default is @Around("eu.europeana.oaipmh.profile.AspectJConfig.allServiceMethods()").

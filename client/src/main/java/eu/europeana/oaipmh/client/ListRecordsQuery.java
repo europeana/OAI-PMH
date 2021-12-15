@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -149,8 +149,8 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
 
         clean();
 
-        LOG.info("ListRecords for set " + setIdentifier + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
-                ". Harvested " + identifiers.size() + " identifiers.");
+        LOG.info("ListRecords for set {} executed in {}. Harvested {} identifiers.",
+                setIdentifier, ProgressLogger.getDurationText(System.currentTimeMillis() - start), identifiers.size());
     }
 
     private void executeListRecords(OAIPMHServiceClient oaipmhServer, String setIdentifier) {
@@ -161,8 +161,9 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         String request = getRequest(oaipmhServer.getOaipmhServer(), setIdentifier);
         ListRecordsResponse response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
         ListRecords responseObject = response.getListRecords();
-        try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(new File(directoryLocation + PATH_SEPERATOR + setIdentifier + ZIP_EXTENSION)));
-             OutputStreamWriter writer = new OutputStreamWriter(zout)) {
+        try (final ZipOutputStream zout = new ZipOutputStream(
+                new FileOutputStream(directoryLocation + PATH_SEPERATOR + setIdentifier + ZIP_EXTENSION));
+             OutputStreamWriter writer = new OutputStreamWriter(zout, StandardCharsets.UTF_8)) {
 
             if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
                 for(Record record : responseObject.getRecords()) {
@@ -201,8 +202,8 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         }
 
 
-        LOG.info("ListRecords for set " + setIdentifier + " executed in " + ProgressLogger.getDurationText(System.currentTimeMillis() - start) +
-                ". Harvested " + counter + " records.");
+        LOG.info("ListRecords for set {} executed in {}. Harvested {} records.",
+                setIdentifier,  ProgressLogger.getDurationText(System.currentTimeMillis() - start), counter);
     }
 
     private ListIdentifiersQuery prepareListIdentifiersQuery(String setIdentifier) {

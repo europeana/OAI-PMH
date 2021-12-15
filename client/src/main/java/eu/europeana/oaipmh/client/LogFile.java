@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * @author Patrick Ehlert
  * Created on 22-08-2018
  */
-public class LogFile {
+public final class LogFile {
 
     private LogFile(){
         throw new IllegalStateException("Utility class");

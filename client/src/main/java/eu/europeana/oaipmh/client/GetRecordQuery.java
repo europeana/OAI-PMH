@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipOutputStream;
 
 @Component
@@ -63,7 +64,7 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
         GetRecord responseObject = response.getGetRecord();
         try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
                 new File(directoryLocation + PATH_SEPERATOR + ZipUtility.getDirectoryName(currentIdentifier) + ZIP_EXTENSION)));
-             OutputStreamWriter writer = new OutputStreamWriter(zout)) {
+             OutputStreamWriter writer = new OutputStreamWriter(zout, StandardCharsets.UTF_8)) {
             if (responseObject != null) {
                 Record record = responseObject.getRecord();
                 if (record == null) {

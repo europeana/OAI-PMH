@@ -49,6 +49,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
 
     @Scheduled(fixedRate = 300_000) // 5 minutes
     public void logMemoryUsage() {
+        // Temporary code to check memory usage / leaks
         System.gc();
         LOG.info("JVM MEMORY INFO: Used {} ({}), Free {}, Max {}, System free {}",
                 MemoryUtils.getTotalMemoryJVMInMB(),

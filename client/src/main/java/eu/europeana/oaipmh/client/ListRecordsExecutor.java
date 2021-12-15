@@ -49,7 +49,7 @@ public class ListRecordsExecutor implements Callable<ListRecordsResult> {
         for (String identifier : identifiers) {
             try {
                 new GetRecordQuery(metadataPrefix, identifier).execute(oaipmhServer);
-            } catch (Exception e) {
+            } catch (RuntimeException e) {
                 LOG.error("Error retrieving record {}", identifier, e);
                 errors++;
                 // if there are too many errors, just abort
