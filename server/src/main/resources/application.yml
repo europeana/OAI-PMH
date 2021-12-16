@@ -5,3 +5,9 @@ server:
 spring:
   application:
     name: OAI-PMH Server
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info
