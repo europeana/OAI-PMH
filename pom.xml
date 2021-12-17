@@ -56,6 +56,7 @@
                 <configuration>
                     <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
                     <skipSystemScope>true</skipSystemScope>
+                    <failBuildOnCVSS>8</failBuildOnCVSS>
                 </configuration>
                 <executions>
                     <execution>
