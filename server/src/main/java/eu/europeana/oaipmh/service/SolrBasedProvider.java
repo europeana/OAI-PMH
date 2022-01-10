@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class SolrBasedProvider extends BaseProvider implements ClosableProvider {
     private static final Logger LOG = LogManager.getLogger(SolrBasedProvider.class);
@@ -41,8 +43,17 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
      */
     @PostConstruct
     private void init() {
-        LOG.info("Connecting to Solr cluster: {}", solrUrl);
-        client = new CloudSolrClient.Builder(Arrays.asList(solrUrl.split(","))).build();
+        LOG.info("Connecting to Solr cluster: {}...", solrUrl);
+
+        List<String> solrHosts;
+        if (solrUrl.contains(",")) {
+            solrHosts = Arrays.asList(solrUrl.split(","));
+        } else {
+            solrHosts = new ArrayList<>();
+            solrHosts.add(solrUrl);
+        }
+
+        client = new CloudSolrClient.Builder(solrHosts).build();
         client.setDefaultCollection(solrCore);
         client.connect();
         LOG.info("Connected to Solr {}", solrUrl);
