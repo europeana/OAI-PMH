@@ -16,7 +16,7 @@ import static org.apache.solr.common.params.StatsParams.STATS_CALC_DISTINCT;
  */
 public class SolrQueryBuilder {
 
-    private static final String FQ_TEMPLATE = "%s:%s_*";
+    private static final String FQ_TEMPLATE = "%s:%s*";
 
     private static final String DATE_RANGE_TEMPLATE = "%s:[%s TO %s]";
 

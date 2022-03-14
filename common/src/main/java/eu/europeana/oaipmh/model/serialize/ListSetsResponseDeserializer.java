@@ -101,9 +101,13 @@ public class ListSetsResponseDeserializer extends StdDeserializer<ListSetsRespon
     }
 
     private void setSetName(JsonNode setNode, Set setObject, JsonNode setNameNode) {
-        if (setNameNode != null) {
-            setObject.setSetName(setNode.get("setName").asText());
+        List<String> setName = new ArrayList<>();
+        if (setNameNode != null && setNameNode.isArray()) {
+            for (int i = 0; i < setNameNode.size(); i++) {
+                setName.add(setNameNode.get(i).asText());
+            }
         }
+        setObject.setSetName(setName);
     }
 
     private void setSetSpec(JsonNode setNode, Set setObject, JsonNode setNameNode) {

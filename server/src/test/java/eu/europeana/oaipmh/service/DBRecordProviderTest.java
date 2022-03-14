@@ -45,6 +45,8 @@ public class DBRecordProviderTest extends BaseApiTestCase {
 
     private static final String DEFAULT_IDENTIFIER_PREFIX = "http://data.europeana.eu/item";
 
+    private static final String[] EUROPEANA_COLLECTION_NAME = new String[] {"2048432a_testing"};
+
     private RecordDao recordDao;
 
     private DBRecordProvider recordProvider;
@@ -91,7 +93,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         doReturn(rdf).when(recordProvider).getRDF(any(FullBeanImpl.class));
         given(name.getString()).willReturn(TEST_RECORD_SETS[0]);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
-        given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
+        given(bean.getEuropeanaCollectionName()).willReturn(EUROPEANA_COLLECTION_NAME);
 
         ReflectionTestUtils.setField(recordProvider, "threadsCount", 1);
         ReflectionTestUtils.setField(recordProvider, "maxThreadsCount", 20);

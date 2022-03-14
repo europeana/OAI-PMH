@@ -304,7 +304,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
             header.setDatestamp(bean.getTimestampCreated());
             List<String> setSpec = new ArrayList<>();
             for (String setName : bean.getEuropeanaCollectionName()) {
-                setSpec.add(getSetIdentifier(setName));
+                setSpec.add(datasetNameToId(setName));
             }
             header.setSetSpec(setSpec);
             return header;

@@ -167,7 +167,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
         Collection<Object> setNames = document.getFieldValues(DATASET_NAME);
         if (setNames != null) {
             for (Object value : setNames) {
-                sets.add(getSetIdentifier((String) value));
+                sets.add(datasetNameToId((String) value));
             }
         }
         Date timestampUpdate = (Date) document.getFieldValue(TIMESTAMP_UPDATE);

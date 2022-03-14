@@ -26,8 +26,8 @@ import javax.validation.constraints.Pattern;
 @RequestMapping(value = {"/oai", "/oaicat/OAIHandler"})
 public class VerbController {
 
-    private static final String REGEX_VALID_SET_ID = "^[a-zA-Z0-9-_]*$";
-    private static final String INVALID_SET_ID_MESSAGE = "Set id is invalid";
+    private static final String REGEX_VALID_SET_ID = "^[0-9]*$";
+    private static final String INVALID_SET_ID_MESSAGE = "Set id is invalid.";
     private static final String MEDIA_TYPE_TEXT_XML = "text/xml;charset=UTF-8";
 
 

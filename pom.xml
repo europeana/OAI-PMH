@@ -56,6 +56,9 @@
                     <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
                     <skipSystemScope>true</skipSystemScope>
                     <failBuildOnCVSS>8</failBuildOnCVSS>
+                    <suppressionFiles>
+                        <suppressionFile>owasp-suppress.xml</suppressionFile>
+                    </suppressionFiles>
                 </configuration>
                 <executions>
                     <execution>

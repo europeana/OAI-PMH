@@ -39,6 +39,19 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
     }
 
     /**
+     * List the next page of sets based on the resumption token.
+     *
+     * @param resumptionToken decoded resumption token used to retrieve next page of results
+     * @return ListSets object with the next page of sets and possibly with resumption token if necessary
+     * @throws OaiPmhException
+     */
+    @Override
+    public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
+        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, null, null, resumptionToken.getCursor() + setsPerPage));
+        return responseToListSets(response, resumptionToken.getCursor() + setsPerPage, resumptionToken.getCompleteListSize());
+    }
+
+    /**
      * Retrieve information from the Solr response and put it into the ListSets object.
      *
      * @param response response returned by Solr
@@ -53,8 +66,16 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
         FacetField field = response.getFacetField(DATASET_NAME);
         for (FacetField.Count setCounts : field.getValues()) {
             String setName = setCounts.getName();
-            String setIdentifier = getSetIdentifier(setName);
-            sets.add(new Set(setIdentifier, setName));
+            // get the Set ID from edm_datasetName
+            String setIdentifier = datasetNameToId(setName);
+            // check if there is already a setId added in the sets List. if yes, add the setNames to the already existing set.
+            // This is done to handle the parted/divided datasets. See EA-2923
+            Set set = getSetIfExistsBySetId(sets, setIdentifier);
+            if (set != null) {
+                set.getSetName().add(setName);
+            } else {
+                sets.add(new Set(setIdentifier, setName));
+            }
         }
         listSets.setSets(sets);
 
@@ -69,6 +90,16 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
     }
 
     /**
+     * Returns the set of the matching setId
+     * @param sets List of Sets
+     * @param setId set Id
+     * @return
+     */
+    private Set getSetIfExistsBySetId(List<Set> sets, String setId) {
+        return sets.stream().filter(set -> set.getSetSpec().equals(setId)).findFirst().orElse(null);
+    }
+
+    /**
      * Determine if a resumption token is needed
      *
      * @param retrieved items retrieved so far
@@ -79,17 +110,4 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
         return cursor + retrieved < completeListSize && retrieved == setsPerPage;
     }
 
-
-    /**
-     * List the next page of sets based on the resumption token.
-     *
-     * @param resumptionToken decoded resumption token used to retrieve next page of results
-     * @return ListSets object with the next page of sets and possibly with resumption token if necessary
-     * @throws OaiPmhException
-     */
-    @Override
-    public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, null, null, resumptionToken.getCursor() + setsPerPage));
-        return responseToListSets(response, resumptionToken.getCursor() + setsPerPage, resumptionToken.getCompleteListSize());
-    }
 }
