@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class ListSetsResponseDeserializer extends StdDeserializer<ListSetsRespon
      * This method is a custom deserializer for nodes corresponding to the ListSet response. It's purpose is to correctly
      * deserialize sets lists which are unwprapped.
      *
-     * @param jp parser
+     * @param jp   parser
      * @param ctxt context
      * @return correctly deserialized ListSetResponse object
      * @throws IOException
@@ -77,10 +78,10 @@ public class ListSetsResponseDeserializer extends StdDeserializer<ListSetsRespon
     /**
      * Deserialize set entries into the list.
      *
-     * @param  set json node
+     * @param set json node
      * @return list of set objects
      */
-    private List<Set> getSets(JsonNode set) {
+    public List<Set> getSets(JsonNode set) {
         List<Set> sets = new ArrayList<>();
 
         if (set.isArray()) {
@@ -102,12 +103,14 @@ public class ListSetsResponseDeserializer extends StdDeserializer<ListSetsRespon
 
     private void setSetName(JsonNode setNode, Set setObject, JsonNode setNameNode) {
         List<String> setName = new ArrayList<>();
-        if (setNameNode != null && setNameNode.isArray()) {
+        if (setNameNode.isArray()) {
             for (int i = 0; i < setNameNode.size(); i++) {
                 setName.add(setNameNode.get(i).asText());
             }
+            setObject.setSetName(setName);
+        } else {
+                setObject.setSetName(Collections.singletonList(setNode.get("setName").asText()));
         }
-        setObject.setSetName(setName);
     }
 
     private void setSetSpec(JsonNode setNode, Set setObject, JsonNode setNameNode) {
