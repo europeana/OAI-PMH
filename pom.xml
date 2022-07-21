@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>oai-pmh2</artifactId>
-    <version>0.8.2-SNAPSHOT</version>
+    <version>0.8.2</version>
     <packaging>pom</packaging>
 
     <name>Europeana OAI-PMH2</name>
