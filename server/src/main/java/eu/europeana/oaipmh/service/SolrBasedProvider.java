@@ -96,10 +96,10 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
     // to truncate the error message thrown by Solr
     private String truncateExceptionMessage(String message){
         String errorMessage;
-        if(StringUtils.contains(message , "org.apache.solr.search.SyntaxError")){
+        if (StringUtils.contains(message , "org.apache.solr.search.SyntaxError")){
             errorMessage = StringUtils.substring(message, StringUtils.indexOf(message, "SyntaxError"), StringUtils.indexOf(message, "at line"));
         } else {
-            errorMessage = "Parameter provided is invalid";
+            errorMessage = "Exception sending request to search engine";
         }
         return errorMessage;
     }
