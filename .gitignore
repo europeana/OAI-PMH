@@ -24,3 +24,4 @@ nbdist/
 .nb-gradle/
 
 **/oai-pmh.user.properties
+/server/src/main/resources/oai-pmh.user.properties

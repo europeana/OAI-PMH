@@ -1,6 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.*;
+import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
 import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.exception.*;

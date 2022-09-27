@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import eu.europeana.oaipmh.model.*;
+import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.request.ListRecordsRequest;
 import eu.europeana.oaipmh.model.response.ListRecordsResponse;
 import eu.europeana.oaipmh.util.DateConverter;
