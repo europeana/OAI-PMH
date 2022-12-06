@@ -88,4 +88,12 @@
         <cve>CVE-2022-22965</cve>
         <cve>CVE-2016-1000027</cve>
     </suppress>
+    <!-- present even in the latest version - 1.33  -->
+    <suppress>
+        <notes><![CDATA[
+   file name: snakeyaml-1.33.jar
+   ]]></notes>
+        <packageUrl regex="true">pkg:maven/org.yaml/snakeyaml@.*$</packageUrl>
+        <cve>CVE-2022-1471</cve>
+    </suppress>
 </suppressions>

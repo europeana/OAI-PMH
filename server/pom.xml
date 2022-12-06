@@ -189,7 +189,15 @@
             <version>${spring-instrument.version}</version>
         </dependency>
 
-<!--        <dependency>-->
+        <!-- bcel is coming from metis-schema and is vulnerable. Hence overriding the version -->
+        <dependency>
+            <groupId>org.apache.bcel</groupId>
+            <artifactId>bcel</artifactId>
+            <version>6.6.1</version>
+        </dependency>
+
+
+        <!--        <dependency>-->
 <!--            <groupId>org.aspectj</groupId>-->
 <!--            <artifactId>aspectjrt</artifactId>-->
 <!--            <version>${aspectj.version}</version>-->
