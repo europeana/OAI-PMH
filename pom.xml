@@ -12,8 +12,8 @@
     <version>0.8.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Europeana OAI-PMH2</name>
-    <description>Europeana OAI-PMH client and server applications</description>
+    <name>OAI-PMH2</name>
+    <description>Europeana OAI-PMH server and primitive test client</description>
 
     <modules>
         <module>common</module>
