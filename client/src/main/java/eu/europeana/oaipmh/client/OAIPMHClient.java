@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
 @PropertySource("classpath:oai-pmh-client.properties")
-public class OAIPMH2Client implements CommandLineRunner {
+public class OAIPMHClient implements CommandLineRunner {
     @Autowired
     private OAIPMHServiceClient oaipmhServiceClient;
 
@@ -22,6 +22,6 @@ public class OAIPMH2Client implements CommandLineRunner {
     }
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder().sources(OAIPMH2Client.class).web(WebApplicationType.NONE).run(args);
+        new SpringApplicationBuilder().sources(OAIPMHClient.class).web(WebApplicationType.NONE).run(args);
     }
 }
