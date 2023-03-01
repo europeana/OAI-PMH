@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oai-pmh2-nodeport
+  name: oai-pmh-nodeport
 spec:
   type: NodePort
   ports:

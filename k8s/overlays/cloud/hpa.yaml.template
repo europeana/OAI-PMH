@@ -1,14 +1,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: oai-pmh2-hpa
+  name: oai-pmh-hpa
 spec:
   maxReplicas: ${MAX_REPLICAS}
   minReplicas: ${MIN_REPLICAS}
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: oai-pmh2-deployment
+    name: oai-pmh-deployment
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 900

@@ -6,4 +6,4 @@ patchesStrategicMerge:
   - deployment_patch.yaml
 
 commonLabels:
-  app: oai-pmh2
+  app: oai-pmh

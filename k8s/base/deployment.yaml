@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: oai-pmh2-deployment
+  name: oai-pmh-deployment
 spec:
   # selector.matchLabels is provided via Kustomize
   template:
     spec:
       containers:
-        - name: oai-pmh2
-          image: europeana/oai-pmh2
+        - name: oai-pmh
+          image: europeana/oai-pmh
           ports:
             - containerPort: 8080
           livenessProbe:
@@ -31,4 +31,4 @@ spec:
       volumes:
         - name: secret
           secret:
-            secretName: oai-pmh2-secret
+            secretName: oai-pmh-secret

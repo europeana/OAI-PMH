@@ -9,4 +9,4 @@ ADD https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/$ELASTIC_APM
 
 # Copy unzipped directory so we can mount config files in Kubernetes pod
 # Ensure sensitive files aren't copied
-COPY ./server/target/oai-pmh2-server/ ./ROOT/
+COPY ./server/target/oai-pmh-server/ ./ROOT/
