@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-pmh2-deployment
+spec:
+  # selector.matchLabels is provided via Kustomize
+  template:
+    spec:
+      containers:
+        - name: oai-pmh2
+          image: europeana/oai-pmh2
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/liveness
+            initialDelaySeconds: 100
+            periodSeconds: 60
+          readinessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health/readiness
+            initialDelaySeconds: 100
+            periodSeconds: 30
+          volumeMounts:
+            - name: secret
+              mountPath: "/usr/local/tomcat/webapps/ROOT/WEB-INF/classes/oai-pmh.user.properties"
+              readOnly: true
+              subPath: oai-pmh.user.properties
+      volumes:
+        - name: secret
+          secret:
+            secretName: oai-pmh2-secret
