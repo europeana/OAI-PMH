@@ -23,5 +23,7 @@ dist/
 nbdist/
 .nb-gradle/
 
+*.user.properties
 **/oai-pmh.user.properties
 /server/src/main/resources/oai-pmh.user.properties
+/logs/

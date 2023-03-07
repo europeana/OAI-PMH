@@ -4,16 +4,16 @@
 
     <parent>
         <groupId>eu.europeana</groupId>
-        <artifactId>oai-pmh2</artifactId>
+        <artifactId>oai-pmh</artifactId>
         <version>0.8.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>oai-pmh2-server</artifactId>
+    <artifactId>oai-pmh-server</artifactId>
     <packaging>war</packaging>
 
-    <name>Europeana OAI-PMH2 Server</name>
-    <description>Europeana OAI-PMH2 Server (Spring Boot application)</description>
+    <name>Europeana OAI-PMH Server</name>
+    <description>Europeana OAI-PMH Server (Spring Boot application)</description>
 
     <properties>
         <spring.boot.mainclass>eu.europeana.oaipmh.OaiPmhApplication</spring.boot.mainclass>
@@ -35,7 +35,7 @@
     <dependencies>
         <dependency>
             <groupId>eu.europeana</groupId>
-            <artifactId>oai-pmh2-common</artifactId>
+            <artifactId>oai-pmh-common</artifactId>
             <version>0.8.3-SNAPSHOT</version>
         </dependency>
 
@@ -254,7 +254,7 @@
         </plugins>
 
         <!-- set static name for easy deployment -->
-        <finalName>oai-pmh2-server</finalName>
+        <finalName>oai-pmh-server</finalName>
     </build>
 
     <profiles>

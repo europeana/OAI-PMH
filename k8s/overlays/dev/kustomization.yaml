@@ -1,0 +1,9 @@
+resources:
+  - ../../base
+  - nodeport.yaml
+
+patchesStrategicMerge:
+  - deployment_patch.yaml
+
+commonLabels:
+  app: oai-pmh

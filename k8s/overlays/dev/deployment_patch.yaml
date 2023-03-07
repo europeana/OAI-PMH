@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-pmh-deployment
+spec:
+  template:
+    spec:
+      containers:
+        - name: oai-pmh
+          # required to use local image
+          imagePullPolicy: Never

@@ -1,0 +1,11 @@
+resources:
+  - ../../base
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
+
+patchesStrategicMerge:
+  - deployment_patch.yaml
+
+commonLabels:
+  app: oai-pmh

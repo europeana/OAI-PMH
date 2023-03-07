@@ -4,14 +4,14 @@
 
     <parent>
         <groupId>eu.europeana</groupId>
-        <artifactId>oai-pmh2</artifactId>
+        <artifactId>oai-pmh</artifactId>
         <version>0.8.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>oai-pmh2-common</artifactId>
+    <artifactId>oai-pmh-common</artifactId>
     <packaging>jar</packaging>
-    <name>Europeana OAI-PMH2 Common</name>
+    <name>Europeana OAI-PMH Common</name>
 
     <dependencies>
 

@@ -1,0 +1,11 @@
+resources:
+  - deployment.yaml
+
+commonLabels:
+  app: oai-pmh
+
+# expects files to be in the same directory
+secretGenerator:
+  - name: oai-pmh-secret
+    files:
+      - oai-pmh.user.properties
