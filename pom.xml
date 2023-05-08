@@ -26,7 +26,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring-boot.version>2.5.7</spring-boot.version>
+        <spring-boot.version>2.7.11</spring-boot.version>
         <spring-instrument.version>5.3.13</spring-instrument.version>
 
         <corelib.version>2.15.7</corelib.version>
