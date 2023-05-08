@@ -3,8 +3,7 @@ kind: Ingress
 metadata:
   name: oai-pmh-ingress
   annotations:
-    cert-manager.io/issuer: letsencrypt-production
-    nginx.ingress.kubernetes.io/server-alias: ${K8S_SERVER_ALIASES}
+    ${K8S_INGRESS_ANNOTATIONS}
 spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
