@@ -9,7 +9,7 @@ spec:
   tls:
     - hosts:
         - ${K8S_HOSTNAME}
-      secretName: ${K8S_SECRETNAME}
+      secretName: ${K8S_HOSTNAME_SECRET}
   rules:
     - host: ${K8S_HOSTNAME}
       http:
