@@ -3,7 +3,6 @@ package eu.europeana.oaipmh;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
 import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.MemoryUtils;
-import eu.europeana.oaipmh.util.SocksProxyHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +22,6 @@ import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -139,15 +137,8 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
      */
     @SuppressWarnings("squid:S2095") // to avoid sonarqube false positive (see https://stackoverflow.com/a/37073154/741249)
     public static void main(String[] args)  {
-        LOG.info("Main - CF_INSTANCE_INDEX  = {}, CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}",
-                System.getenv("CF_INSTANCE_INDEX"), System.getenv("CF_INSTANCE_GUID"), System.getenv("CF_INSTANCE_IP"));
-        try {
-            SocksProxyHelper.injectSocksProxySettings();
-            SpringApplication.run(OaiPmhApplication.class, args);
-        } catch (IOException e) {
-            LogManager.getLogger(OaiPmhApplication.class).fatal("Error reading properties file", e);
-            System.exit(-1);
-        }
+        SpringApplication.run(OaiPmhApplication.class, args);
+
     }
 
     /**
@@ -157,14 +148,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
      */
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
-        LOG.info("Startup - CF_INSTANCE_INDEX  = {}, CF_INSTANCE_GUID = {}, CF_INSTANCE_IP  = {}",
-                System.getenv("CF_INSTANCE_INDEX"), System.getenv("CF_INSTANCE_GUID"), System.getenv("CF_INSTANCE_IP"));
-        try {
-            SocksProxyHelper.injectSocksProxySettings();
-            super.onStartup(servletContext);
-        } catch (IOException e) {
-            throw new ServletException("Error reading properties", e);
-        }
+        super.onStartup(servletContext);
     }
 }
 
