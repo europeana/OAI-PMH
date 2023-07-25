@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>oai-pmh</artifactId>
-    <version>0.8.4-SNAPSHOT</version>
+    <version>0.9</version>
     <packaging>pom</packaging>
 
     <name>OAI-PMH</name>
