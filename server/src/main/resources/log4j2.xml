@@ -13,6 +13,11 @@
             <AppenderRef ref="Console"/>
         </Root>
         <Logger name="org.apache.http" level="INFO"/>
-        <!-- <Logger name="eu.europeana.oaipmh" level="DEBUG"/> -->
+
+        <!-- Set mongo logging to WARN to avoid all the Connection opened/closed messages -->
+        <Logger name="org.mongodb.driver.connection" level="WARN"/>
+
+        <!-- Set to DEBUG Level to log JVM memory usage -->
+        <Logger name="eu.europeana.oaipmh.OaiPmhApplication" level="INFO"/>
     </Loggers>
 </Configuration>

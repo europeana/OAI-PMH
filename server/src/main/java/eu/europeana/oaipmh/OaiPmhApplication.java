@@ -49,7 +49,7 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
     public void logMemoryUsage() {
         // Temporary code to check memory usage / leaks
         System.gc();
-        LOG.info("JVM MEMORY INFO: Used {} ({}), Free {}, Max {}, System free {}",
+        LOG.debug("JVM MEMORY INFO: Used {} ({}), Free {}, Max {}, System free {}",
                 MemoryUtils.getTotalMemoryJVMInMB(),
                 MemoryUtils.getPercentageUsedFormatted(),
                 MemoryUtils.getFreeMemoryJVMInMB(),
