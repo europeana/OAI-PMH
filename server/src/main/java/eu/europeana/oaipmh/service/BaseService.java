@@ -11,7 +11,9 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.service.exception.SerializationException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class BaseService {
 
@@ -43,9 +45,9 @@ public class BaseService {
 
     protected String serialize(OAIResponse response) throws SerializationException {
         try {
-            return XML_DECLARATION + xmlMapper.
-                    //writerWithDefaultPrettyPrinter().
-                    writeValueAsString(response);
+            OutputStream outputStream = new ByteArrayOutputStream();
+             xmlMapper.writeValue(outputStream, response);
+             return XML_DECLARATION + outputStream;
         }
         catch (IOException e) {
             throw new SerializationException("Error serializing data: " + e.getMessage(), e);
