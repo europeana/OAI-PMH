@@ -51,7 +51,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = "verb=Identify",
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public Object handleIdentify(HttpServletRequest request, HttpServletResponse response) throws OaiPmhException {
         OaiPmhRequestFactory.validateParameterNames(request.getQueryString());
         response.setContentType(MEDIA_TYPE_TEXT_XML);
@@ -69,7 +69,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = "verb=GetRecord",
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleGetRecord(@RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
                                   @RequestParam(value = "identifier", required = true) String identifier,
                                   HttpServletRequest request,
@@ -89,7 +89,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = {"verb=ListIdentifiers", "resumptionToken", "!metadataPrefix", "!set", "!from", "!until"},
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListIdentifiersToken(@RequestParam(value = "resumptionToken") String resumptionToken,
                                              HttpServletRequest request,
                                              HttpServletResponse response) throws OaiPmhException {
@@ -111,7 +111,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = {"verb=ListIdentifiers", "metadataPrefix", "!resumptionToken"},
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListIdentifiers(@RequestParam(value = "metadataPrefix") String metadataPrefix,
                                         @RequestParam(value = "from", required = false) String from,
                                         @RequestParam(value = "until", required = false) String until,
@@ -137,7 +137,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = {"verb=ListRecords", "metadataPrefix", "!resumptionToken"},
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListRecords(@RequestParam(value = "metadataPrefix") String metadataPrefix,
                                     @RequestParam(value = "from", required = false) String from,
                                     @RequestParam(value = "until", required = false) String until,
@@ -160,7 +160,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = {"verb=ListRecords", "resumptionToken", "!metadataPrefix", "!set", "!from", "!until"},
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListRecordsToken(@RequestParam(value = "resumptionToken") String resumptionToken,
                                          HttpServletRequest request,
                                          HttpServletResponse response) throws OaiPmhException {
@@ -179,7 +179,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = "verb=ListMetadataFormats",
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListMetadataFormats(@RequestParam(value = "identifier", required = false) String identifier,
                                             HttpServletRequest request,
                                             HttpServletResponse response) throws OaiPmhException {
@@ -199,7 +199,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = "verb=ListSets",
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListSets( @RequestParam(value = "from", required = false) String from,
                                   @RequestParam(value = "until", required = false) String until,
                                   HttpServletRequest request, HttpServletResponse response) throws OaiPmhException {
@@ -218,7 +218,7 @@ public class VerbController {
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
                     params = {"verb=ListSets", "resumptionToken"},
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleListSetsToken(@RequestParam(value = "resumptionToken") String resumptionToken,
                                       HttpServletRequest request,
                                       HttpServletResponse response) throws OaiPmhException {
@@ -236,7 +236,7 @@ public class VerbController {
     // oai-pmh protocol requires us to support both post and get even if post doesn't change any state
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
     @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST},
-                    produces = MediaType.TEXT_XML_VALUE)
+                    produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleIllegalVerbs(@RequestParam(value = "verb", required = false) String verb,
                                      HttpServletRequest request,
                                      HttpServletResponse response) throws OaiPmhException {
@@ -256,7 +256,7 @@ public class VerbController {
     // oai-pmh protocol requires us to support both post and get even if post doesn't change any state
     // also we intentionally want to catch all other methods here
     @SuppressWarnings({"squid:S3752", "findsecbugs:SPRING_CSRF_UNRESTRICTED_REQUEST_MAPPING"})
-    @RequestMapping(produces = MediaType.TEXT_XML_VALUE)
+    @RequestMapping(produces = { MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public String handleIllegalMethods(@RequestParam(value = "verb", required = false) String verb,
                                        HttpServletRequest request,
                                        HttpServletResponse response) throws BadMethodException {
