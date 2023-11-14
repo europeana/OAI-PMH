@@ -15,14 +15,14 @@ spec:
             httpGet:
               port: 8080
               path: /actuator/info
-            initialDelaySeconds: 100
-            periodSeconds: 60
+            initialDelaySeconds: 40
+            periodSeconds: 20
           readinessProbe:
             httpGet:
               port: 8080
               path: /actuator/info
-            initialDelaySeconds: 80
-            periodSeconds: 30
+            initialDelaySeconds: 40
+            periodSeconds: 20
           volumeMounts:
             - name: secret
               mountPath: "/usr/local/tomcat/webapps/ROOT/WEB-INF/classes/oai-pmh.user.properties"
