@@ -7,16 +7,23 @@ spring:
     name: OAI-PMH Server
 
 management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health
+
+  info:
+    env:
+      enabled: true
+
   endpoint:
     health:
       probes:
         enabled: true
+      show-details: always
+
   health:
-    livenessstate:
+    livenessState:
       enabled: true
-    readinessstate:
+    readinessState:
       enabled: true
-  endpoints:
-    web:
-      exposure:
-        include: info
