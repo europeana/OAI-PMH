@@ -1,11 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
 resources:
   - ../../base
   - service.yaml
   - ingress.yaml
   - hpa.yaml
 
-patchesStrategicMerge:
-  - deployment_patch.yaml
+patches:
+  - path: deployment_patch.yaml
 
-commonLabels:
-  app: oai-pmh
+labels:
+  - includeSelectors: true
+    pairs:
+      app: oai-pmh

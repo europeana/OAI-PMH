@@ -1,8 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
 resources:
   - deployment.yaml
 
-commonLabels:
-  app: oai-pmh
+labels:
+  - includeSelectors: true
+    pairs:
+      app: oai-pmh
 
 # expects files to be in the same directory
 secretGenerator:
