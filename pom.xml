@@ -29,7 +29,7 @@
         <spring-boot.version>2.7.11</spring-boot.version>
         <spring-instrument.version>5.3.13</spring-instrument.version>
 
-        <corelib.version>2.16.6</corelib.version>
+        <corelib.version>2.16.7</corelib.version>
         <metis.version>7</metis.version>
         <snappy.version>1.1.7.6</snappy.version>
         <solrj.version>8.11.1</solrj.version>
