@@ -5,7 +5,7 @@
     <parent>
         <artifactId>europeana-parent-pom</artifactId>
         <groupId>eu.europeana</groupId>
-        <version>2.4</version>
+        <version>2.5</version>
     </parent>
 
     <artifactId>oai-pmh</artifactId>
@@ -22,22 +22,22 @@
     </modules>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring-boot.version>2.7.11</spring-boot.version>
-        <spring-instrument.version>5.3.13</spring-instrument.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <spring-instrument.version>5.3.34</spring-instrument.version>
 
         <corelib.version>2.16.7</corelib.version>
-        <metis.version>9</metis.version>
-        <snappy.version>1.1.7.6</snappy.version>
+        <metis-schema.version>9</metis-schema.version>
+        <snappy.version>1.1.10.3</snappy.version>
         <solrj.version>8.11.3</solrj.version>
-        <log4j2.version>2.17.1</log4j2.version>
+        <log4j2.version>2.23.1</log4j2.version>
 
-        <jackson.version>2.13.0</jackson.version>
-        <json-path.version>2.6.0</json-path.version>
-        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <jackson.version>2.17.1</jackson.version>
+        <json-path.version>2.9.0</json-path.version>
+        <commons-lang3.version>3.14.0</commons-lang3.version>
 
         <!--<aspectj.version>1.8.13</aspectj.version>-->
         <!--<aspectj-maven-plugin.version>1.7</aspectj-maven-plugin.version>-->
@@ -59,6 +59,7 @@
                     <suppressionFiles>
                         <suppressionFile>owasp-suppress.xml</suppressionFile>
                     </suppressionFiles>
+                    <knownExploitedUrl>http://artifactory.eanadev.org/artifactory/ext-release-local/gov/cisa/www/known_exploited_vulnerabilities-14-05-2024.json</knownExploitedUrl>
                 </configuration>
                 <executions>
                     <execution>
