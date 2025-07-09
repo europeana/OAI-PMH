@@ -18,6 +18,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: api-gateway-service-test
+                name: ${K8S_BACKEND_SERVICE}
                 port:
                   number: 80
