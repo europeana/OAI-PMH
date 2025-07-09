@@ -5,7 +5,7 @@ metadata:
   annotations:
     ${K8S_INGRESS_ANNOTATIONS}
     nginx.ingress.kubernetes.io/server-snippet: |
-      return 301 $scheme://api-gateway-service-test$request_uri;
+      return 301 https://api-gateway-service-test$request_uri;
 spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
@@ -14,3 +14,12 @@ spec:
       secretName: ${K8S_HOSTNAME_SECRET}
   rules:
     - host: ${K8S_HOSTNAME}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway-service-test
+                port:
+                  number: 80
