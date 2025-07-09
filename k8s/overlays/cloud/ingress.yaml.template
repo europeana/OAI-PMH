@@ -4,8 +4,6 @@ metadata:
   name: oai-pmh-ingress
   annotations:
     ${K8S_INGRESS_ANNOTATIONS}
-    nginx.ingress.kubernetes.io/server-snippet: |
-      return 301 https://api.test.eanadev.org/oai/record$request_uri;
 spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
