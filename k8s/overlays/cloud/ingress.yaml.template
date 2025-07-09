@@ -4,6 +4,8 @@ metadata:
   name: oai-pmh-ingress
   annotations:
     ${K8S_INGRESS_ANNOTATIONS}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      return 301 $scheme://api-gateway-service-test$request_uri;
 spec:
   ingressClassName: public-iks-k8s-nginx
   tls:
@@ -12,36 +14,3 @@ spec:
       secretName: ${K8S_HOSTNAME_SECRET}
   rules:
     - host: ${K8S_HOSTNAME}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: api-gateway-service-test
-                port:
-                  number: 80
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: oai-pmh-ingress-redirect
-  annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: https://api-gateway-service-test/$1
-spec:
-  tls:
-    - hosts:
-        - ${K8S_HOSTNAME}
-      secretName: ${K8S_HOSTNAME_SECRET}
-  rules:
-    - host: ${K8S_HOSTNAME}
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: api-gateway-service-test
-                port:
-                  number: 80
