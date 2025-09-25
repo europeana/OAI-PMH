@@ -14,7 +14,7 @@ spec:
     - host: ${K8S_HOSTNAME}
       http:
         paths:
-          - path: /record/oai(/|$)(.*)
+          - path: /
             pathType: Prefix
             backend:
               service:
