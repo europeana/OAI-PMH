@@ -11,11 +11,11 @@ spec:
     name: oai-pmh-deployment
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 900
+      stabilizationWindowSeconds: 600
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 300
