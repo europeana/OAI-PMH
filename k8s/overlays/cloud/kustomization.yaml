@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ../../base
   - service.yaml
+  - ingress.yaml
   - hpa.yaml
 
 patches:
