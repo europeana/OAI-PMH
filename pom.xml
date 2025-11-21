@@ -5,7 +5,7 @@
     <parent>
         <artifactId>europeana-parent-pom</artifactId>
         <groupId>eu.europeana</groupId>
-        <version>2.5</version>
+        <version>3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>oai-pmh</artifactId>
@@ -22,15 +22,17 @@
     </modules>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <spring-boot.version>2.7.18</spring-boot.version>
         <spring-instrument.version>5.3.34</spring-instrument.version>
 
-        <corelib.version>2.16.7</corelib.version>
-        <metis-schema.version>9</metis-schema.version>
+        <corelib.version>2.17.5</corelib.version>
+        <metis-schema.version>12</metis-schema.version>
+        <!-- Old metis Mongo classes are moved to metis-common-->
+        <metis.common.version>16.1</metis.common.version>
         <snappy.version>1.1.10.3</snappy.version>
         <solrj.version>8.11.3</solrj.version>
         <log4j2.version>2.23.1</log4j2.version>
@@ -44,6 +46,32 @@
         <mockito.version>3.3.3</mockito.version>
     </properties>
 
+    <repositories>
+        <!--Release repositories-->
+        <repository>
+            <id>libs-release</id>
+            <name>libs-release</name>
+            <url>https://artifactory-prod.eanadev.org/artifactory/libs-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>libs-snapshot</id>
+            <name>libs-snapshot</name>
+            <url>https://artifactory-prod.eanadev.org/artifactory/libs-snapshot-local</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
 <!--    <build>-->
 <!--        <plugins>-->
 <!--            &lt;!&ndash; This will be active when running the verify or install goal-->
@@ -55,7 +83,7 @@
 <!--                <configuration>-->
 <!--                    <nvdApiKeyEnvironmentVariable>NVD_APIKEY</nvdApiKeyEnvironmentVariable>-->
 <!--                    &lt;!&ndash; see EA-3505 why we host the known exploited vulnerabilties file ourselves &ndash;&gt;-->
-<!--                    <knownExploitedUrl>https://artifactory.eanadev.org/artifactory/ext-release-local/gov/cisa/www/known_exploited_vulnerabilities.json</knownExploitedUrl>-->
+<!--                    <knownExploitedUrl>https://artifactory-prod.eanadev.org/artifactory/ext-release-local/gov/cisa/www/known_exploited_vulnerabilities.json</knownExploitedUrl>-->
 <!--                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>-->
 <!--                    <skipSystemScope>true</skipSystemScope>-->
 <!--                    <failBuildOnCVSS>8</failBuildOnCVSS>-->
