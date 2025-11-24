@@ -69,6 +69,21 @@
         </repository>
     </repositories>
 
+    <!-- TO Fix error No plugin found for prefix 'sonar' in the current project and in the plugin groups [org.apache.maven.plugins, org.codehaus.mojo]
+    available from the repositories -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>3.7.0.1746</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
 <!--    <build>-->
 <!--        <plugins>-->
 <!--            &lt;!&ndash; This will be active when running the verify or install goal-->
