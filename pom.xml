@@ -5,7 +5,7 @@
     <parent>
         <artifactId>europeana-parent-pom</artifactId>
         <groupId>eu.europeana</groupId>
-        <version>2.4</version>
+        <version>3.0</version>
     </parent>
 
     <artifactId>oai-pmh</artifactId>
@@ -40,9 +40,6 @@
         <jackson.version>2.17.1</jackson.version>
         <json-path.version>2.9.0</json-path.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
-
-        <!--<aspectj.version>1.8.13</aspectj.version>-->
-        <!--<aspectj-maven-plugin.version>1.7</aspectj-maven-plugin.version>-->
         <mockito.version>3.3.3</mockito.version>
     </properties>
 
