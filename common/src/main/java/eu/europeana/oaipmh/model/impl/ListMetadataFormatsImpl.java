@@ -37,6 +37,10 @@ public class ListMetadataFormatsImpl implements ListMetadataFormats {
         this.metadataFormats = metadataFormats;
     }
 
+    @Override
+    public void close() throws Exception {
+    }
+
     public static class Adapter extends XmlAdapter<ListMetadataFormatsImpl
                                           , ListMetadataFormats> {
         public ListMetadataFormats unmarshal(ListMetadataFormatsImpl v) { 

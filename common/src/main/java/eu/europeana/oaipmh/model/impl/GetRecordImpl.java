@@ -34,6 +34,10 @@ public class GetRecordImpl implements GetRecord {
         this.record = record;
     }
 
+    @Override
+    public void close() throws Exception {
+    }
+
     public static class Adapter extends XmlAdapter<GetRecordImpl, GetRecord> {
 
         public GetRecord unmarshal(GetRecordImpl v) { 

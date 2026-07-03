@@ -42,8 +42,9 @@ public class RecordDaoNew extends RecordDao {
 
     public boolean hasRecord(String id) throws EuropeanaException {
         try {
-            return (getDatastore().find(FullBeanImpl.class).filter(Filters.eq("about", id))
-                             .count() > 0);
+            return (getDatastore().find(FullBeanImpl.class)
+                                  .filter(Filters.eq("about", id))
+                                  .count() > 0);
         }
         catch (RuntimeException re) { throw processException(re); }
     }

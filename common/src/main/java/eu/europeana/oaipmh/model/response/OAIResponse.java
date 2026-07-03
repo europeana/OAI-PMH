@@ -70,5 +70,6 @@ public class OAIResponse implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
+        this.verb.close();
     }
 }

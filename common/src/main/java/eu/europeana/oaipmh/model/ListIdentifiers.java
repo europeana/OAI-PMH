@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 @XmlRootElement(name=ListIdentifiers)
 @XmlJavaTypeAdapter(ListIdentifiersImpl.Adapter.class)
 @XmlType(propOrder={ headers, resumptionToken })
-public interface ListIdentifiers extends OAIPMHVerb, AutoCloseable {
+public interface ListIdentifiers extends OAIPMHVerb {
 
     public boolean isEmpty();
 

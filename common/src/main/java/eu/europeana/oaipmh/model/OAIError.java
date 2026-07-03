@@ -41,4 +41,8 @@ public class OAIError implements OAIPMHVerb {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public void close() throws Exception {
+    }
 }

@@ -144,6 +144,10 @@ public class IdentifyImpl implements Identify {
         return description;
     }
 
+    @Override
+    public void close() throws Exception {
+    }
+
     public static class Adapter extends XmlAdapter<IdentifyImpl, Identify> {
 
         public Identify unmarshal(IdentifyImpl v) { 
