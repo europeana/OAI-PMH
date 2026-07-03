@@ -1,8 +1,7 @@
 package eu.europeana.oaipmh.client;
 
 import eu.europeana.oaipmh.model.ListRecords;
-import eu.europeana.oaipmh.model.Record;
-import eu.europeana.oaipmh.model.response.ListRecordsResponse;
+import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -154,47 +153,46 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
     }
 
     private void executeListRecords(OAIPMHServiceClient oaipmhServer, String setIdentifier) {
-        long counter = 0;
+        final Counter counter = new Counter();
         long start = System.currentTimeMillis();
         ProgressLogger logger = new ProgressLogger(-1, logProgressInterval);
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), setIdentifier);
-        ListRecordsResponse response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
-        ListRecords responseObject = response.getListRecords();
+        OAIResponse response = oaipmhServer.makeRequest(request, OAIResponse.class);
+        ListRecords responseObject = (ListRecords)response.getVerb();
         try (final ZipOutputStream zout = new ZipOutputStream(
                 new FileOutputStream(directoryLocation + PATH_SEPERATOR + setIdentifier + ZIP_EXTENSION));
              OutputStreamWriter writer = new OutputStreamWriter(zout, StandardCharsets.UTF_8)) {
 
             if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
-                for(Record record : responseObject.getRecords()) {
+                responseObject.stream().forEach(record -> {
                     ZipUtility.writeInZip(zout, writer, record);
-                }
+                    counter.n++;
+                });
             }
             if (responseObject != null) {
-                counter += responseObject.getRecords().size();
-
                 if (responseObject.getResumptionToken() != null) {
                     logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
                 } else {
-                    logger.setTotalItems(responseObject.getRecords().size());
+                    logger.setTotalItems(counter.n);
                 }
                 while (responseObject.getResumptionToken() != null) {
 
                     request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
-                    response = (ListRecordsResponse) oaipmhServer.makeRequest(request, ListRecordsResponse.class);
-                    responseObject = response.getListRecords();
+                    response = oaipmhServer.makeRequest(request, OAIResponse.class);
+                    responseObject = (ListRecords)response.getVerb();
 
                     if (StringUtils.equalsIgnoreCase(saveToFile, "true")) {
-                        for (Record record : responseObject.getRecords()) {
+                        responseObject.stream().forEach(record -> {
                             ZipUtility.writeInZip(zout, writer, record);
-                        }
+                            counter.n++;
+                        });
                     }
                     if (responseObject == null) {
 
                         break;
                     }
-                    counter += responseObject.getRecords().size();
-                    logger.logProgress(counter);
+                    logger.logProgress(counter.n);
                 }
             }
         } catch (IOException e) {
@@ -239,5 +237,9 @@ public class ListRecordsQuery extends BaseQuery implements OAIPMHQuery {
         if (threadPool != null) {
             threadPool.shutdown();
         }
+    }
+
+    private static class Counter {
+        public long n = 0;
     }
 }

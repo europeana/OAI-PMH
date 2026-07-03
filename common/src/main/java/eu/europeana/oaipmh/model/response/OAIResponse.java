@@ -1,40 +1,47 @@
 package eu.europeana.oaipmh.model.response;
 
+import eu.europeana.oaipmh.model.OAIPMHVerb;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import eu.europeana.oaipmh.model.SerializationConstants;
+
 import java.util.Date;
+
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
 
 /**
  * Basic OAI response
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-@XmlRootElement(name = "OAI-PMH")
-public class OAIResponse implements Serializable {
+@XmlRootElement(name = OAIPMH)
+@JsonIgnoreProperties({ XMLNS, XSI_LOCATION, schemaLocation })
+@XmlType(propOrder={ responseDate, request
+                   , error, GetRecord, ListRecords, Identify, ListIdentifiers
+                   , ListMetadataFormats, ListSets })
+public class OAIResponse implements AutoCloseable {
 
-    private static final long serialVersionUID = -7158631502815022149L;
-
-    @XmlAttribute
-    private String xmlns="http://www.openarchives.org/OAI/2.0/";
-
-    @XmlAttribute(name = "xmlns:xsi")
-    private String xmlnsxsi="http://www.w3.org/2001/XMLSchema-instance";
-
-    @XmlAttribute(name = "xsi:schemaLocation")
-    private String xsischemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
-
+    @XmlElement(name=SerializationConstants.responseDate)
     private Date responseDate;
 
+    @XmlElement(name=SerializationConstants.request)
     private OAIRequest request;
 
-    public OAIResponse() {}
+    @JsonAlias({ error, GetRecord, ListRecords, Identify, ListIdentifiers, ListMetadataFormats, ListSets })
+    private OAIPMHVerb verb;
 
-    OAIResponse(OAIRequest request) {
+    protected OAIResponse() {}
+
+    public OAIResponse(OAIRequest request, OAIPMHVerb verb) {
         this.responseDate = new Date();
-        this.request = request;
+        this.request      = request;
+        this.verb         = verb;
     }
 
     public Date getResponseDate() {
@@ -51,5 +58,17 @@ public class OAIResponse implements Serializable {
 
     public void setRequest(OAIRequest request) {
         this.request = request;
+    }
+
+    public OAIPMHVerb getVerb() {
+        return verb;
+    }
+
+    public void setVerb(OAIPMHVerb verb) {
+        this.verb = verb;
+    }
+
+    @Override
+    public void close() throws Exception {
     }
 }

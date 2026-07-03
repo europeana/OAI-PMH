@@ -2,27 +2,29 @@ package eu.europeana.oaipmh.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
-import java.io.Serializable;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlValue;
+
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
+
 import java.util.Date;
 
 /**
  * This class represents resumption token tag in the ListIdentifiers verb response XML
  */
-@XmlType(propOrder = {"completeListSize", "expirationDate", "cursor"})
-public class ResumptionToken implements Serializable {
+@XmlRootElement(name=resumptionToken)
+@XmlType(propOrder = { completeListSize, expirationDate, cursor })
+public class ResumptionToken {
 
-    private static final long serialVersionUID = -1976239725102126946L;
-
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.expirationDate)
     private Date expirationDate;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.cursor)
     private long cursor;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.completeListSize)
     private long completeListSize;
 
     @JacksonXmlText
@@ -31,7 +33,8 @@ public class ResumptionToken implements Serializable {
 
     public ResumptionToken() {}
 
-    public ResumptionToken(String resumptionToken, long completeListSize, Date expirationDate, long cursor) {
+    public ResumptionToken(String resumptionToken, long completeListSize
+                         , Date expirationDate, long cursor) {
         this.value = resumptionToken;
         this.completeListSize = completeListSize;
         this.expirationDate = expirationDate;

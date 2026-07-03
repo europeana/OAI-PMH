@@ -1,119 +1,40 @@
 package eu.europeana.oaipmh.model;
 
-import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.model.response.IdentifyResponse;
-import eu.europeana.oaipmh.model.response.OAIResponse;
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import eu.europeana.oaipmh.model.impl.IdentifyImpl;
 
 /**
  * Container for identify data
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-@XmlType(propOrder = {"repositoryName", "baseURL", "protocolVersion", "adminEmail", "earliestDatestamp", "deletedRecord", "granularity", "compression", "description"})
-public class Identify extends OAIPMHVerb {
+@XmlRootElement(name=Identify)
+@XmlJavaTypeAdapter(IdentifyImpl.Adapter.class)
+@XmlType(propOrder = { repositoryName, baseURL, protocolVersion
+                    , adminEmail, earliestDatestamp, deletedRecord
+                    , granularity, compression, description })
+public interface Identify extends OAIPMHVerb {
 
-    private static final long serialVersionUID = 203469625750930136L;
+    public String getRepositoryName();
 
-    // required fields
-    private String repositoryName;
+    public String getBaseURL();
 
-    private String baseURL;
+    public String getProtocolVersion();
 
-    private String protocolVersion;
+    public String getEarliestDatestamp();
 
-    private String earliestDatestamp;
+    public String getDeletedRecord();
 
-    private String deletedRecord;
+    public String getGranularity();
 
-    private String granularity;
+    public String[] getAdminEmail();
 
-    private String[] adminEmail;
+    public String[] getCompression();
 
-    // optional fields
-    private String[] compression;
-
-    private String[] description;
-
-    public Identify() {
-        // to support serialization
-    }
-
-    public void setRepositoryName(String repositoryName) {
-        this.repositoryName = repositoryName;
-    }
-
-    public String getRepositoryName() {
-        return repositoryName;
-    }
-
-    public void setBaseURL(String baseUrl) {
-        this.baseURL = baseUrl;
-    }
-
-    public String getBaseURL() {
-        return baseURL;
-    }
-
-    public void setProtocolVersion(String protocolVersion) {
-        this.protocolVersion = protocolVersion;
-    }
-
-    public String getProtocolVersion() {
-        return protocolVersion;
-    }
-
-    public void setEarliestDatestamp(String earliestDatestamp) {
-        this.earliestDatestamp = earliestDatestamp;
-    }
-
-    public String getEarliestDatestamp() {
-        return earliestDatestamp;
-    }
-
-    public void setDeletedRecord(String deletedRecord) {
-        this.deletedRecord = deletedRecord;
-    }
-
-    public String getDeletedRecord() {
-        return deletedRecord;
-    }
-
-    public void setGranularity(String granularity) {
-        this.granularity = granularity;
-    }
-
-    public String getGranularity() {
-        return granularity;
-    }
-
-    public void setAdminEmail(String[] adminEmail) {
-        this.adminEmail = adminEmail;
-    }
-
-    public String[] getAdminEmail() {
-        return adminEmail;
-    }
-
-    public void setCompression(String[] compression) {
-        this.compression = compression;
-    }
-
-    public String[] getCompression() {
-        return compression;
-    }
-
-    public void setDescription(String[] description) {
-        this.description = description;
-    }
-
-    public String[] getDescription() {
-        return description;
-    }
-
-    @Override
-    public OAIResponse getResponse(OAIRequest request) {
-        return new IdentifyResponse(this, request);
-    }
+    public String[] getDescription();
 }

@@ -2,33 +2,36 @@ package eu.europeana.oaipmh.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.io.Serializable;
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
+
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
- * This class represents metadataFormat tag in the ListMetadataFormats response XML
+ * This class represents metadataFormat tag in the ListMetadataFormats 
+ * response XML
  */
-public class MetadataFormat implements Serializable {
+@XmlRootElement(name=metadataFormat)
+public class MetadataFormat {
 
-    private static final long serialVersionUID = 2145947131425894852L;
-
-    @XmlElement
+    @XmlElement(name=SerializationConstants.metadataPrefix)
     private String metadataPrefix;
 
-    @XmlElement
+    @XmlElement(name=SerializationConstants.schema)
     private String schema;
 
-    @XmlElement
+    @XmlElement(name=SerializationConstants.metadataNamespace)
     private String metadataNamespace;
 
     @JsonIgnore
     private transient MetadataFormatConverter converter;
 
-    public MetadataFormat() {
-        // empty constructor to allow deserialization
-    }
+    // empty constructor to allow deserialization
+    protected MetadataFormat() {}
 
-    public MetadataFormat(String metadataPrefix, String schema, String metadataNamespace, MetadataFormatConverter converter) {
+    public MetadataFormat(String metadataPrefix, String schema
+                        , String metadataNamespace
+                        , MetadataFormatConverter converter) {
         this.metadataPrefix = metadataPrefix;
         this.schema = schema;
         this.metadataNamespace = metadataNamespace;

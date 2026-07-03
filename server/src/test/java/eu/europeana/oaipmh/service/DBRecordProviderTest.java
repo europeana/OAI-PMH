@@ -9,7 +9,7 @@ import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
 import eu.europeana.metis.schema.jibx.RDF;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
-import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -109,7 +109,7 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         Assert.assertEquals(retrievedHeader.getIdentifier(), preparedHeader.getIdentifier());
         Assert.assertEquals(retrievedHeader.getSetSpec(), preparedHeader.getSetSpec());
 
-        String metadata = retrievedRecord.getMetadata().getMetadata();
+        String metadata = retrievedRecord.getMetadata().toString();
         int index = metadata.indexOf("metadata='");
         if (index != -1) {
             metadata = metadata.substring(index+"metadata='".length());
@@ -118,12 +118,10 @@ public class DBRecordProviderTest extends BaseApiTestCase {
     }
 
     private Record prepareRecord(String record) {
-        Header header = new Header();
-        header.setDatestamp(TEST_RECORD_CREATE_DATE);
-        header.setIdentifier(TEST_RECORD_ID);
-        header.setSetSpec(TEST_RECORD_SETS[0]);
+        Header header = new Header(
+            TEST_RECORD_ID, TEST_RECORD_CREATE_DATE, TEST_RECORD_SETS[0]);
 
-        RDFMetadata metadata = new RDFMetadata(record.substring(record.indexOf("<rdf:RDF")));
+        Metadata metadata = new Metadata(record.substring(record.indexOf("<rdf:RDF")));
         return new Record(header, metadata);
     }
 
@@ -140,15 +138,16 @@ public class DBRecordProviderTest extends BaseApiTestCase {
 
         // when
         Record preparedRecord = prepareRecord(record);
-        List<Header> headers = new ArrayList<>();
-        headers.add(preparedRecord.getHeader());
+        List<String> ids = new ArrayList<>();
+        ids.add(preparedRecord.getHeader().getIdentifier());
 
-        ListRecords retrievedRecords = recordProvider.listRecords(headers);
+        ListRecords retrievedRecords = recordProvider.listRecords(ids, null);
 
         // then
         Assert.assertNotNull(retrievedRecords);
-        Assert.assertEquals(1, retrievedRecords.getRecords().size());
-        assertRecordEquals(retrievedRecords.getRecords().get(0), preparedRecord);
+        List<Record> records = retrievedRecords.stream().toList();
+        Assert.assertEquals(1, records.size());
+        assertRecordEquals(records.get(0), preparedRecord);
     }
 
     @Test

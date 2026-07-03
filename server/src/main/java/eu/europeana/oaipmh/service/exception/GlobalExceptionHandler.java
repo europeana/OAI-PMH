@@ -2,8 +2,8 @@ package eu.europeana.oaipmh.service.exception;
 
 import eu.europeana.oaipmh.model.OAIError;
 import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.service.BaseService;
-import eu.europeana.oaipmh.service.OaiPmhRequestFactory;
+import eu.europeana.oaipmh.model.response.OAIResponse;
+import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,10 +15,20 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
+
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.stream.Collectors;
+
+import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
+import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+import static eu.europeana.oaipmh.web.WebConstants.*;
 
 /**
  * Global exception handler that catches all errors and logs the interesting ones
@@ -27,21 +37,27 @@ import java.util.stream.Collectors;
  */
 @ControllerAdvice
 @RestController
-public class GlobalExceptionHandler extends BaseService {
+public class GlobalExceptionHandler {
 
     @Value("${baseURL}")
     private String baseUrl;
 
     private static final Logger LOG = LogManager.getLogger(GlobalExceptionHandler.class);
-    private static final String MEDIA_TYPE_TEXT_XML = "text/xml;charset=UTF-8";
+
+    private static final XmlMapper serialization 
+        = new DefaultSerializationProvider().getSerialization();
 
     /**
      * Checks if we should log an error and serializes the error response
      * @param e
      * @throws OaiPmhException
      */
-    @ExceptionHandler({BadArgumentException.class, BadResumptionToken.class, BadVerbException.class, CannotDisseminateFormatException.class})
-    public ResponseEntity<String> handleBadRequest(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
+    @ExceptionHandler({ BadArgumentException.class
+                      , BadResumptionToken.class
+                      , BadVerbException.class
+                      , CannotDisseminateFormatException.class})
+    public ResponseEntity<StreamingResponseBody> handleBadRequest(
+            OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.BAD_REQUEST);
     }
 
@@ -51,7 +67,8 @@ public class GlobalExceptionHandler extends BaseService {
      * @throws OaiPmhException
      */
     @ExceptionHandler({IdDoesNotExistException.class})
-    public ResponseEntity<String> handleNotFound(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
+    public ResponseEntity<StreamingResponseBody> handleNotFound(
+            OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.NOT_FOUND);
     }
 
@@ -61,7 +78,8 @@ public class GlobalExceptionHandler extends BaseService {
      * @throws OaiPmhException
      */
     @ExceptionHandler({BadMethodException.class})
-    public ResponseEntity<String> handleBadMethod(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
+    public ResponseEntity<StreamingResponseBody> handleBadMethod(
+            OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
@@ -71,36 +89,63 @@ public class GlobalExceptionHandler extends BaseService {
      * @throws OaiPmhException
      */
     @ExceptionHandler(OaiPmhException.class)
-    public ResponseEntity<String> handleOther(OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
+    public ResponseEntity<StreamingResponseBody> handleOther(
+            OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<String> handleMissingParams(MissingServletRequestParameterException e, HttpServletRequest request)
+    public ResponseEntity<StreamingResponseBody> handleMissingParams(
+            MissingServletRequestParameterException e, HttpServletRequest request)
             throws OaiPmhException {
-        return handleException(new BadArgumentException("Required parameter \"" + e.getParameterName() + "\" is missing"), request, HttpStatus.BAD_REQUEST);
-    }
-
-    private ResponseEntity<String> handleException(OaiPmhException e, HttpServletRequest request, HttpStatus httpStatus)
-            throws OaiPmhException {
-        if (e.doLog()) {
-            LOG.error(e.getMessage(), e);
-        }
-        OAIRequest originalRequest = OaiPmhRequestFactory.createRequest(baseUrl, request.getQueryString(), true);
-        OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
-        return new ResponseEntity<>(serialize(error.getResponse(originalRequest)), responseHeaders, httpStatus);
+        return handleException(
+            new BadArgumentException(msg(BAD_ARGUMENT_MSG, e.getParameterName()))
+          , request, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public final ResponseEntity<String> handleConstraintViolation(ConstraintViolationException ex, HttpServletRequest request)
+    public final ResponseEntity<StreamingResponseBody> handleConstraintViolation(
+            ConstraintViolationException ex, HttpServletRequest request)
             throws OaiPmhException {
         String details = String.join(" ," ,ex.getConstraintViolations()
                 .parallelStream()
                 .map(e -> e.getMessage())
                 .collect(Collectors.toList()));
-        return handleException(new BadArgumentException(details),request, HttpStatus.BAD_REQUEST);
+        return handleException(
+            new BadArgumentException(details)
+          , request, HttpStatus.BAD_REQUEST);
     }
 
+    private ResponseEntity<StreamingResponseBody> handleException(
+            OaiPmhException e, HttpServletRequest request, HttpStatus status)
+            throws OaiPmhException {
+        if (e.doLog()) {
+            LOG.error(e.getMessage(), e);
+        }
+        OAIRequest origRequest = createRequest(baseUrl
+                                             , request.getQueryString(), true);
+        OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
+        return respond(new OAIResponse(origRequest, error), status);
+    }
+
+    private ResponseEntity<StreamingResponseBody> respond(
+            OAIResponse rsp, HttpStatus status) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
+
+        return new ResponseEntity<StreamingResponseBody>(
+            new StreamingResponseBody() {
+                @Override
+                public void writeTo(OutputStream out) throws IOException {
+                    try {
+                        serialization.writeValue(out, rsp);
+                    }
+                    catch (IOException e) {
+                        throw new SerializationException(
+                            msg(SERIALIZATION_MSG, e.getMessage()), e);
+                    }
+                }
+            }, headers, status);
+    }
 }

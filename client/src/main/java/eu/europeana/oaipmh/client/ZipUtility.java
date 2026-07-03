@@ -19,10 +19,15 @@ public final class ZipUtility {
         //adding a private constructor to hide implicit public one
     }
 
-    public static void writeInZip(ZipOutputStream zout, OutputStreamWriter writer, Record record) {
+    public static void writeInZip(ZipOutputStream zout
+                                , OutputStreamWriter writer
+                                , Record record) {
         try {
             zout.putNextEntry(new ZipEntry(getEntryName(record)));
-            writer.write(record.getMetadata().getMetadata());
+            Object metadata = record.getMetadata();
+            if ( metadata instanceof String ) {
+                writer.write((String)metadata);
+            }
             writer.flush();
             zout.closeEntry();
         } catch (IOException e) {

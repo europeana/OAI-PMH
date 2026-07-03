@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
+@SuppressWarnings("serial")
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class IdDoesNotExistException extends OaiPmhException {
 

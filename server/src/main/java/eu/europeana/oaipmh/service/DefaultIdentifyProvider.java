@@ -1,6 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Identify;
+import eu.europeana.oaipmh.model.impl.IdentifyImpl;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.SolrQueryBuilder;
@@ -13,7 +14,8 @@ import java.util.Date;
 
 import static eu.europeana.oaipmh.util.SolrConstants.TIMESTAMP_UPDATE;
 
-public class DefaultIdentifyProvider extends SolrBasedProvider implements IdentifyProvider {
+public class DefaultIdentifyProvider 
+        extends SolrBasedProvider implements IdentifyProvider {
 
     @Value("${repositoryName}")
     private String repositoryName;
@@ -42,16 +44,11 @@ public class DefaultIdentifyProvider extends SolrBasedProvider implements Identi
 
     @Override
     public Identify provideIdentify() throws OaiPmhException {
-        Identify identify = new Identify();
-        identify.setBaseURL(baseURL);
-        identify.setAdminEmail(adminEmail);
-        identify.setCompression(compression);
-        identify.setDeletedRecord(deletedRecord);
-        identify.setEarliestDatestamp(getEarliestTimestamp());
-        identify.setGranularity(granularity);
-        identify.setProtocolVersion(protocolVersion);
-        identify.setRepositoryName(repositoryName);
-        return identify;
+        return new IdentifyImpl(
+            repositoryName, baseURL, 
+            protocolVersion, getEarliestTimestamp(), 
+            deletedRecord, granularity, adminEmail,
+            compression, null);
     }
 
     private String getEarliestTimestamp() throws OaiPmhException {

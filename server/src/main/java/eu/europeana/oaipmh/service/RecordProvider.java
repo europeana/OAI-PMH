@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 
@@ -37,5 +38,6 @@ public interface RecordProvider extends ClosableProvider {
      * @return ListRecords object with metadata of records for specified identifiers
      * @throws OaiPmhException
      */
-    ListRecords listRecords(List<Header> identifiers) throws OaiPmhException;
+    ListRecords listRecords(List<String> identifiers
+                          , ResumptionToken token) throws OaiPmhException;
 }

@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+  <responseDate>2026-06-26T08:02:44Z</responseDate>
+  <request verb="Identify">https://api.europeana.eu/oai</request>
+  <Identify>
+    <repositoryName>Europeana OAI Endpoint v2.0</repositoryName>
+    <baseURL>https://api.europeana.eu/oai</baseURL>
+    <protocolVersion>2.0</protocolVersion>
+    <adminEmail>api@europeana.eu</adminEmail>
+    <earliestDatestamp>1970-01-01T00:00:00Z</earliestDatestamp>
+    <deletedRecord>no</deletedRecord>
+    <granularity>YYYY-MM-DDThh:mm:ssZ</granularity>
+    <compression>gzip</compression>
+  </Identify>
+</OAI-PMH>

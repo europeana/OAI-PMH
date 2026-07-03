@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
+import eu.europeana.oaipmh.model.impl.ListIdentifiersImpl;
 import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
@@ -99,7 +100,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      */
     private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark, int pageSize) throws OaiPmhException {
         QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, pageSize));
-        ListIdentifiers result = responseToListIdentifiers(response);
+        ListIdentifiersImpl result = responseToListIdentifiers(response);
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(DateConverter.toIsoDate(from),
                     DateConverter.toIsoDate(until),
@@ -124,16 +125,13 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @return next page of the list of identifiers
      */
     @TrackTime
-    private ListIdentifiers responseToListIdentifiers(QueryResponse response) {
+    private ListIdentifiersImpl responseToListIdentifiers(QueryResponse response) {
         List<Header> headers = new ArrayList<>();
-
         SolrDocumentList docs = response.getResults();
         for (SolrDocument document : docs) {
             headers.add(documentToHeader(document));
         }
-        ListIdentifiers listIdentifiersResult = new ListIdentifiers();
-        listIdentifiersResult.setHeaders(headers);
-        return listIdentifiersResult;
+        return new ListIdentifiersImpl(headers);
     }
 
     /**

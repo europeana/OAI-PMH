@@ -13,7 +13,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Set;
 
+import static eu.europeana.oaipmh.service.OaiParameterName.*;
+
+import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+
 public class OaiPmhRequestFactory {
+
     private static final String PARAMETER_INFO = "Parameter \"%s\" ";
 
     private static final Set<String> validVerbs;
@@ -36,16 +41,16 @@ public class OaiPmhRequestFactory {
         mandatoryVerbParameters = new HashMap<>();
         // ListIdentifiers
         Set<OaiParameterName> mandatoryParameters = new HashSet<>();
-        mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
+        mandatoryParameters.add(METADATA_PREFIX);
         mandatoryVerbParameters.put(ListIdentifiers.class.getSimpleName(), mandatoryParameters);
         // GetRecord
         mandatoryParameters = new HashSet<>();
-        mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
-        mandatoryParameters.add(OaiParameterName.IDENTIFIER);
+        mandatoryParameters.add(METADATA_PREFIX);
+        mandatoryParameters.add(IDENTIFIER);
         mandatoryVerbParameters.put(GetRecord.class.getSimpleName(), mandatoryParameters);
         // ListRecords
         mandatoryParameters = new HashSet<>();
-        mandatoryParameters.add(OaiParameterName.METADATA_PREFIX);
+        mandatoryParameters.add(METADATA_PREFIX);
         mandatoryVerbParameters.put(ListRecords.class.getSimpleName(), mandatoryParameters);
 
         validVerbParameters = new HashMap<>();
@@ -54,65 +59,65 @@ public class OaiPmhRequestFactory {
         validVerbParameters.put(Identify.class.getSimpleName(), validParameters);
         // ListIdentifiers
         validParameters = new HashSet<>();
-        validParameters.add(OaiParameterName.METADATA_PREFIX);
-        validParameters.add(OaiParameterName.FROM);
-        validParameters.add(OaiParameterName.UNTIL);
-        validParameters.add(OaiParameterName.SET);
-        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validParameters.add(METADATA_PREFIX);
+        validParameters.add(FROM);
+        validParameters.add(UNTIL);
+        validParameters.add(SET);
+        validParameters.add(RESUMPTION_TOKEN);
         validVerbParameters.put(ListIdentifiers.class.getSimpleName(), validParameters);
         // GetRecord
         validParameters = new HashSet<>();
-        validParameters.add(OaiParameterName.METADATA_PREFIX);
-        validParameters.add(OaiParameterName.IDENTIFIER);
+        validParameters.add(METADATA_PREFIX);
+        validParameters.add(IDENTIFIER);
         validVerbParameters.put(GetRecord.class.getSimpleName(), validParameters);
         // ListSets
         validParameters = new HashSet<>();
-        validParameters.add(OaiParameterName.FROM);
-        validParameters.add(OaiParameterName.UNTIL);
-        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validParameters.add(FROM);
+        validParameters.add(UNTIL);
+        validParameters.add(RESUMPTION_TOKEN);
         validVerbParameters.put(ListSets.class.getSimpleName(), validParameters);
         // ListMetadataFormats
         validParameters = new HashSet<>();
-        validParameters.add(OaiParameterName.IDENTIFIER);
+        validParameters.add(IDENTIFIER);
         validVerbParameters.put(ListMetadataFormats.class.getSimpleName(), validParameters);
         // ListRecords
         validParameters = new HashSet<>();
-        validParameters.add(OaiParameterName.METADATA_PREFIX);
-        validParameters.add(OaiParameterName.FROM);
-        validParameters.add(OaiParameterName.UNTIL);
-        validParameters.add(OaiParameterName.SET);
-        validParameters.add(OaiParameterName.RESUMPTION_TOKEN);
+        validParameters.add(METADATA_PREFIX);
+        validParameters.add(FROM);
+        validParameters.add(UNTIL);
+        validParameters.add(SET);
+        validParameters.add(RESUMPTION_TOKEN);
         validVerbParameters.put(ListRecords.class.getSimpleName(), validParameters);
 
         exclusiveParameters = new EnumMap<>(OaiParameterName.class);
         // metadataPrefix
         Set<OaiParameterName> exclusiveForParam = new HashSet<>();
-        exclusiveForParam.add(OaiParameterName.RESUMPTION_TOKEN);
-        exclusiveParameters.put(OaiParameterName.METADATA_PREFIX, exclusiveForParam);
+        exclusiveForParam.add(RESUMPTION_TOKEN);
+        exclusiveParameters.put(METADATA_PREFIX, exclusiveForParam);
         // resumptionToken
         exclusiveForParam = new HashSet<>();
-        exclusiveForParam.add(OaiParameterName.METADATA_PREFIX);
-        exclusiveForParam.add(OaiParameterName.FROM);
-        exclusiveForParam.add(OaiParameterName.IDENTIFIER);
-        exclusiveForParam.add(OaiParameterName.SET);
-        exclusiveForParam.add(OaiParameterName.UNTIL);
-        exclusiveParameters.put(OaiParameterName.RESUMPTION_TOKEN, exclusiveForParam);
+        exclusiveForParam.add(METADATA_PREFIX);
+        exclusiveForParam.add(FROM);
+        exclusiveForParam.add(IDENTIFIER);
+        exclusiveForParam.add(SET);
+        exclusiveForParam.add(UNTIL);
+        exclusiveParameters.put(RESUMPTION_TOKEN, exclusiveForParam);
         // from
         exclusiveForParam = new HashSet<>();
-        exclusiveForParam.add(OaiParameterName.RESUMPTION_TOKEN);
-        exclusiveForParam.add(OaiParameterName.IDENTIFIER);
-        exclusiveParameters.put(OaiParameterName.FROM, exclusiveForParam);
+        exclusiveForParam.add(RESUMPTION_TOKEN);
+        exclusiveForParam.add(IDENTIFIER);
+        exclusiveParameters.put(FROM, exclusiveForParam);
         // until
-        exclusiveParameters.put(OaiParameterName.UNTIL, exclusiveForParam);
+        exclusiveParameters.put(UNTIL, exclusiveForParam);
         // set
-        exclusiveParameters.put(OaiParameterName.SET, exclusiveForParam);
+        exclusiveParameters.put(SET, exclusiveForParam);
     }
 
     private OaiPmhRequestFactory() {}
 
     public static void validateVerb(String verb) throws BadVerbException {
         if (verb == null || !validVerbs.contains(verb)) {
-            throw new BadVerbException("Verb \"" + verb + "\" is invalid!");
+            throw new BadVerbException(msg(BAD_VERB_INVALID_MSG, verb));
         }
     }
 
@@ -148,7 +153,7 @@ public class OaiPmhRequestFactory {
     public static void validateParameterNames(String request) throws BadArgumentException, BadVerbException {
         Map<OaiParameterName, String> parameters = prepareParameters(request, false);
         validateMandatoryParameters(parameters);
-        validateDateParameters(parameters.get(OaiParameterName.FROM), parameters.get(OaiParameterName.UNTIL));
+        validateDateParameters(parameters.get(FROM), parameters.get(UNTIL));
     }
 
     private static void validateMandatoryParameters(Map<OaiParameterName, String> parameters) throws BadVerbException, BadArgumentException {
@@ -182,11 +187,11 @@ public class OaiPmhRequestFactory {
 
     private static String getVerb(Map<OaiParameterName, String> parameters) throws BadVerbException {
         if (parameters == null || parameters.isEmpty()) {
-            throw new BadVerbException("Verb is missing.");
+            throw new BadVerbException(BAD_VERB_MISSING_MSG);
         }
-        String verb = parameters.get(OaiParameterName.VERB);
+        String verb = parameters.get(VERB);
         if (verb == null || verb.isEmpty()) {
-            throw new BadVerbException("Verb is missing.");
+            throw new BadVerbException(BAD_VERB_MISSING_MSG);
         }
         return verb;
     }
@@ -225,12 +230,12 @@ public class OaiPmhRequestFactory {
         if (StringUtils.isEmpty(name)) {
             throw new BadArgumentException("Empty parameter!");
         }
-        if (!OaiParameterName.contains(name)) {
+        if (!contains(name)) {
             throw new BadArgumentException("Parameter \"" + name + "\" is not supported!");
         }
 
         if (verb != null) {
-            validateVerbParameter(verb, OaiParameterName.fromString(name));
+            validateVerbParameter(verb, fromString(name));
         }
 
         // empty
@@ -278,15 +283,15 @@ public class OaiPmhRequestFactory {
 
     private static void validateParameterWithoutValue(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String name) throws BadArgumentException {
         try {
-            validateParameter(parameters.get(OaiParameterName.VERB), name, null);
-            validateExclusiveParameters(OaiParameterName.fromString(name), parameters.keySet());
+            validateParameter(parameters.get(VERB), name, null);
+            validateExclusiveParameters(fromString(name), parameters.keySet());
         } catch (BadArgumentException e) {
             if (!ignoreErrors) {
                 throw e;
             }
         }
         try {
-            parameters.put(OaiParameterName.fromString(name), "");
+            parameters.put(fromString(name), "");
         } catch (IllegalArgumentException e) {
             // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
         }
@@ -294,16 +299,16 @@ public class OaiPmhRequestFactory {
 
     private static void validateNormalParameter(boolean ignoreErrors, Map<OaiParameterName, String> parameters, String paramName, String paramValue) throws BadArgumentException {
         try {
-            validateParameter(parameters.get(OaiParameterName.VERB), paramName, paramValue);
-            validateMultipleParameter(parameters.containsKey(OaiParameterName.fromString(paramName)), paramName);
-            validateExclusiveParameters(OaiParameterName.fromString(paramName), parameters.keySet());
+            validateParameter(parameters.get(VERB), paramName, paramValue);
+            validateMultipleParameter(parameters.containsKey(fromString(paramName)), paramName);
+            validateExclusiveParameters(fromString(paramName), parameters.keySet());
         } catch (BadArgumentException e) {
             if (!ignoreErrors) {
                 throw e;
             }
         }
         try {
-            parameters.put(OaiParameterName.fromString(paramName), URLDecoder.decode(paramValue, StandardCharsets.UTF_8.name()));
+            parameters.put(fromString(paramName), URLDecoder.decode(paramValue, StandardCharsets.UTF_8.name()));
         } catch (IllegalArgumentException e) {
             // here we just skip adding the parameter to the map because this exception can be caught only when ignoreErrors is true
         } catch (UnsupportedEncodingException e) {
@@ -339,12 +344,12 @@ public class OaiPmhRequestFactory {
     public static OAIRequest createRequest(String baseUrl, String request, boolean ignoreErrors) throws BadArgumentException {
         Map<OaiParameterName, String> parameters = prepareParameters(request, ignoreErrors);
 
-        String verb = parameters.get(OaiParameterName.VERB);
+        String verb = parameters.get(VERB);
         if (verb == null) {
             if (ignoreErrors) {
                 return new OAIRequest(null, baseUrl);
             }
-            throw new BadArgumentException("Verb parameter is missing...");
+            throw new BadArgumentException(BAD_ARGUMENT_VERB_MISSING_MSG);
         }
 
         if (Identify.class.getSimpleName().equals(verb)) {
@@ -356,7 +361,7 @@ public class OaiPmhRequestFactory {
         }
 
         if (GetRecord.class.getSimpleName().equals(verb)) {
-            return createGetRecordRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX), parameters.get(OaiParameterName.IDENTIFIER));
+            return createGetRecordRequest(baseUrl, parameters.get(METADATA_PREFIX), parameters.get(IDENTIFIER));
         }
 
         if (ListSets.class.getSimpleName().equals(verb)) {
@@ -364,7 +369,7 @@ public class OaiPmhRequestFactory {
         }
 
         if (ListMetadataFormats.class.getSimpleName().equals(verb)) {
-            return createListMetadataFormatsRequest(baseUrl, parameters.get(OaiParameterName.IDENTIFIER));
+            return createListMetadataFormatsRequest(baseUrl, parameters.get(IDENTIFIER));
         }
 
         if (ListRecords.class.getSimpleName().equals(verb)) {
@@ -372,53 +377,58 @@ public class OaiPmhRequestFactory {
         }
 
         if (!ignoreErrors) {
-            throw new BadArgumentException("Unsupported verb.");
+            throw new BadArgumentException(BAD_ARGUMENT_VERB_MSG);
         }
         // in this case just create a general request object with verb and url only.
         return new OAIRequest(verb, baseUrl);
     }
 
-    private static ListSetsRequest createListSetsRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
-        if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
-            return createListSetsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+    private static ListSetsRequest createListSetsRequest(
+            String baseUrl, Map<OaiParameterName, String> parameters) {
+        if (parameters.containsKey(RESUMPTION_TOKEN)) {
+            return createListSetsRequest(baseUrl, parameters.get(RESUMPTION_TOKEN));
         }
-        if (parameters.containsKey(OaiParameterName.METADATA_PREFIX)) {
+        if (parameters.containsKey(METADATA_PREFIX)) {
             return createListSetsRequest(baseUrl,
-                    parameters.get(OaiParameterName.FROM),
-                    parameters.get(OaiParameterName.UNTIL));
+                    parameters.get(FROM),
+                    parameters.get(UNTIL));
         }
         // when key parameters are missing return a basic list records request object
-        return new ListSetsRequest(parameters.get(OaiParameterName.VERB), baseUrl);
+        return new ListSetsRequest(parameters.get(VERB), baseUrl);
     }
 
-    public static ListSetsRequest createListSetsRequest(String baseUrl, String resumptionToken) {
+    public static ListSetsRequest createListSetsRequest(
+            String baseUrl, String resumptionToken) {
        return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, resumptionToken);
 
     }
 
-    public static ListSetsRequest createListSetsRequest(String baseUrl, String from, String until) {
+    public static ListSetsRequest createListSetsRequest(
+            String baseUrl, String from, String until) {
         return new ListSetsRequest(ListSets.class.getSimpleName(), baseUrl, from, until);
     }
 
     private static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
-        if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
-            return createListIdentifiersRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+        if (parameters.containsKey(RESUMPTION_TOKEN)) {
+            return createListIdentifiersRequest(baseUrl, parameters.get(RESUMPTION_TOKEN));
         }
-        if (parameters.containsKey(OaiParameterName.METADATA_PREFIX)) {
-            return createListIdentifiersRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX),
-                    parameters.get(OaiParameterName.SET),
-                    parameters.get(OaiParameterName.FROM),
-                    parameters.get(OaiParameterName.UNTIL));
+        if (parameters.containsKey(METADATA_PREFIX)) {
+            return createListIdentifiersRequest(baseUrl, parameters.get(METADATA_PREFIX),
+                    parameters.get(SET),
+                    parameters.get(FROM),
+                    parameters.get(UNTIL));
         }
         // when key parameters are missing return a basic list identifiers request object
-        return new ListIdentifiersRequest(parameters.get(OaiParameterName.VERB), baseUrl);
+        return new ListIdentifiersRequest(parameters.get(VERB), baseUrl);
     }
 
-    public static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, String metadataPrefix, String set, String from, String until) {
+    public static ListIdentifiersRequest createListIdentifiersRequest(
+            String baseUrl, String metadataPrefix, String set, String from, String until) {
         return new ListIdentifiersRequest(ListIdentifiers.class.getSimpleName(), baseUrl, metadataPrefix, set, from, until);
     }
 
-    public static ListIdentifiersRequest createListIdentifiersRequest(String baseUrl, String resumptionToken) {
+    public static ListIdentifiersRequest createListIdentifiersRequest(
+            String baseUrl, String resumptionToken) {
         return new ListIdentifiersRequest(ListIdentifiers.class.getSimpleName(), baseUrl, resumptionToken);
     }
 
@@ -426,33 +436,39 @@ public class OaiPmhRequestFactory {
         return new IdentifyRequest(Identify.class.getSimpleName(), baseUrl);
     }
 
-    public static GetRecordRequest createGetRecordRequest(String baseUrl, String metadataPrefix, String identifier) {
+    public static GetRecordRequest createGetRecordRequest(
+            String baseUrl, String metadataPrefix, String identifier) {
         return new GetRecordRequest(GetRecord.class.getSimpleName(), baseUrl, metadataPrefix, identifier);
     }
 
-    public static ListMetadataFormatsRequest createListMetadataFormatsRequest(String baseUrl, String identifier) {
+    public static ListMetadataFormatsRequest createListMetadataFormatsRequest(
+            String baseUrl, String identifier) {
         return new ListMetadataFormatsRequest(ListMetadataFormats.class.getSimpleName(), baseUrl, identifier);
     }
 
-    private static ListRecordsRequest createListRecordsRequest(String baseUrl, Map<OaiParameterName, String> parameters) {
-        if (parameters.containsKey(OaiParameterName.RESUMPTION_TOKEN)) {
-            return createListRecordsRequest(baseUrl, parameters.get(OaiParameterName.RESUMPTION_TOKEN));
+    private static ListRecordsRequest createListRecordsRequest(
+            String baseUrl, Map<OaiParameterName, String> parameters) {
+        if (parameters.containsKey(RESUMPTION_TOKEN)) {
+            return createListRecordsRequest(baseUrl, parameters.get(RESUMPTION_TOKEN));
         }
-        if (parameters.containsKey(OaiParameterName.METADATA_PREFIX)) {
-            return createListRecordsRequest(baseUrl, parameters.get(OaiParameterName.METADATA_PREFIX),
-                    parameters.get(OaiParameterName.SET),
-                    parameters.get(OaiParameterName.FROM),
-                    parameters.get(OaiParameterName.UNTIL));
+        if (parameters.containsKey(METADATA_PREFIX)) {
+            return createListRecordsRequest(baseUrl, parameters.get(METADATA_PREFIX),
+                    parameters.get(SET),
+                    parameters.get(FROM),
+                    parameters.get(UNTIL));
         }
         // when key parameters are missing return a basic list records request object
-        return new ListRecordsRequest(parameters.get(OaiParameterName.VERB), baseUrl);
+        return new ListRecordsRequest(parameters.get(VERB), baseUrl);
     }
 
-    public static ListRecordsRequest createListRecordsRequest(String baseUrl, String metadataPrefix, String set, String from, String until) {
+    public static ListRecordsRequest createListRecordsRequest(
+            String baseUrl, String metadataPrefix, String set
+          , String from, String until) {
         return new ListRecordsRequest(ListRecords.class.getSimpleName(), baseUrl, metadataPrefix, set, from, until);
     }
 
-    public static ListRecordsRequest createListRecordsRequest(String baseUrl, String resumptionToken) {
+    public static ListRecordsRequest createListRecordsRequest(
+            String baseUrl, String resumptionToken) {
         return new ListRecordsRequest(ListRecords.class.getSimpleName(), baseUrl, resumptionToken);
     }
 }

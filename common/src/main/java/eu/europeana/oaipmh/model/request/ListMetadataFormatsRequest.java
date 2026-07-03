@@ -1,16 +1,21 @@
 package eu.europeana.oaipmh.model.request;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+
+import eu.europeana.oaipmh.model.SerializationConstants;
 
 /**
  * This class represents the ListMetadataFormats verb request.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ListMetadataFormatsRequest extends OAIRequest {
 
-    private static final long serialVersionUID = -3245074909546527770L;
-
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.identifier)
     private String identifier;
+
+    protected ListMetadataFormatsRequest() {}
 
     public ListMetadataFormatsRequest(String verb, String baseUrl) {
         super(verb, baseUrl);

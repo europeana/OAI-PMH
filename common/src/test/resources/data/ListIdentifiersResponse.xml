@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+  <OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-06-26T18:13:01Z</responseDate>
+    <request verb="ListIdentifiers" metadataPrefix="edm" set="2021672" from="2000-01-01T00:00:00Z" until="2025-01-01T00:00:00Z">https://api.europeana.eu/oai</request>
+    <ListIdentifiers>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1031</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1032</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <resumptionToken completeListSize="832" expirationDate="2026-06-27T18:13:01Z" cursor="0">MjAwMC0wMS0wMVQwMDowMDowMFp8MjAyNS0wMS0wMVQwMDowMDowMFp8MjAyMTY3MnxlZG18MTc4MjU4Mzk4MTk4NXw4MzJ8MHxBb0oxOWR6TXk0WURQd292TWpBeU1UWTNNaTl5WlhOdmRYSmpaVjlrYjJOMWJXVnVkRjl0WVhWeWFYUnphSFZwYzE4eU5BPT0=</resumptionToken>
+    </ListIdentifiers>
+  </OAI-PMH>

@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.ListSets;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.model.Set;
+import eu.europeana.oaipmh.model.impl.ListSetsImpl;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
@@ -19,6 +20,7 @@ import java.util.List;
 import static eu.europeana.oaipmh.util.SolrConstants.DATASET_NAME;
 
 public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvider {
+
     @Value("${setsPerPage}")
     private int setsPerPage;
 
@@ -39,6 +41,22 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
     }
 
     /**
+     * List the next page of sets based on the resumption token.
+     *
+     * @param resumptionToken decoded resumption token used to retrieve next page of results
+     * @return ListSets object with the next page of sets and possibly with resumption token if necessary
+     * @throws OaiPmhException
+     */
+    @Override
+    public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
+        long offset = resumptionToken.getCursor() + setsPerPage;
+        QueryResponse response = executeQuery(
+                SolrQueryBuilder.listSets(setsPerPage, null, null, offset));
+        return responseToListSets(response, offset
+                                , resumptionToken.getCompleteListSize());
+    }
+
+    /**
      * Retrieve information from the Solr response and put it into the ListSets object.
      *
      * @param response response returned by Solr
@@ -46,26 +64,27 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      * @param completeListSize number of all elements
      * @return ListSets object with sets and resumption token if necessary
      */
-    private ListSets responseToListSets(QueryResponse response, long cursor, long completeListSize) {
-        ListSets listSets = new ListSets();
-        List<Set> sets = new ArrayList<>();
+    private ListSets responseToListSets(
+            QueryResponse response, long cursor, long completeListSize) {
 
+        List<Set> sets = new ArrayList<>();
         FacetField field = response.getFacetField(DATASET_NAME);
         for (FacetField.Count setCounts : field.getValues()) {
             String setName = setCounts.getName();
             String setIdentifier = getSetIdentifier(setName);
             sets.add(new Set(setIdentifier, setName));
         }
-        listSets.setSets(sets);
 
+        ResumptionToken resumptionToken = null;
         if (shouldCreateResumptionToken(cursor, field.getValueCount(), completeListSize)) {
             // create resumption token for ListSets
-            ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+            resumptionToken = ResumptionTokenHelper.createResumptionToken(
+                    new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
                     completeListSize,
                     cursor);
-            listSets.setResumptionToken(resumptionToken);
         }
-        return listSets;
+
+        return new ListSetsImpl(sets, resumptionToken);
     }
 
     /**
@@ -77,19 +96,5 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      */
     private boolean shouldCreateResumptionToken(long cursor, long retrieved, long completeListSize) {
         return cursor + retrieved < completeListSize && retrieved == setsPerPage;
-    }
-
-
-    /**
-     * List the next page of sets based on the resumption token.
-     *
-     * @param resumptionToken decoded resumption token used to retrieve next page of results
-     * @return ListSets object with the next page of sets and possibly with resumption token if necessary
-     * @throws OaiPmhException
-     */
-    @Override
-    public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, null, null, resumptionToken.getCursor() + setsPerPage));
-        return responseToListSets(response, resumptionToken.getCursor() + setsPerPage, resumptionToken.getCompleteListSize());
     }
 }

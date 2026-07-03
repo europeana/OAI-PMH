@@ -8,6 +8,7 @@ import eu.europeana.oaipmh.model.MetadataFormatConverter;
  * to disseminate object with the specified format and to retrieve the converter.
  */
 public interface MetadataFormatsProvider {
+
     boolean canDisseminate(String metadataFormat);
 
     MetadataFormatConverter getConverter(String metadataFormat);

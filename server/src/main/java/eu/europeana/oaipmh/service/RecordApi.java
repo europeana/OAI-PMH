@@ -2,8 +2,10 @@ package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
-import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.model.ResumptionToken;
+import eu.europeana.oaipmh.model.impl.ListRecordsImpl;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
@@ -41,12 +43,29 @@ public class RecordApi extends BaseProvider implements RecordProvider {
     @Override
     public Record getRecord(String id) throws OaiPmhException {
         ResponseEntity<String> response = getResponseForRecord(id);
-        RDFMetadata rdf = new RDFMetadata(response.getBody());
+        Metadata rdf = new Metadata(response.getBody());
 
-        Header header = new Header();
-        header.setIdentifier(id);
-        header.setDatestamp(new Date());
+        Header header = new Header(id, new Date(), new ArrayList<>());
         return new Record(header, rdf);
+    }
+
+    @Override
+    public void checkRecordExists(String id) throws OaiPmhException {
+        ResponseEntity<String> response = getResponseForRecord(id);
+        if (response == null) {
+            throw new IdDoesNotExistException("Record with id '" + id + "' not found");
+        }
+    }
+
+    @Override
+    public ListRecords listRecords(
+            List<String> identifiers, ResumptionToken token) 
+                throws OaiPmhException {
+        List<Record> records = new ArrayList<>();
+        for (String id : identifiers) {
+            records.add(getRecord(id));
+        }
+        return new ListRecordsImpl(records, null);
     }
 
     private ResponseEntity<String> getResponseForRecord(String id) throws OaiPmhException {
@@ -74,25 +93,6 @@ public class RecordApi extends BaseProvider implements RecordProvider {
             throw new OaiPmhException("Error retrieving record. Status = "+response.getStatusCodeValue());
         }
         return response;
-    }
-
-    @Override
-    public void checkRecordExists(String id) throws OaiPmhException {
-        ResponseEntity<String> response = getResponseForRecord(id);
-        if (response == null) {
-            throw new IdDoesNotExistException("Record with id '" + id + "' not found");
-        }
-    }
-
-    @Override
-    public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
-        ListRecords listRecords = new ListRecords();
-        List<Record> records = new ArrayList<>();
-        for (Header header : identifiers) {
-            records.add(getRecord(header.getIdentifier()));
-        }
-        listRecords.setRecords(records);
-        return listRecords;
     }
 
     private String constructRequestUrl(String id) {

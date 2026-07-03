@@ -1,6 +1,6 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -52,10 +52,10 @@ public class RecordApiTest extends BaseApiTestCase {
         Assert.assertTrue(xml.getMetadata().getMetadata().contains("about=\"http://data.europeana.eu/item/"+TEST_RECORD_ID));
     }
 
-    private RDFMetadata loadRecord() throws IOException {
+    private Metadata loadRecord() throws IOException {
         Path path = Paths.get(resDir + "/" + TEST_RECORD_FILENAME);
         String content = new String(Files.readAllBytes(path));
-        return new RDFMetadata(content);
+        return new Metadata(content);
     }
 
     /**

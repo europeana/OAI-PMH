@@ -3,6 +3,8 @@ package eu.europeana.oaipmh.model.metadata;
 import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormat;
 import eu.europeana.oaipmh.model.MetadataFormatConverter;
+import eu.europeana.oaipmh.model.impl.ListMetadataFormatsImpl;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -26,7 +28,9 @@ public class MetadataFormatsService implements MetadataFormatsProvider {
 
     private final Map<String, String> namespaces = new HashMap<>();
 
-    private Map<String, MetadataFormat> metadataFormats = new HashMap<>();
+    private final Map<String, MetadataFormat> metadataFormats = new HashMap<>();
+
+    private ListMetadataFormats formats;
 
     public Map<String, String> getConverters() {
         return converters;
@@ -52,6 +56,7 @@ public class MetadataFormatsService implements MetadataFormatsProvider {
                 metadataFormats.put(prefix, format);
             }
         }
+        formats = new ListMetadataFormatsImpl(metadataFormats.values());
     }
 
     private MetadataFormatConverter createConverter(String className) {
@@ -83,10 +88,6 @@ public class MetadataFormatsService implements MetadataFormatsProvider {
 
     @Override
     public ListMetadataFormats listMetadataFormats() {
-        ListMetadataFormats result = new ListMetadataFormats();
-        if (! metadataFormats.isEmpty()) {
-            result.setMetadataFormats(new ArrayList<>(metadataFormats.values()));
-        }
-        return result;
+        return formats;
     }
 }

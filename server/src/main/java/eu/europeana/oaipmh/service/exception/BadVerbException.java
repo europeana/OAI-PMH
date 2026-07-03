@@ -8,11 +8,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
+@SuppressWarnings("serial")
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class BadVerbException extends OaiPmhException {
 
-    public BadVerbException(String verb) {
-        super(verb, ErrorCode.BAD_VERB);
+    public BadVerbException(String msg) {
+        super(msg, ErrorCode.BAD_VERB);
     }
 
     @Override

@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-06-26T18:08:42Z</responseDate>
+    <request verb="ListSets">https://api.europeana.eu/oai</request>
+    <ListSets>
+      <set>
+        <setSpec>2058621</setSpec>
+        <setName>2058621_Ag_EU_LoCloud_NRA</setName>
+      </set>
+      <set>
+        <setSpec>9200365</setSpec>
+        <setName>9200365_Ag_EU_TEL_a0142_Gallica</setName>
+      </set>
+      <set>
+        <setSpec>542</setSpec>
+        <setName>542_DDB_Landesarchiv</setName>
+      </set>
+      <set>
+        <setSpec>2020706</setSpec>
+        <setName>2020706_Ag_EU_CARARE_NPU</setName>
+      </set>
+      <set>
+        <setSpec>1321</setSpec>
+        <setName>1321__Austrian_National_Library_update</setName>
+      </set>
+      <resumptionToken completeListSize="2365" expirationDate="2026-06-27T18:08:42Z" cursor="0">fHx8fDE3ODI1ODM3MjIxNzJ8MjM2NXwwfG51bGw=</resumptionToken>
+    </ListSets>
+  </OAI-PMH>

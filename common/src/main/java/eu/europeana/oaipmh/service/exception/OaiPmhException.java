@@ -1,17 +1,23 @@
 package eu.europeana.oaipmh.service.exception;
 
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Base error class for this application
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
+@SuppressWarnings("serial")
 @XmlRootElement
-public class OaiPmhException extends Exception {
+public class OaiPmhException extends RuntimeException {
 
     private final ErrorCode errorCode;
+
+    public OaiPmhException(Throwable t) {
+        super(t);
+        errorCode = null;
+    }
 
     public OaiPmhException(String msg, Throwable t) {
         super(msg, t);

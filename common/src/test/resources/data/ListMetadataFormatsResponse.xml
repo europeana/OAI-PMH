@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+  <responseDate>2026-06-25T20:48:32Z</responseDate>
+  <request verb="ListMetadataFormats" identifier="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670">https://api.europeana.eu/oai</request>
+  <ListMetadataFormats>
+    <metadataFormat>
+      <metadataPrefix>edm</metadataPrefix>
+      <schema>http://www.europeana.eu/schemas/edm/EDM.xsd</schema>
+      <metadataNamespace>http://www.europeana.eu/schemas/edm/</metadataNamespace>
+    </metadataFormat>
+  </ListMetadataFormats>
+</OAI-PMH>

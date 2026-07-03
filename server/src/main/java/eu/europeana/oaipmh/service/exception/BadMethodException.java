@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Patrick Ehlert
  * Created on 16-04-2018
  */
+@SuppressWarnings("serial")
 @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
 public class BadMethodException extends OaiPmhException {
 

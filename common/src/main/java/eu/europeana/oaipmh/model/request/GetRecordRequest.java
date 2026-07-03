@@ -1,16 +1,21 @@
 package eu.europeana.oaipmh.model.request;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
+import eu.europeana.oaipmh.model.SerializationConstants;
+
+@XmlAccessorType(XmlAccessType.FIELD)
 public class GetRecordRequest extends OAIRequest {
 
-    private static final long serialVersionUID = -2916674752350963926L;
-
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.metadataPrefix)
     private String metadataPrefix;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.identifier)
     private String identifier;
+
+    protected GetRecordRequest() {}
 
     public GetRecordRequest(String verb, String baseUrl) {
         super(verb, baseUrl);

@@ -1,24 +1,24 @@
 package eu.europeana.oaipmh.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.io.Serializable;
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
+
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class represents set tag in the ListSets response XML
  */
-public class Set implements Serializable {
+@XmlRootElement(name=set)
+public class Set {
 
-    private static final long serialVersionUID = -8390878458067204309L;
-
-    @XmlElement
+    @XmlElement(name=SerializationConstants.setSpec)
     private String setSpec;
 
-    @XmlElement
+    @XmlElement(name=SerializationConstants.setName)
     private String setName;
 
-    public Set() {
-        // empty constructor to allow deserialization
-    }
+    // empty constructor to allow deserialization
+    protected Set() {}
 
     public Set(String setSpec, String setName) {
         this.setSpec = setSpec;
