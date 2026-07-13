@@ -1,14 +1,13 @@
 package eu.europeana.oaipmh.web;
 
+import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.response.OAIResponse;
-import eu.europeana.oaipmh.model.serialize.SerializationHandler;
-import eu.europeana.oaipmh.model.serialize.ServerSerializationProvider;
 import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.BadMethodException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,6 +21,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Pattern;
@@ -44,21 +44,16 @@ public class VerbController {
 
     private static final String REGEX_VALID_SET_ID = "^[a-zA-Z0-9-_]*$";
 
-    static {
-        SerializationHandler.register(new ServerSerializationProvider());
-    }
-
-    @Value("${baseURL}")
-    private String baseUrl;
-
+    private XmlMapper     serialization;
     private OaiPmhService ops;
 
-    private static final XmlMapper serialization 
-        = SerializationHandler.getSerialization();
+    @Resource
+    OaiPmhSettings settings;
 
-
-    public VerbController(OaiPmhService oaiPmhService) {
+    @Autowired
+    public VerbController(OaiPmhService oaiPmhService, XmlMapper serialization) {
         this.ops = oaiPmhService;
+        this.serialization = serialization;
     }
 
     /**
@@ -79,7 +74,7 @@ public class VerbController {
             HttpServletRequest request, HttpServletResponse response) 
                 throws OaiPmhException {
         validateParameterNames(request.getQueryString());
-        return respond(ops.getIdentify(createIdentifyRequest(baseUrl)));
+        return respond(ops.getIdentify(createIdentifyRequest(settings.getBaseUrl())));
     }
 
     /**
@@ -106,7 +101,7 @@ public class VerbController {
             throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.getRecord(
-            createGetRecordRequest(baseUrl, metadataPrefix, identifier)));
+            createGetRecordRequest(settings.getBaseUrl(), metadataPrefix, identifier)));
     }
 
     /**
@@ -128,7 +123,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listIdentifiers(
-            createListIdentifiersRequest(baseUrl, resumptionToken)));
+            createListIdentifiersRequest(settings.getBaseUrl(), resumptionToken)));
     }
 
     /**
@@ -159,7 +154,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listIdentifiers(
-            createListIdentifiersRequest(baseUrl, metadataPrefix, set
+            createListIdentifiersRequest(settings.getBaseUrl(), metadataPrefix, set
                                        , from, until)));
     }
 
@@ -193,7 +188,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listRecords(
-            createListRecordsRequest(baseUrl, metadataPrefix, set, from, until)));
+            createListRecordsRequest(settings.getBaseUrl(), metadataPrefix, set, from, until)));
     }
 
     /**
@@ -218,7 +213,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listRecords(
-            createListRecordsRequest(baseUrl, resumptionToken)));
+            createListRecordsRequest(settings.getBaseUrl(), resumptionToken)));
     }
 
     /**
@@ -242,7 +237,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listMetadataFormats(
-            createListMetadataFormatsRequest(baseUrl, identifier)));
+            createListMetadataFormatsRequest(settings.getBaseUrl(), identifier)));
     }
 
     /**
@@ -267,7 +262,7 @@ public class VerbController {
             HttpServletRequest request, 
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
-        return respond(ops.listSets(createListSetsRequest(baseUrl, from, until)));
+        return respond(ops.listSets(createListSetsRequest(settings.getBaseUrl(), from, until)));
     }
 
     /**
@@ -290,7 +285,7 @@ public class VerbController {
             HttpServletRequest request,
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
-        return respond(ops.listSets(createListSetsRequest(baseUrl, resumptionToken)));
+        return respond(ops.listSets(createListSetsRequest(settings.getBaseUrl(), resumptionToken)));
     }
 
     /**

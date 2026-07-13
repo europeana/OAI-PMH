@@ -21,6 +21,8 @@ public class StreamListRecordsSerializer extends JsonSerializer<StreamListRecord
                         , SerializerProvider provider) throws IOException {
         gen.writeStartObject();
 
+        System.out.println("StreamListRecordsSerializer invoked");
+
         try ( Stream<Record> stream = listRecords.stream() ) {
             JsonSerializer<Object> serRecord = provider.findValueSerializer(Record.class);
             if ( serRecord != null ) {

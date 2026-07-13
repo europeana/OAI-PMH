@@ -10,7 +10,6 @@ import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
@@ -30,12 +29,6 @@ import java.util.List;
 public class RecordApi extends BaseProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(RecordApi.class);
-
-    @Value("${recordApiUrl}")
-    private String recordApiUrl;
-
-    @Value("${wskey}")
-    private String wskey;
 
     /**
      * @see RecordProvider#getRecord(String)
@@ -96,7 +89,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
     }
 
     private String constructRequestUrl(String id) {
-        StringBuilder url = new StringBuilder(recordApiUrl);
+        StringBuilder url = new StringBuilder(settings.getRecordApiUrl());
         url.append(id);
         url.append(".rdf?");
         url.append(appendWskey());
@@ -104,7 +97,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
     }
 
     private String appendWskey() {
-        return String.format("wskey=%s", wskey);
+        return String.format("wskey=%s", settings.getWskey());
     }
 
     /**

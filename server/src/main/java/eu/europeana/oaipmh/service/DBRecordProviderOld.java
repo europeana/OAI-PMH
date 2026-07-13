@@ -10,11 +10,10 @@ import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.corelib.web.exception.EuropeanaException;
 import eu.europeana.metis.mongo.connection.MongoClientProvider;
 import eu.europeana.metis.mongo.dao.RecordDao;
-import eu.europeana.metis.mongo.dao.RecordDaoNew;
+import eu.europeana.metis.network.ExternalRequestUtil;
 import eu.europeana.metis.schema.jibx.DatasetName;
 import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
 import eu.europeana.metis.schema.jibx.RDF;
-import eu.europeana.metis.utils.ExternalRequestUtil;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Metadata;
@@ -37,7 +36,7 @@ import java.util.Optional;
 import java.util.concurrent.*;
 
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
-
+@Deprecated
 public class DBRecordProviderOld extends BaseProvider implements RecordProvider, ConnectionPoolListener {
 
     private static final Logger LOG                   = LogManager.getLogger(DBRecordProviderOld.class);
@@ -71,7 +70,7 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
 
     private ExecutorService threadPool;
     private MongoClient mongoClient;
-    private RecordDaoNew recordDao;
+    private RecordDao recordDao;
 
 
     @PostConstruct
@@ -84,7 +83,7 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
         // We add a connectionPoolListener so we can keep track of the number of connections
         // MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
         this.mongoClient = MongoClientProvider.create(connectionUrl).createMongoClient();
-        this.recordDao = new RecordDaoNew(mongoClient, recordDBName, false);
+        this.recordDao = new RecordDao(mongoClient, recordDBName, false);
         LOG.info("Connected to mongo database {} at {}", recordDBName, new MongoClientURI(connectionUrl).getHosts());
     }
 
@@ -160,7 +159,7 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
             if ( opt.isEmpty() ) { return null; }
             FullBean bean = opt.get();
             return new Record(getHeader(id, bean), new Metadata(bean));
-        } catch (EuropeanaException e) {
+        } catch (RuntimeException  e) {
             throw new InternalServerErrorException(e.getMessage());
         }
     }
@@ -172,7 +171,7 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
         try {
             if ( recordDao.hasRecord(recordId) ) { return; }
             throw new IdDoesNotExistException(msg(ID_DOES_NOT_EXIST_MSG, id));
-        } catch (EuropeanaException e) {
+        } catch (RuntimeException  e) {
             throw new InternalServerErrorException(e.getMessage());
         }
     }

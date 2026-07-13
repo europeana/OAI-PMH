@@ -13,7 +13,7 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.mongodb.client.MongoClients;
 
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.metis.mongo.dao.RecordDaoNew;
+import eu.europeana.metis.mongo.dao.RecordDao;
 import eu.europeana.oaipmh.model.GetRecord;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
@@ -34,7 +34,7 @@ public class TestRecordDao {
 
     private static XmlMapper xmlMapper = SerializationHandler.getSerialization();
 
-    private RecordDaoNew recordDao;
+    private RecordDao recordDao;
 
     public TestRecordDao() {
     }

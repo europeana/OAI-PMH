@@ -1,12 +1,9 @@
 package eu.europeana.oaipmh.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import eu.europeana.oaipmh.model.serialize.SerializationHandler;
-import eu.europeana.oaipmh.model.serialize.StringMetadataDeserializer;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,7 +56,6 @@ public class OAIPMHServiceClient {
     public void execute(String verb) throws OaiPmhException {
         OAIPMHQuery verbToExecute = queries.get(verb);
         if (verbToExecute != null) {
-            //LogFile.setFileName(verbToExecute.getVerbName());
             verbToExecute.execute(this);
         }
     }

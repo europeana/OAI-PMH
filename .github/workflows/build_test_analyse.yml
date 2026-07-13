@@ -1,0 +1,40 @@
+name: Build, Run Tests and Sonar Analysis
+on: push
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up GIT Checkout
+        uses: actions/checkout@v4
+        with:
+          # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0
+      - name: Set up maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.9
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin' #should use the same as in the docker file
+          java-version: 21
+          cache: 'maven'
+          #cache-dependency-path: 'sub-project/pom.xml' # optional
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Build, run tests and analyse
+        # projectKey should match the <groupId>:<artifactId> of the project (see pom.xml).
+        # As jenkins artifactory job will push the project based on <groupId>:<artifactId>
+        # and if GitHub actions will push a new project in sonar cloud if they don't match
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar -Pcoverage -Dsonar.projectKey=eu.europeana:oai-pmh -DskipTests
+        env:
+          # Needed to get some information about the pull request, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # SonarCloud access token should be generated from https://sonarcloud.io/account/security/
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

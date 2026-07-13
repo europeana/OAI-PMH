@@ -11,8 +11,6 @@ import eu.europeana.oaipmh.util.SolrQueryBuilder;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,9 +18,6 @@ import java.util.List;
 import static eu.europeana.oaipmh.util.SolrConstants.DATASET_NAME;
 
 public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvider {
-
-    @Value("${setsPerPage}")
-    private int setsPerPage;
 
     /**
      * List the first or the only page of sets.
@@ -32,7 +27,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      */
     @Override
     public ListSets listSets(Date from, Date until) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(setsPerPage, from, until, 0));
+        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(settings.getSetsPerPage(), from, until, 0));
         FieldStatsInfo info = response.getFieldStatsInfo().get(DATASET_NAME);
         if (info == null) {
             throw new InternalServerErrorException("An error occurred while retrieving information from the index.");
@@ -49,9 +44,9 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      */
     @Override
     public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
-        long offset = resumptionToken.getCursor() + setsPerPage;
+        long offset = resumptionToken.getCursor() + settings.getSetsPerPage();
         QueryResponse response = executeQuery(
-                SolrQueryBuilder.listSets(setsPerPage, null, null, offset));
+                SolrQueryBuilder.listSets(settings.getSetsPerPage(), null, null, offset));
         return responseToListSets(response, offset
                                 , resumptionToken.getCompleteListSize());
     }
@@ -79,7 +74,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
         if (shouldCreateResumptionToken(cursor, field.getValueCount(), completeListSize)) {
             // create resumption token for ListSets
             resumptionToken = ResumptionTokenHelper.createResumptionToken(
-                    new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+                    new Date(System.currentTimeMillis() + settings.getResumptionTokenTTL()),
                     completeListSize,
                     cursor);
         }
@@ -95,6 +90,6 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      * @return true when resumption token is needed
      */
     private boolean shouldCreateResumptionToken(long cursor, long retrieved, long completeListSize) {
-        return cursor + retrieved < completeListSize && retrieved == setsPerPage;
+        return cursor + retrieved < completeListSize && retrieved == settings.getSetsPerPage();
     }
 }

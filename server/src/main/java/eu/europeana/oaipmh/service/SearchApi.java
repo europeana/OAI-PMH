@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -33,7 +32,6 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
 
     private static final Date DEFAULT_IDENTIFIER_TIMESTAMP = DateConverter.fromIsoDateTime("1970-01-01T00:00:00Z");
 
-    @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
     private Date defaultIdentifierTimestamp;
 
     /**
@@ -41,7 +39,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      */
     @PostConstruct
     private void initDefaults() {
-        if (defaultIdentifierTimestamp == null) {
+        if (settings.getDefaultIdentifierTimestamp() == null) {
             defaultIdentifierTimestamp = DEFAULT_IDENTIFIER_TIMESTAMP;
         }
     }
@@ -106,7 +104,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
                     DateConverter.toIsoDate(until),
                     set,
                     metadataPrefix,
-                    new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+                    new Date(System.currentTimeMillis() + settings.getResumptionTokenTTL()),
                     response.getResults().getNumFound(),
                     cursor,
                     response.getNextCursorMark());

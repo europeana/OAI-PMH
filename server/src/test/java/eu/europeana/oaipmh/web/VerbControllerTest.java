@@ -89,7 +89,7 @@ public class VerbControllerTest {
 
     @Test
     public void testIdentify() throws Exception {
-        given(ops.getIdentify(any(IdentifyRequest.class))).willReturn(IDENTIFY_RESPONSE);
+      //  given(ops.getIdentify(any(IdentifyRequest.class))).willReturn(IDENTIFY_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
@@ -107,7 +107,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListMetadataFormats() throws Exception {
-        given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willReturn(LIST_METADATA_FORMATS_RESPONSE);
+      //  given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willReturn(LIST_METADATA_FORMATS_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
@@ -138,7 +138,7 @@ public class VerbControllerTest {
 
     @Test
     public void testGetRecord() throws Exception {
-        given(ops.getRecord(any(GetRecordRequest.class))).willReturn(RECORD_RESPONSE);
+     //   given(ops.getRecord(any(GetRecordRequest.class))).willReturn(RECORD_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
@@ -155,7 +155,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiersWithResumptionToken() throws Exception {
-        given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
+     //   given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
@@ -181,7 +181,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListIdentifiers() throws Exception {
-        given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE);
+    //    given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
                         .accept(MediaType.parseMediaType("text/xml")))
@@ -291,7 +291,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListRecordsWithResumptionToken() throws Exception {
-        given(ops.listRecords(any(ListRecordsRequest.class))).willReturn(LIST_RECORDS_RESPONSE_WITH_TOKEN);
+    //    given(ops.listRecords(any(ListRecordsRequest.class))).willReturn(LIST_RECORDS_RESPONSE_WITH_TOKEN);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
@@ -317,7 +317,7 @@ public class VerbControllerTest {
 
     @Test
     public void testListRecords() throws Exception {
-        given(ops.listRecords(any(ListRecordsRequest.class))).willReturn(LIST_RECORDS_RESPONSE);
+    //    given(ops.listRecords(any(ListRecordsRequest.class))).willReturn(LIST_RECORDS_RESPONSE);
 
         this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
                         .accept(MediaType.parseMediaType("text/xml")))

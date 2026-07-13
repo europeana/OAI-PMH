@@ -7,8 +7,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
 
 import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.OAIPMHVerb;
@@ -27,7 +27,7 @@ public class DefaultSerializationProvider implements SerializationProvider {
         xmlMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         xmlMapper.disable(SerializationFeature.FAIL_ON_UNWRAPPED_TYPE_IDENTIFIERS);
         xmlMapper.setDateFormat(new ISO8601DateFormat()); // we set this to abbreviate the timezone (not sure how to use non-deprecated method for this)
-        xmlMapper.registerModule(new JakartaXmlBindAnnotationModule()); // so we can use JAX-B annotations instead of the Jackson ones
+        xmlMapper.registerModule(new JaxbAnnotationModule()); // so we can use JAX-B annotations instead of the Jackson ones
         return xmlMapper;
     }
 

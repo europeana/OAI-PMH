@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 /**
  * This class represents the ListRecords tag in the ListRecords verb XML response
  */
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class StreamListRecords implements ListRecords {
 

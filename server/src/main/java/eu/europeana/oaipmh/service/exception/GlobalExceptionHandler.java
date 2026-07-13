@@ -1,12 +1,12 @@
 package eu.europeana.oaipmh.service.exception;
 
+import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.OAIError;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolationException;
 
@@ -39,13 +40,16 @@ import static eu.europeana.oaipmh.web.WebConstants.*;
 @RestController
 public class GlobalExceptionHandler {
 
-    @Value("${baseURL}")
-    private String baseUrl;
-
     private static final Logger LOG = LogManager.getLogger(GlobalExceptionHandler.class);
 
-    private static final XmlMapper serialization 
-        = new DefaultSerializationProvider().getSerialization();
+    @Resource
+    OaiPmhSettings settings;
+
+    @Resource
+    XmlMapper serialization;
+
+//    private static final XmlMapper serialization
+//        = new DefaultSerializationProvider().getSerialization();
 
     /**
      * Checks if we should log an error and serializes the error response
@@ -122,7 +126,7 @@ public class GlobalExceptionHandler {
         if (e.doLog()) {
             LOG.error(e.getMessage(), e);
         }
-        OAIRequest origRequest = createRequest(baseUrl
+        OAIRequest origRequest = createRequest(settings.getBaseUrl()
                                              , request.getQueryString(), true);
         OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
         return respond(new OAIResponse(origRequest, error), status);

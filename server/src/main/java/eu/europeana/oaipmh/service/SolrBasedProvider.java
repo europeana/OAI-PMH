@@ -1,6 +1,6 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.metis.utils.ExternalRequestUtil;
+import eu.europeana.metis.network.ExternalRequestUtil;
 import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import eu.europeana.oaipmh.service.exception.ErrorCode;
@@ -13,28 +13,20 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrException;
-import org.springframework.beans.factory.annotation.Value;
-
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A provider implementation that integrates with an Apache Solr cluster to
+ * execute queries and manage connections for OAI-PMH operations. This provider
+ * extends {@code BaseProvider} and implements {@code ClosableProvider} to
+ * provide lifecycle management for the Solr client.
+ */
 public class SolrBasedProvider extends BaseProvider implements ClosableProvider {
     private static final Logger LOG = LogManager.getLogger(SolrBasedProvider.class);
-
-    @Value("${resumptionTokenTTL}")
-    private int resumptionTokenTTL;
-
-    @Value("${solr.url}")
-    private String solrUrl;
-
-    @Value("${zookeeper.url}")
-    private String zookeeperURL;
-
-    @Value("${solr.core}")
-    private String solrCore;
 
     private CloudSolrClient client;
 
@@ -43,20 +35,20 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
      */
     @PostConstruct
     private void init() {
-        LOG.info("Connecting to Solr cluster: {}...", solrUrl);
+        LOG.info("Connecting to Solr cluster: {}...", settings.getSolrUrl());
 
         List<String> solrHosts;
-        if (solrUrl.contains(",")) {
-            solrHosts = Arrays.asList(solrUrl.split(","));
+        if (settings.getSolrUrl().contains(",")) {
+            solrHosts = Arrays.asList(settings.getSolrUrl().split(","));
         } else {
             solrHosts = new ArrayList<>();
-            solrHosts.add(solrUrl);
+            solrHosts.add(settings.getSolrUrl());
         }
 
         client = new CloudSolrClient.Builder(solrHosts).build();
-        client.setDefaultCollection(solrCore);
+        client.setDefaultCollection(settings.getSolrCore());
         client.connect();
-        LOG.info("Connected to Solr {}", solrUrl);
+        LOG.info("Connected to Solr {}", settings.getSolrUrl());
     }
 
     @TrackTime
@@ -72,15 +64,11 @@ public class SolrBasedProvider extends BaseProvider implements ClosableProvider 
                     throw new RuntimeException(e);
                 }
             });
-        } catch(SolrException e){
+        } catch (SolrException e){
             throw new BadArgumentException(e.getMessage());
         } catch (RuntimeException e) {
             throw new OaiPmhException(e.getMessage(), ErrorCode.INTERNAL_ERROR);
         }
-    }
-
-    int getResumptionTokenTTL() {
-        return resumptionTokenTTL;
     }
 
     @Override

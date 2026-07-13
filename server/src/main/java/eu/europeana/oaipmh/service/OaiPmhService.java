@@ -1,23 +1,22 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.impl.GetRecordImpl;
-import eu.europeana.oaipmh.model.impl.ListIdentifiersImpl;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
 import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.model.response.OAIResponse;
-import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import eu.europeana.oaipmh.service.exception.*;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -34,14 +33,8 @@ public class OaiPmhService {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhService.class);
 
-    @Value("${recordsPerPage}")
-    private int recordsPerPage;
-
-    @Value("${identifiersPerPage}")
-    private int identifiersPerPage;
-
-    @Value("${resumptionTokenTTL}")
-    private int resumptionTokenTTL;
+    @Resource
+    OaiPmhSettings settings;
 
     private RecordProvider recordProvider;
 
@@ -69,9 +62,9 @@ public class OaiPmhService {
     @PostConstruct
     private void init() {
         // Note that properties aren't available until after the construction of the bean
-        LOG.info("Records per page: {}", recordsPerPage);
-        LOG.info("Identifiers per page: {}", identifiersPerPage);
-        LOG.info("Resumption token TTL: {}", resumptionTokenTTL);
+        LOG.info("Records per page: {}", settings.getRecordsPerPage());
+        LOG.info("Identifiers per page: {}", settings.getIdentifiersPerPage());
+        LOG.info("Resumption token TTL: {}", settings.getResumptionTokenTTL());
     }
 
     /**
@@ -129,7 +122,7 @@ public class OaiPmhService {
                 DateConverter.fromIsoDateTime(req.getUntil()),
                 req.getSet(),
                 req.getResumptionToken(),
-                identifiersPerPage);
+                settings.getIdentifiersPerPage());
         OAIPMHVerb verb = (!responseObject.isEmpty() ? 
             responseObject : new OAIError(ErrorCode.NO_RECORDS_MATCH
                                         , NO_RECORDS_MATCH_MSG));
@@ -169,7 +162,7 @@ public class OaiPmhService {
      * Retrieve list of records that match given filter parameters: metadata format, date between from and until and set.
      * When no records were found then NoRecordsMatch error is returned.
      *
-     * @param request request containing all necessary parameters
+     * @param req request containing all necessary parameters
      * @return list of records matching the given filter parameters
      * @throws OaiPmhException
      */
@@ -180,7 +173,7 @@ public class OaiPmhService {
                 DateConverter.fromIsoDateTime(req.getUntil()),
                 req.getSet(),
                 req.getResumptionToken(),
-                recordsPerPage);
+                settings.getRecordsPerPage());
         List<String> ids;
         try ( identifiers ) {
             ids = identifiers.stream().map(t -> t.getIdentifier())

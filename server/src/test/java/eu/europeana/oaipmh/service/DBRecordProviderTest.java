@@ -87,8 +87,8 @@ public class DBRecordProviderTest extends BaseApiTestCase {
         given(recordDao.getFullBean(anyString())).willReturn(bean);
         given(rdf.getEuropeanaAggregationList()).willReturn(types);
         given(type.getCollectionName()).willReturn(name);
-        doReturn(record).when(recordProvider).getEDM(any(RDF.class));
-        doReturn(rdf).when(recordProvider).getRDF(any(FullBeanImpl.class));
+       // doReturn(record).when(recordProvider).getEDM(any(RDF.class));
+      //  doReturn(rdf).when(recordProvider).getRDF(any(FullBeanImpl.class));
         given(name.getString()).willReturn(TEST_RECORD_SETS[0]);
         given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
         given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
