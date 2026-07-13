@@ -8,6 +8,7 @@ import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import javax.validation.constraints.Pattern;
 
 import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+import static eu.europeana.oaipmh.util.AppConfigConstants.XML_SERIALIZATION_PROVIDER;
 import static eu.europeana.oaipmh.web.WebConstants.*;
 
 /**
@@ -51,7 +53,8 @@ public class VerbController {
     OaiPmhSettings settings;
 
     @Autowired
-    public VerbController(OaiPmhService oaiPmhService, XmlMapper serialization) {
+    public VerbController(OaiPmhService oaiPmhService,
+                          @Qualifier(value = XML_SERIALIZATION_PROVIDER) XmlMapper serialization) {
         this.ops = oaiPmhService;
         this.serialization = serialization;
     }

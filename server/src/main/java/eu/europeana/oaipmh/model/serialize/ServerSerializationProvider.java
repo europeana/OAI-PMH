@@ -1,7 +1,6 @@
 package eu.europeana.oaipmh.model.serialize;
 
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule;
-
 import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 
 public class ServerSerializationProvider extends DefaultSerializationProvider {

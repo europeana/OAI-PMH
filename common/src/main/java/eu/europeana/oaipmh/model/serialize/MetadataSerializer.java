@@ -28,7 +28,6 @@ public class MetadataSerializer extends JsonSerializer<Metadata> {
     private void writeMetadata(Object obj, JsonGenerator gen
                              , SerializerProvider provider) 
             throws IOException {
-        System.out.println("writeMetadata: ");
         if ( obj instanceof String ) {
             gen.writeRaw(removeXMLHeader((String)obj));
             return;
