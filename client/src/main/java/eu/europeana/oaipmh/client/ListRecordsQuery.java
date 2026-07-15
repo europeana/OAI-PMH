@@ -3,14 +3,14 @@ package eu.europeana.oaipmh.client;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;

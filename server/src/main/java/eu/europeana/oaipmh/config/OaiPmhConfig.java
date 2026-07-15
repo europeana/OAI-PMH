@@ -2,6 +2,8 @@ package eu.europeana.oaipmh.config;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
+import eu.europeana.oaipmh.model.request.OAIRequestAdapter;
+import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import eu.europeana.oaipmh.model.serialize.SerializationHandler;
 import eu.europeana.oaipmh.model.serialize.ServerSerializationProvider;
 import eu.europeana.oaipmh.service.*;
@@ -9,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -19,7 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static eu.europeana.oaipmh.util.AppConfigConstants.RECORD_PROVIDER_BEAN;
+import static eu.europeana.oaipmh.util.AppConfigConstants.*;
 
 @Configuration
 public class OaiPmhConfig {
@@ -141,10 +144,24 @@ public class OaiPmhConfig {
      *
      * @return an instance of {@link XmlMapper} configured for serialization.
      */
-    @Bean
-    public XmlMapper serialization() {
-        LOG.info("Registering XmlMapper serialization provider..... ");
+    @Primary
+    @Bean(XML_SERVER_SERIALIZATION)
+    public XmlMapper serverSerialization() {
+        LOG.info("Registering XmlMapper server serialization provider..... ");
         SerializationHandler.register(new ServerSerializationProvider());
         return SerializationHandler.getSerialization();
+    }
+
+    @Bean(XML_DEFAULT_SERIALIZATION)
+    public XmlMapper defaultSerialization() {
+        LOG.info("Registering XmlMapper default serialization provider..... ");
+        SerializationHandler.register(new DefaultSerializationProvider());
+        return SerializationHandler.getSerialization();
+    }
+
+    @Bean(name = "oaiRequestAdapter")
+    public OAIRequestAdapter oaiRequestAdapter() {
+        LOG.info("Instantiating OAIRequestAdapter ..... ");
+        return new OAIRequestAdapter(serverSerialization());
     }
 }

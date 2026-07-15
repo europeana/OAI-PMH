@@ -68,7 +68,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     }
 
     @Override
-    public void connectionPoolOpened(ConnectionPoolOpenedEvent connectionPoolOpenedEvent) {
+    public void connectionPoolCreated(ConnectionPoolCreatedEvent connectionPoolOpenedEvent) {
         LOG.debug("Connection pool opened {}", connectionPoolOpenedEvent);
     }
 
@@ -88,13 +88,13 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     }
 
     @Override
-    public synchronized void connectionAdded(ConnectionAddedEvent connectionAddedEvent) {
+    public synchronized void connectionCreated(ConnectionCreatedEvent connectionAddedEvent) {
         nrConnections++;
         LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionAddedEvent, this.hashCode(), nrConnections);
     }
 
     @Override
-    public synchronized void connectionRemoved(ConnectionRemovedEvent connectionRemovedEvent) {
+    public synchronized void connectionClosed(ConnectionClosedEvent connectionRemovedEvent) {
         nrConnections--;
         LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionRemovedEvent, this.hashCode(), nrConnections);
     }
@@ -159,10 +159,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
         try {
             Stream<FullBean> stream = recordDao.getRecords(preparedIdentifiers);
             return new StreamListRecords(
-                    stream.map(t -> {
-                                System.out.println("Calling createRecord");
-                                return createRecord(t);
-                            }),
+                    stream.map(t -> createRecord(t)),
                     token
             );
         }

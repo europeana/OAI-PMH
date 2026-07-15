@@ -9,6 +9,7 @@ import java.util.Date;
 @Configuration
 @PropertySource("classpath:oai-pmh.properties")
 @PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
 public class OaiPmhSettings {
 
     @Value("${baseURL}")

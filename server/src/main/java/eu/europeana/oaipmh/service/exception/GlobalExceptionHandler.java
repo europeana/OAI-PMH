@@ -4,7 +4,8 @@ import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.OAIError;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.OAIResponse;
-import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpHeaders;
@@ -20,8 +21,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolationException;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+import static eu.europeana.oaipmh.util.AppConfigConstants.XML_DEFAULT_SERIALIZATION;
 import static eu.europeana.oaipmh.web.WebConstants.*;
 
 /**
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler {
     @Resource
     OaiPmhSettings settings;
 
-    @Resource
+    @Resource(name = XML_DEFAULT_SERIALIZATION)
     XmlMapper serialization;
 
 //    private static final XmlMapper serialization
@@ -132,24 +132,31 @@ public class GlobalExceptionHandler {
         return respond(new OAIResponse(origRequest, error), status);
     }
 
+    // TODO serialization is working , but StreamResponseBody is never invoked
     private ResponseEntity<StreamingResponseBody> respond(
             OAIResponse rsp, HttpStatus status) {
+        write(System.out, rsp); // todo remove it later (serialization is working)
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
 
-        return new ResponseEntity<StreamingResponseBody>(
-            new StreamingResponseBody() {
-                @Override
-                public void writeTo(OutputStream out) throws IOException {
-                    try {
-                        serialization.writeValue(out, rsp);
-                    }
-                    catch (IOException e) {
-                        throw new SerializationException(
-                            msg(SERIALIZATION_MSG, e.getMessage()), e);
-                    }
-                }
-            }, headers, status);
+        StreamingResponseBody body = new StreamingResponseBody() {
+            @Override
+            public void writeTo(OutputStream out) throws IOException {
+                write(out, rsp);
+            }
+        };
+        System.out.println("body = " + body);
+        return new ResponseEntity<>(body, headers, status);
+    }
+
+    private void write(OutputStream out, OAIResponse rsp ) {
+        try {
+            serialization.writeValue(out, rsp);
+        }
+        catch (IOException e) {
+            throw new SerializationException(
+                    msg(SERIALIZATION_MSG, e.getMessage()), e);
+        }
     }
 }

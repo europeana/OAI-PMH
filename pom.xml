@@ -30,8 +30,8 @@
         <sonar.organization>europeana</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-        <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-instrument.version>5.3.34</spring-instrument.version>
+        <spring-boot.version>3.5.12</spring-boot.version>
+<!--        <spring-instrument.version>5.3.34</spring-instrument.version>-->
 
         <corelib.version>2.17.8-SNAPSHOT</corelib.version>
         <metis-schema.version>15-SNAPSHOT</metis-schema.version>

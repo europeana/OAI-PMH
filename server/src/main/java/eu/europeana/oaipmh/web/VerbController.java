@@ -7,6 +7,10 @@ import eu.europeana.oaipmh.service.exception.BadMethodException;
 import eu.europeana.oaipmh.service.exception.BadVerbException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.service.exception.SerializationException;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
@@ -22,14 +26,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Pattern;
-
 import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
-import static eu.europeana.oaipmh.util.AppConfigConstants.XML_SERIALIZATION_PROVIDER;
+import static eu.europeana.oaipmh.util.AppConfigConstants.XML_SERVER_SERIALIZATION;
 import static eu.europeana.oaipmh.web.WebConstants.*;
 
 /**
@@ -54,7 +53,7 @@ public class VerbController {
 
     @Autowired
     public VerbController(OaiPmhService oaiPmhService,
-                          @Qualifier(value = XML_SERIALIZATION_PROVIDER) XmlMapper serialization) {
+                          @Qualifier(value = XML_SERVER_SERIALIZATION) XmlMapper serialization) {
         this.ops = oaiPmhService;
         this.serialization = serialization;
     }
@@ -100,7 +99,7 @@ public class VerbController {
             @RequestParam(value = "metadataPrefix", required = true) String metadataPrefix,
             @RequestParam(value = "identifier", required = true) String identifier,
             HttpServletRequest request,
-            HttpServletResponse response) 
+            HttpServletResponse response)
             throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.getRecord(

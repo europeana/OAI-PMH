@@ -2,20 +2,21 @@ package eu.europeana.oaipmh;
 
 import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.MemoryUtils;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 
 /**
  * Main application and configuration.
@@ -23,10 +24,10 @@ import javax.servlet.ServletException;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class, MongoAutoConfiguration.class, EmbeddedMongoAutoConfiguration.class})
-@PropertySource("classpath:oai-pmh.properties")
-@PropertySource(value = "classpath:oai-pmh.user.properties", ignoreResourceNotFound = true)
-@PropertySource(value = "classpath:build.properties", ignoreResourceNotFound = true)
+@SpringBootApplication(exclude={DataSourceAutoConfiguration.class,
+        MongoAutoConfiguration.class,
+        MongoDataAutoConfiguration.class,
+        ManagementWebSecurityAutoConfiguration.class})
 @EnableScheduling
 public class OaiPmhApplication extends SpringBootServletInitializer  {
 

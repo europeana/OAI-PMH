@@ -11,6 +11,7 @@ import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -77,7 +78,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);
         LOG.debug("Response = {}", response);
 
-        HttpStatus responseCode = response.getStatusCode();
+        HttpStatusCode responseCode = response.getStatusCode();
         if (HttpStatus.UNAUTHORIZED == responseCode) {
             throw new OaiPmhException("API key is not valid");
         } else if (HttpStatus.NOT_FOUND == responseCode) {

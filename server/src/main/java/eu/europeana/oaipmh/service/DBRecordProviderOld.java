@@ -109,9 +109,8 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
         LOG.info("Creating new thread pool with {} threads.", threadsCount);
         threadPool = Executors.newFixedThreadPool(threadsCount);
     }
-
     @Override
-    public void connectionPoolOpened(ConnectionPoolOpenedEvent connectionPoolOpenedEvent) {
+    public void connectionPoolCreated(ConnectionPoolCreatedEvent connectionPoolOpenedEvent) {
         LOG.debug("Connection pool opened {}", connectionPoolOpenedEvent);
     }
 
@@ -131,17 +130,16 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
     }
 
     @Override
-    public synchronized void connectionAdded(ConnectionAddedEvent connectionAddedEvent) {
+    public synchronized void connectionCreated(ConnectionCreatedEvent connectionAddedEvent) {
         nrConnections++;
         LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionAddedEvent, this.hashCode(), nrConnections);
     }
 
     @Override
-    public synchronized void connectionRemoved(ConnectionRemovedEvent connectionRemovedEvent) {
+    public synchronized void connectionClosed(ConnectionClosedEvent connectionRemovedEvent) {
         nrConnections--;
         LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionRemovedEvent, this.hashCode(), nrConnections);
     }
-
     /**
      * Retrieves record from MongoDB and prepares EDM metadata.
      *
