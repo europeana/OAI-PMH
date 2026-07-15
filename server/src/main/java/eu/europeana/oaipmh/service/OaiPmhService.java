@@ -185,12 +185,12 @@ public class OaiPmhService {
         if (!ids.isEmpty()) {
             ListRecords responseObject = recordProvider.listRecords(
                     ids, identifiers.getResumptionToken());
-            if (!responseObject.isEmpty()) {
+          //  if (!responseObject.isEmpty()) {
                 return new OAIResponse(req, responseObject);
-            }
+         //   }
         }
         return new OAIResponse(req, new OAIError(ErrorCode.NO_RECORDS_MATCH
-                                                , NO_RECORDS_MATCH_MSG));
+                                                 , NO_RECORDS_MATCH_MSG));
     }
 
     /**
