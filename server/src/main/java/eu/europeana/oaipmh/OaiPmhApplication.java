@@ -11,10 +11,8 @@ import org.springframework.boot.actuate.autoconfigure.security.servlet.Managemen
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -46,14 +44,13 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
     }
 
     /**
-     * This method is called when starting as a Spring-Boot application (e.g. when running this class from your IDE, or
-     * when using Cloud Foundry Java Main i.c.m. the Tomcat embedded by Spring-Boot)
-     * @param args
+     * Main entry point of this application
+     *
+     * @param args command-line arguments
      */
-    @SuppressWarnings("squid:S2095") // to avoid sonarqube false positive (see https://stackoverflow.com/a/37073154/741249)
     public static void main(String[] args)  {
+        LOG.info("Configure Spring Application!!");
         SpringApplication.run(OaiPmhApplication.class, args);
-
     }
 
     /**
@@ -65,5 +62,6 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
     public void onStartup(ServletContext servletContext) throws ServletException {
         super.onStartup(servletContext);
     }
+
 }
 

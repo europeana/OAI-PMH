@@ -51,7 +51,7 @@ public class OaiPmhRequestFactoryTest {
     @Test
     public void validateParameterNamesValid() {
         try {
-            OaiPmhRequestFactory.validateParameterNames(VALID_REQUEST);
+            OaiPmhValidationService.validateParameterNames(VALID_REQUEST);
         } catch (BadArgumentException | BadVerbException e) {
             fail();
         }
@@ -59,51 +59,51 @@ public class OaiPmhRequestFactoryTest {
 
     @Test(expected = BadVerbException.class)
     public void validateUnsupportedVerb() throws BadVerbException, BadArgumentException {
-        OaiPmhRequestFactory.validateVerb(UNSUPPORTED_VERB);
-        OaiPmhRequestFactory.validateParameterNames(UNSUPPORTED_VERB_REQUEST);
+        OaiPmhValidationService.validateVerb(UNSUPPORTED_VERB);
+        OaiPmhValidationService.validateParameterNames(UNSUPPORTED_VERB_REQUEST);
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateMandatoryParametersListIdentifiers() throws BadVerbException, BadArgumentException {
-        OaiPmhRequestFactory.validateParameterNames(LIST_IDENTIFIERS_GENERAL_REQUEST); // OK
-        OaiPmhRequestFactory.validateParameterNames(LIST_IDENTIFIERS_NO_MANDATORY_REQUEST); // Exception
+        OaiPmhValidationService.validateParameterNames(LIST_IDENTIFIERS_GENERAL_REQUEST); // OK
+        OaiPmhValidationService.validateParameterNames(LIST_IDENTIFIERS_NO_MANDATORY_REQUEST); // Exception
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateMandatoryParametersGetRecord() throws BadVerbException, BadArgumentException {
-        OaiPmhRequestFactory.validateParameterNames(GET_RECORD_GENERAL_REQUEST); // OK
-        OaiPmhRequestFactory.validateParameterNames(GET_RECORD_NO_MANDATORY_REQUEST); // Exception
+        OaiPmhValidationService.validateParameterNames(GET_RECORD_GENERAL_REQUEST); // OK
+        OaiPmhValidationService.validateParameterNames(GET_RECORD_NO_MANDATORY_REQUEST); // Exception
     }
 
     @Test
     public void validateMandatoryParametersIdentify() throws BadVerbException, BadArgumentException {
-        OaiPmhRequestFactory.validateParameterNames(IDENTIFY_REQUEST); // OK always
+        OaiPmhValidationService.validateParameterNames(IDENTIFY_REQUEST); // OK always
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateParameterNamesEmptyOrNull() throws BadArgumentException, BadVerbException {
-        OaiPmhRequestFactory.validateParameterNames(EMPTY_PARAMETER_NAME_REQUEST);
+        OaiPmhValidationService.validateParameterNames(EMPTY_PARAMETER_NAME_REQUEST);
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateParameterValueEmptyOrNull() throws BadArgumentException, BadVerbException {
-        OaiPmhRequestFactory.validateParameterNames(EMPTY_PARAMETER_VALUE_REQUEST);
+        OaiPmhValidationService.validateParameterNames(EMPTY_PARAMETER_VALUE_REQUEST);
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateParameterNamesInvalidName() throws BadArgumentException, BadVerbException {
-        OaiPmhRequestFactory.validateParameterNames(INVALID_PARAMETER_NAME_REQUEST);
+        OaiPmhValidationService.validateParameterNames(INVALID_PARAMETER_NAME_REQUEST);
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateParameterNamesMultiParameter() throws BadArgumentException, BadVerbException {
-        OaiPmhRequestFactory.validateParameterNames(MULTI_PARAMETER_REQUEST_1);
-        OaiPmhRequestFactory.validateParameterNames(MULTI_PARAMETER_REQUEST_2);
+        OaiPmhValidationService.validateParameterNames(MULTI_PARAMETER_REQUEST_1);
+        OaiPmhValidationService.validateParameterNames(MULTI_PARAMETER_REQUEST_2);
     }
 
     @Test(expected = BadArgumentException.class)
     public void validateParameterNamesWrongDates() throws BadArgumentException, BadVerbException {
-        OaiPmhRequestFactory.validateParameterNames("verb=ListIdentifiers&from=2000-01-01T00:00:00Z&until=1995-01-01T00:00:00Z");
+        OaiPmhValidationService.validateParameterNames("verb=ListIdentifiers&from=2000-01-01T00:00:00Z&until=1995-01-01T00:00:00Z");
     }
 
     @Test(expected = BadArgumentException.class)

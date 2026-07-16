@@ -170,18 +170,6 @@
         </dependency>
 
 
-<!--        &lt;!&ndash; Profiling using Spring AOP &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-aop</artifactId>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-instrument</artifactId>-->
-<!--            <version>${spring-instrument.version}</version>-->
-<!--        </dependency>-->
-
         <!-- bcel is coming from metis-schema and is vulnerable. Hence overriding the version -->
         <dependency>
             <groupId>org.apache.bcel</groupId>

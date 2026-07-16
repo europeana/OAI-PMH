@@ -4,23 +4,15 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClient;
 import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.edm.utils.EdmUtils;
-import eu.europeana.corelib.record.api.WebMetaInfo;
-import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
-import eu.europeana.corelib.web.exception.EuropeanaException;
 import eu.europeana.metis.mongo.connection.MongoClientProvider;
 import eu.europeana.metis.mongo.dao.RecordDao;
 import eu.europeana.metis.network.ExternalRequestUtil;
-import eu.europeana.metis.schema.jibx.DatasetName;
-import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
-import eu.europeana.metis.schema.jibx.RDF;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.model.impl.ListRecordsImpl;
-import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -36,6 +28,15 @@ import java.util.Optional;
 import java.util.concurrent.*;
 
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+
+/**
+ * This class provides database record services using MongoDB and multi-threading.
+ * It is a legacy implementation and marked as {@code @Deprecated} in favor of newer alternatives.
+ *
+ * The class is responsible for managing connections to the MongoDB database, retrieving records,
+ * preparing metadata for OAI-PMH compatibility, and splitting tasks across threads to optimize performance.
+ * @deprecated Use {@link DBRecordProvider} instead.
+ */
 @Deprecated
 public class DBRecordProviderOld extends BaseProvider implements RecordProvider, ConnectionPoolListener {
 
@@ -148,7 +149,6 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
      * @throws OaiPmhException
      */
     @Override
-    @TrackTime
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
 
@@ -174,7 +174,6 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
         }
     }
 
-    @TrackTime
     private FullBean getFullBean(String recordId) throws InternalServerErrorException {
         try {
             return ExternalRequestUtil.retryableExternalRequest(() -> {
@@ -189,66 +188,6 @@ public class DBRecordProviderOld extends BaseProvider implements RecordProvider,
             throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be retrieved due to database problems.");
         }
     }
-
-    /*
-    private RDFMetadata prepareRDFMetadata(String recordId, FullBeanImpl bean) throws OaiPmhException {
-        if (bean != null) {
-            enhanceWithTechnicalMetadata(bean);
-            RDF rdf = getRDF(bean);
-            if (rdf == null) {
-                throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be converted to EDM.");
-            }
-            updateDatasetName(rdf);
-            String edm = getEDM(rdf);
-            return new RDFMetadata(removeXMLHeader(edm));
-        }
-        throw new IdDoesNotExistException(recordId);
-    }
-
-    @TrackTime
-    public String getEDM(RDF rdf) {
-        try {
-            return EdmUtils.toEDM(rdf);
-        } catch (RuntimeException e) {
-            // in the past we've had records that threw a JibX marshalling error because of missing data,
-            // so we catch those to log which record fails
-            String id = "unknown";
-            if (!rdf.getEuropeanaAggregationList().isEmpty()) {
-                id = rdf.getEuropeanaAggregationList().get(0).getAbout();
-            }
-            LOG.error("Error converting RDF to EDM for record {}", id);
-            throw e;
-        }
-    }
-
-    @TrackTime
-    public RDF getRDF(FullBeanImpl bean) {
-        return EdmUtils.toRDF(bean);
-    }
-
-    @TrackTime
-    private void updateDatasetName(RDF rdf) {
-        EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
-        if (aggregationType.getCollectionName() != null) {
-            DatasetName dsName = new DatasetName();
-            dsName.setString(aggregationType.getCollectionName().getString());
-            aggregationType.setDatasetName(dsName);
-            aggregationType.setCollectionName(null);
-        }
-    }
-
-    @TrackTime
-    private void enhanceWithTechnicalMetadata(FullBean bean) {
-        long start = System.currentTimeMillis();
-        if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfoBatch(bean, recordDao, null);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
-            }
-        }
-    }
-
-    */
 
     @Override
     public ListRecords listRecords(

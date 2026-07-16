@@ -45,7 +45,7 @@
         <jackson.version>2.18.2</jackson.version>
 
         <json-path.version>2.9.0</json-path.version>
-        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <mockito.version>3.3.3</mockito.version>
     </properties>
 

@@ -1,9 +1,11 @@
 package eu.europeana.oaipmh.service.exception;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.OAIError;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.OAIResponse;
+import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.logging.log4j.LogManager;
@@ -22,14 +24,15 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import javax.annotation.Resource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.stream.Collectors;
 
 import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+import static eu.europeana.oaipmh.util.AppConfigConstants.MEDIA_TYPE_TEXT_XML;
 import static eu.europeana.oaipmh.util.AppConfigConstants.XML_DEFAULT_SERIALIZATION;
-import static eu.europeana.oaipmh.web.WebConstants.*;
 
 /**
  * Global exception handler that catches all errors and logs the interesting ones
@@ -48,9 +51,6 @@ public class GlobalExceptionHandler {
     @Resource(name = XML_DEFAULT_SERIALIZATION)
     XmlMapper serialization;
 
-//    private static final XmlMapper serialization
-//        = new DefaultSerializationProvider().getSerialization();
-
     /**
      * Checks if we should log an error and serializes the error response
      * @param e
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
                       , BadResumptionToken.class
                       , BadVerbException.class
                       , CannotDisseminateFormatException.class})
-    public ResponseEntity<StreamingResponseBody> handleBadRequest(
+    public ResponseEntity<String> handleBadRequest(
             OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.BAD_REQUEST);
     }
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
      * @throws OaiPmhException
      */
     @ExceptionHandler({IdDoesNotExistException.class})
-    public ResponseEntity<StreamingResponseBody> handleNotFound(
+    public ResponseEntity<String> handleNotFound(
             OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.NOT_FOUND);
     }
@@ -82,7 +82,7 @@ public class GlobalExceptionHandler {
      * @throws OaiPmhException
      */
     @ExceptionHandler({BadMethodException.class})
-    public ResponseEntity<StreamingResponseBody> handleBadMethod(
+    public ResponseEntity<String> handleBadMethod(
             OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.METHOD_NOT_ALLOWED);
     }
@@ -93,13 +93,13 @@ public class GlobalExceptionHandler {
      * @throws OaiPmhException
      */
     @ExceptionHandler(OaiPmhException.class)
-    public ResponseEntity<StreamingResponseBody> handleOther(
+    public ResponseEntity<String> handleOther(
             OaiPmhException e, HttpServletRequest request) throws OaiPmhException {
         return handleException(e, request, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<StreamingResponseBody> handleMissingParams(
+    public ResponseEntity<String> handleMissingParams(
             MissingServletRequestParameterException e, HttpServletRequest request)
             throws OaiPmhException {
         return handleException(
@@ -108,7 +108,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public final ResponseEntity<StreamingResponseBody> handleConstraintViolation(
+    public final ResponseEntity<String> handleConstraintViolation(
             ConstraintViolationException ex, HttpServletRequest request)
             throws OaiPmhException {
         String details = String.join(" ," ,ex.getConstraintViolations()
@@ -120,43 +120,25 @@ public class GlobalExceptionHandler {
           , request, HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<StreamingResponseBody> handleException(
-            OaiPmhException e, HttpServletRequest request, HttpStatus status)
+
+    private ResponseEntity<String> handleException(OaiPmhException e, HttpServletRequest request, HttpStatus httpStatus)
             throws OaiPmhException {
         if (e.doLog()) {
             LOG.error(e.getMessage(), e);
         }
-        OAIRequest origRequest = createRequest(settings.getBaseUrl()
-                                             , request.getQueryString(), true);
+        try (OutputStream outputStream = new ByteArrayOutputStream()) {
+
+        OAIRequest originalRequest = createRequest(settings.getBaseUrl(), request.getQueryString(), true);
         OAIError error = new OAIError(e.getErrorCode(), e.getMessage());
-        return respond(new OAIResponse(origRequest, error), status);
-    }
 
-    // TODO serialization is working , but StreamResponseBody is never invoked
-    private ResponseEntity<StreamingResponseBody> respond(
-            OAIResponse rsp, HttpStatus status) {
-        write(System.out, rsp); // todo remove it later (serialization is working)
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
-
-        StreamingResponseBody body = new StreamingResponseBody() {
-            @Override
-            public void writeTo(OutputStream out) throws IOException {
-                write(out, rsp);
-            }
-        };
-        System.out.println("body = " + body);
-        return new ResponseEntity<>(body, headers, status);
-    }
-
-    private void write(OutputStream out, OAIResponse rsp ) {
-        try {
-            serialization.writeValue(out, rsp);
-        }
-        catch (IOException e) {
-            throw new SerializationException(
-                    msg(SERIALIZATION_MSG, e.getMessage()), e);
+        serialization.writeValue(outputStream, new OAIResponse(originalRequest, error));
+        return new ResponseEntity<>(outputStream.toString(), responseHeaders,  httpStatus);
+        } catch (IOException ex) {
+            throw new SerializationException(msg(SERIALIZATION_MSG, ex.getMessage()), ex);
         }
     }
 }
+

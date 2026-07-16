@@ -183,11 +183,14 @@ public class OaiPmhService {
         catch (Exception e        ) { throw new OaiPmhException(e); }
 
         if (!ids.isEmpty()) {
+            /**
+             * The response contains a lazily evaluated stream, so it will always appear empty at this stage.
+             * Skip null/empty checks for the ListRecord, as it will be consumed by the mapper in the VerbController,
+             * which evaluates the stream and generates the final response.
+             */
             ListRecords responseObject = recordProvider.listRecords(
                     ids, identifiers.getResumptionToken());
-          //  if (!responseObject.isEmpty()) {
                 return new OAIResponse(req, responseObject);
-         //   }
         }
         return new OAIResponse(req, new OAIError(ErrorCode.NO_RECORDS_MATCH
                                                  , NO_RECORDS_MATCH_MSG));

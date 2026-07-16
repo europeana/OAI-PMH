@@ -6,14 +6,12 @@ import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
 import eu.europeana.metis.mongo.connection.MongoClientProvider;
 import eu.europeana.metis.mongo.dao.RecordDao;
-import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.model.impl.StreamListRecords;
-import eu.europeana.oaipmh.profile.TrackTime;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -21,7 +19,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -107,7 +104,6 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
      * @throws OaiPmhException
      */
     @Override
-    @TrackTime
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
         try {

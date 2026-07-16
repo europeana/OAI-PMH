@@ -27,9 +27,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
+import static eu.europeana.oaipmh.service.OaiPmhValidationService.*;
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+import static eu.europeana.oaipmh.util.AppConfigConstants.MEDIA_TYPE_TEXT_XML;
 import static eu.europeana.oaipmh.util.AppConfigConstants.XML_SERVER_SERIALIZATION;
-import static eu.europeana.oaipmh.web.WebConstants.*;
 
 /**
  * Rest controller that handles incoming OAI-PMH requests 
@@ -335,6 +336,15 @@ public class VerbController {
         throw new BadMethodException(msg(BAD_METHOD_MSG, request.getMethod()));
     }
 
+    /**
+     * Constructs an HTTP response entity containing a streaming response
+     * body serialized from the given OAIResponse.
+     *
+     * @param rsp the OAIResponse object to be serialized into the streaming response body;
+     *            it is expected to be a resource that will be closed after usage.
+     * @return a ResponseEntity containing the serialized data as a streaming response
+     *         body with appropriate headers and HTTP status code.
+     */
     private ResponseEntity<StreamingResponseBody> respond(OAIResponse rsp) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));

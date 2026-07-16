@@ -15,7 +15,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Created on 27-02-2018
  */ 
 @XmlSeeAlso({ ListIdentifiersRequest.class, GetRecordRequest.class
-            , IdentifyRequest.class, ListMetadataFormatsRequest.class
+            , IdentifyRequest.class, ListMetadataFormatsRequest.class,
+              ListRecordsRequest.class
             , ListSetsRequest.class })
 @XmlJavaTypeAdapter(OAIRequestAdapter.class)
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -21,13 +21,6 @@
             <version>${log4j2.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>com.fasterxml.jackson.module</groupId>-->
-<!--            <artifactId>jackson-module-jaxb-annotations</artifactId>-->
-<!--            <version>${jackson.version}</version>-->
-<!--        </dependency>-->
-
-
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
@@ -76,7 +69,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.7</version>
+            <version>${commons-lang3.version}</version>
             <scope>compile</scope>
         </dependency>
 
