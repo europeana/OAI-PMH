@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>oai-pmh-server</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>Europeana OAI-PMH Server</name>
     <description>Europeana OAI-PMH Server (Spring Boot application)</description>
@@ -198,11 +198,8 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <classifier>executable</classifier>
+                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>
                 </configuration>
-<!--                <configuration>-->
-<!--                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>-->
-<!--                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
