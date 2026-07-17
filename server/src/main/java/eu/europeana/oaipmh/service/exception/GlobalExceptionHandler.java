@@ -3,6 +3,7 @@ package eu.europeana.oaipmh.service.exception;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.OAIError;
+import eu.europeana.oaipmh.model.request.ErrorRequest;
 import eu.europeana.oaipmh.model.request.OAIRequest;
 import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;

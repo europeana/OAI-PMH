@@ -23,6 +23,7 @@ public class OAIRequestAdapter extends XmlAdapter<JsonNode, OAIRequest> {
         map.put(ListMetadataFormats, ListMetadataFormatsRequest.class);
         map.put(ListRecords        , ListRecordsRequest.class);
         map.put(ListSets           , ListSetsRequest.class);
+        map.put(""                 , ErrorRequest.class);
     }
 
 //    public OAIRequestAdapter(XmlMapper mapper) {
@@ -53,9 +54,10 @@ public class OAIRequestAdapter extends XmlAdapter<JsonNode, OAIRequest> {
     }
 
     private Class<? extends OAIRequest> getVerb(String verb) {
-        if ( verb == null ) {
-            throw new IllegalArgumentException("Unknown verb: " + verb);
-        }
+        if ( verb == null ) { verb = ""; }
+//        if ( verb == null ) {
+//            throw new IllegalArgumentException("Unknown verb: " + verb);
+//        }
         Class<? extends OAIRequest> c = map.get(verb);
         if ( c == null ) {
             throw new IllegalArgumentException("Unknown verb: " + verb);

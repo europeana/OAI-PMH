@@ -31,7 +31,7 @@ public class OaiPmhRequestFactory {
         String verb = parameters.get(VERB);
         if (verb == null) {
             if (ignoreErrors) {
-                return new OAIRequest(null, baseUrl);
+                return new ErrorRequest(null, baseUrl);
             }
             throw new BadArgumentException(BAD_ARGUMENT_VERB_MISSING_MSG);
         }
@@ -64,7 +64,7 @@ public class OaiPmhRequestFactory {
             throw new BadArgumentException(BAD_ARGUMENT_VERB_MSG);
         }
         // in this case just create a general request object with verb and url only.
-        return new OAIRequest(verb, baseUrl);
+        return new ErrorRequest(verb, baseUrl);
     }
 
     private static ListSetsRequest createListSetsRequest(

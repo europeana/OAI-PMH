@@ -14,13 +14,13 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */ 
-@XmlSeeAlso({ ListIdentifiersRequest.class, GetRecordRequest.class
-            , IdentifyRequest.class, ListMetadataFormatsRequest.class,
-              ListRecordsRequest.class
-            , ListSetsRequest.class })
+@XmlSeeAlso({ ErrorRequest.class,
+              ListIdentifiersRequest.class, GetRecordRequest.class
+            , IdentifyRequest.class, ListMetadataFormatsRequest.class
+            , ListSetsRequest.class, ListRecordsRequest.class})
 @XmlJavaTypeAdapter(OAIRequestAdapter.class)
 @XmlAccessorType(XmlAccessType.FIELD)
-public class OAIRequest {
+public abstract class OAIRequest {
 
     @XmlAttribute(name=SerializationConstants.verb)
     private String verb;
