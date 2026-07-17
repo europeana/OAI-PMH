@@ -72,7 +72,7 @@ public class OAIResponseSerializer extends JsonSerializer<OAIResponse> {
 
         gen.writeFieldName("request");
         OAIRequest req = value.getRequest();
-        provider.findValueSerializer(req.getClass()).serialize(req, gen, provider);
+        provider.findValueSerializer(req.getClass()).serialize(req, gen, provider); // problem here
 
         OAIPMHVerb verb = value.getVerb();
         gen.writeFieldName(getTag(verb));

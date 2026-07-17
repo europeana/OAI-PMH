@@ -158,10 +158,10 @@ public class OaiPmhConfig {
         SerializationHandler.register(new DefaultSerializationProvider());
         return SerializationHandler.getSerialization();
     }
-
-    @Bean(name = "oaiRequestAdapter")
-    public OAIRequestAdapter oaiRequestAdapter() {
-        LOG.info("Instantiating OAIRequestAdapter ..... ");
-        return new OAIRequestAdapter(serverSerialization());
-    }
+//
+//    @Bean(name = "oaiRequestAdapter")
+//    public OAIRequestAdapter oaiRequestAdapter() {
+//        LOG.info("Instantiating OAIRequestAdapter ..... ");
+//        return new OAIRequestAdapter(serverSerialization());
+//    }
 }
