@@ -118,11 +118,6 @@
             <groupId>eu.europeana.metis</groupId>
             <artifactId>metis-common-mongo</artifactId>
             <version>${metis.common.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>eu.europeana.metis</groupId>
-            <artifactId>metis-schema</artifactId>
-            <version>${metis-schema.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -130,7 +125,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <!-- for parsing record json -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
