@@ -2,7 +2,6 @@ package eu.europeana.oaipmh.config;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
-import eu.europeana.oaipmh.model.request.OAIRequestAdapter;
 import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import eu.europeana.oaipmh.model.serialize.SerializationHandler;
 import eu.europeana.oaipmh.model.serialize.ServerSerializationProvider;
@@ -158,10 +157,4 @@ public class OaiPmhConfig {
         SerializationHandler.register(new DefaultSerializationProvider());
         return SerializationHandler.getSerialization();
     }
-//
-//    @Bean(name = "oaiRequestAdapter")
-//    public OAIRequestAdapter oaiRequestAdapter() {
-//        LOG.info("Instantiating OAIRequestAdapter ..... ");
-//        return new OAIRequestAdapter(serverSerialization());
-//    }
 }
