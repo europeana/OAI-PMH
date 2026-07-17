@@ -218,7 +218,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
      */
     private Record createRecord(FullBean bean) {
         return new Record(
-                new Header(bean.getId(), null, bean.getEuropeanaCollectionName()[0])
+                 getHeader(prepareFullId(bean.getAbout()), bean)
                 , new Metadata(bean));
     }
 }
