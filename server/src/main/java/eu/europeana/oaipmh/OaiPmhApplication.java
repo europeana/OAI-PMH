@@ -2,8 +2,6 @@ package eu.europeana.oaipmh;
 
 import eu.europeana.oaipmh.service.*;
 import eu.europeana.oaipmh.util.MemoryUtils;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -51,16 +49,6 @@ public class OaiPmhApplication extends SpringBootServletInitializer  {
     public static void main(String[] args)  {
         LOG.info("Configure Spring Application!!");
         SpringApplication.run(OaiPmhApplication.class, args);
-    }
-
-    /**
-     * This method is called when starting a 'traditional' Servlet war deployment
-     * @param servletContext
-     * @throws ServletException
-     */
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        super.onStartup(servletContext);
     }
 
 }

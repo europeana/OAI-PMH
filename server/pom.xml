@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>oai-pmh-server</artifactId>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>Europeana OAI-PMH Server</name>
     <description>Europeana OAI-PMH Server (Spring Boot application)</description>
@@ -190,15 +190,19 @@
     </dependencies>
 
     <build>
+        <!-- set fixed name for easy deployment -->
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
-                <!-- add mainclass so we can use it as standalone application -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>
+                    <classifier>executable</classifier>
                 </configuration>
+<!--                <configuration>-->
+<!--                    <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>-->
+<!--                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
@@ -208,58 +212,7 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <!-- set static name for easy deployment -->
-        <finalName>oai-pmh-server</finalName>
     </build>
-
-    <profiles>
-        <profile>
-            <id>profiling</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>aspectj-maven-plugin</artifactId>
-                            <version>1.7</version>
-                            <configuration>
-                                <showWeaveInfo>false</showWeaveInfo>
-                                <source>${java.version}</source>
-                                <target>${java.version}</target>
-                                <Xlint>ignore</Xlint>
-                                <complianceLevel>11</complianceLevel>
-                                <encoding>UTF-8</encoding>
-                                <verbose>false</verbose>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <!-- IMPORTANT -->
-                                    <phase>process-sources</phase>
-                                    <goals>
-                                        <goal>compile</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-<!--                            <dependencies>-->
-<!--                                <dependency>-->
-<!--                                    <groupId>org.aspectj</groupId>-->
-<!--                                    <artifactId>aspectjtools</artifactId>-->
-<!--                                    <version>${aspectj.version}</version>-->
-<!--                                </dependency>-->
-<!--                            </dependencies>-->
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.codehaus.mojo</groupId>-->
-<!--                        <artifactId>aspectj-maven-plugin</artifactId>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-            </build>
-        </profile>
-    </profiles>
 
 
 </project>

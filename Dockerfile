@@ -1,5 +1,5 @@
 # Builds a docker image from a locally built Maven war. Requires 'mvn package' to have been run beforehand
-FROM tomcat:9.0-jre21
+FROM tomcat:9.0.74-jre21
 LABEL Author="Europeana Foundation <development@europeana.eu>"
 WORKDIR /usr/local/tomcat/webapps
 
@@ -10,4 +10,5 @@ ADD https://repo1.maven.org/maven2/co/elastic/apm/elastic-apm-agent/$ELASTIC_APM
 
 # Copy unzipped directory so we can mount config files in Kubernetes pod
 # Ensure sensitive files aren't copied
-COPY ./server/target/oai-pmh-server/ ./ROOT/
+COPY ./server/target/oai-pmh-server.jar ./opt/app/oai-pmh-server.jar
+ENTRYPOINT ["java", "-jar","/opt/app/oai-pmh-server.jar"]
