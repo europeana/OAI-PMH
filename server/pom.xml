@@ -105,6 +105,13 @@
             <groupId>eu.europeana.metis</groupId>
             <artifactId>metis-schema</artifactId>
             <version>${metis-schema.version}</version>
+            <exclusions>
+            <!-- Exclude the vulnerable legacy 1.6.1 dom4j -->
+                <exclusion>
+                    <groupId>dom4j</groupId>
+                    <artifactId>dom4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- for parsing record json -->

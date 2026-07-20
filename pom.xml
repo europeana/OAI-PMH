@@ -27,7 +27,11 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-instrument.version>5.3.34</spring-instrument.version>
+        <spring.version>5.3.39</spring.version>
+
+<!--        no longer needed, consider removing-->
+        <spring-instrument.version>5.3.39</spring-instrument.version>
+
 
         <corelib.version>2.17.5</corelib.version>
         <metis-schema.version>12</metis-schema.version>
@@ -41,6 +45,10 @@
         <json-path.version>2.9.0</json-path.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <mockito.version>3.3.3</mockito.version>
+<!--        fixing critical vulnerabilities-->
+        <snakeyaml.version>2.2</snakeyaml.version>
+        <dom4j.version>2.1.4</dom4j.version>
+        <zookeeper.version>3.8.4</zookeeper.version>
     </properties>
 
     <repositories>
@@ -68,6 +76,28 @@
             </snapshots>
         </repository>
     </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.yaml</groupId>
+                <artifactId>snakeyaml</artifactId>
+                <version>${snakeyaml.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <!-- TO Fix error No plugin found for prefix 'sonar' in the current project and in the plugin groups [org.apache.maven.plugins, org.codehaus.mojo]
     available from the repositories -->

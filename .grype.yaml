@@ -1,0 +1,5 @@
+ignore:
+  - vulnerability: GHSA-4wrc-f8pq-fpqp
+    reason: "HttpInvoker is not used in this service. Upgrading to Spring 6 requires Spring Boot 3 migration."
+  - vulnerability: CVE-2016-1000027
+    reason: "HttpInvoker is not used in this service. Upgrading to Spring 6 requires Spring Boot 3 migration."
