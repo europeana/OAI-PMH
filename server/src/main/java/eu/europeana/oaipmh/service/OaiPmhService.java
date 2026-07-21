@@ -1,20 +1,26 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.*;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.model.impl.GetRecordImpl;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsProvider;
 import eu.europeana.oaipmh.model.request.*;
+import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.service.exception.*;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
+
+import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
 
 /**
  *
@@ -23,18 +29,12 @@ import java.util.Date;
  * Created on 27-02-2018
  */
 @Service
-public class OaiPmhService extends BaseService {
+public class OaiPmhService {
 
     private static final Logger LOG = LogManager.getLogger(OaiPmhService.class);
 
-    @Value("${recordsPerPage}")
-    private int recordsPerPage;
-
-    @Value("${identifiersPerPage}")
-    private int identifiersPerPage;
-
-    @Value("${resumptionTokenTTL}")
-    private int resumptionTokenTTL;
+    @Resource
+    OaiPmhSettings settings;
 
     private RecordProvider recordProvider;
 
@@ -46,7 +46,11 @@ public class OaiPmhService extends BaseService {
 
     private SetsProvider setsProvider;
 
-    public OaiPmhService(RecordProvider recordProvider, IdentifierProvider identifierProvider, IdentifyProvider identifyProvider, MetadataFormatsProvider metadataFormats, SetsProvider setsProvider) {
+    public OaiPmhService(RecordProvider recordProvider
+                       , IdentifierProvider identifierProvider
+                       , IdentifyProvider identifyProvider
+                       , MetadataFormatsProvider metadataFormats
+                       , SetsProvider setsProvider) {
         super();
         this.recordProvider = recordProvider;
         this.identifierProvider = identifierProvider;
@@ -58,9 +62,9 @@ public class OaiPmhService extends BaseService {
     @PostConstruct
     private void init() {
         // Note that properties aren't available until after the construction of the bean
-        LOG.info("Records per page: {}", recordsPerPage);
-        LOG.info("Identifiers per page: {}", identifiersPerPage);
-        LOG.info("Resumption token TTL: {}", resumptionTokenTTL);
+        LOG.info("Records per page: {}", settings.getRecordsPerPage());
+        LOG.info("Identifiers per page: {}", settings.getIdentifiersPerPage());
+        LOG.info("Resumption token TTL: {}", settings.getResumptionTokenTTL());
     }
 
     /**
@@ -68,9 +72,20 @@ public class OaiPmhService extends BaseService {
      * @return
      * @throws OaiPmhException
      */
-    public String getIdentify(IdentifyRequest request) throws OaiPmhException {
-        Identify responseObject = identifyProvider.provideIdentify();
-        return serialize(responseObject.getResponse(request));
+    public OAIResponse getIdentify(IdentifyRequest req) throws OaiPmhException {
+        return new OAIResponse(req, identifyProvider.provideIdentify());
+    }
+
+    public OAIResponse listMetadataFormats(ListMetadataFormatsRequest req) throws OaiPmhException {
+        if (req.getIdentifier() != null) {
+            recordProvider.checkRecordExists(req.getIdentifier());
+        }
+        ListMetadataFormats responseObject = metadataFormats.listMetadataFormats();
+        if (! responseObject.getMetadataFormats().isEmpty()) {
+            return new OAIResponse(req, responseObject);
+        }
+        return new OAIResponse(req, new OAIError(ErrorCode.NO_METADATA_FORMATS
+                                               , NO_METADATA_FORMATS_MSG));
     }
 
     /**
@@ -79,16 +94,15 @@ public class OaiPmhService extends BaseService {
      * @return record information in OAI-PMH (xml)
      * @throws OaiPmhException
      */
-    public String getRecord(GetRecordRequest request) throws OaiPmhException {
-        if (!metadataFormats.canDisseminate(request.getMetadataPrefix())) {
-            throw new CannotDisseminateFormatException(request.getMetadataPrefix());
+    public OAIResponse getRecord(GetRecordRequest req) throws OaiPmhException {
+        if (!metadataFormats.canDisseminate(req.getMetadataPrefix())) {
+            throw new CannotDisseminateFormatException(req.getMetadataPrefix());
         }
-        Record record = recordProvider.getRecord(request.getIdentifier());
+        Record record = recordProvider.getRecord(req.getIdentifier());
         if (record == null) {
-            throw new IdDoesNotExistException(request.getIdentifier());
+            throw new IdDoesNotExistException(req.getIdentifier());
         }
-        GetRecord responseObject = new GetRecord(record);
-        return serialize(responseObject.getResponse(request));
+        return new OAIResponse(req, new GetRecordImpl(record));
     }
 
     /**
@@ -100,45 +114,19 @@ public class OaiPmhService extends BaseService {
      * @return list of identifiers matching the given filter parameters
      * @throws OaiPmhException
      */
-    public String listIdentifiers(ListIdentifiersRequest request) throws OaiPmhException {
-        ListIdentifiers responseObject = getListIdentifiersObject(request.getMetadataPrefix(),
-                DateConverter.fromIsoDateTime(request.getFrom()),
-                DateConverter.fromIsoDateTime(request.getUntil()),
-                request.getSet(),
-                request.getResumptionToken(),
-                identifiersPerPage);
-        if (! responseObject.getHeaders().isEmpty()) {
-            return serialize(responseObject.getResponse(request));
-        }
-        OAIError error = new OAIError(ErrorCode.NO_RECORDS_MATCH, "No records found!");
-        return serialize(error.getResponse(request));
-    }
-
-    /**
-     * Prepare the ListIdentifiers object according to the specified parameters.
-     *
-     * @param metadataPrefix metadata prefix
-     * @param from start date
-     * @param until end date
-     * @param set dataset identifier
-     * @param resumptionToken resumption token (encoded)
-     * @param pageSize page size
-     * @return ListIdentifiers object containing max pageSize number of identifiers
-     * @throws OaiPmhException
-     */
-    private ListIdentifiers getListIdentifiersObject(String metadataPrefix, Date from, Date until, String set, String resumptionToken, int pageSize) throws OaiPmhException {
-        ListIdentifiers responseObject;
-        if (resumptionToken != null) {
-            ResumptionToken validated = validateResumptionToken(resumptionToken);
-            responseObject = identifierProvider.listIdentifiers(validated, pageSize);
-        } else {
-            if (!metadataFormats.canDisseminate(metadataPrefix)) {
-                throw new CannotDisseminateFormatException(metadataPrefix);
-            }
-
-            responseObject = identifierProvider.listIdentifiers(metadataPrefix, from, until, set, pageSize);
-        }
-        return responseObject;
+    public OAIResponse listIdentifiers(ListIdentifiersRequest req) 
+            throws OaiPmhException {
+        ListIdentifiers responseObject = getListIdentifiersObject(
+                req.getMetadataPrefix(),
+                DateConverter.fromIsoDateTime(req.getFrom()),
+                DateConverter.fromIsoDateTime(req.getUntil()),
+                req.getSet(),
+                req.getResumptionToken(),
+                settings.getIdentifiersPerPage());
+        OAIPMHVerb verb = (!responseObject.isEmpty() ? 
+            responseObject : new OAIError(ErrorCode.NO_RECORDS_MATCH
+                                        , NO_RECORDS_MATCH_MSG));
+        return new OAIResponse(req, verb);
     }
 
     /**
@@ -148,46 +136,64 @@ public class OaiPmhService extends BaseService {
      * @return list of sets
      * @throws OaiPmhException
      */
-    public String listSets(ListSetsRequest request) throws OaiPmhException {
+    public OAIResponse listSets(ListSetsRequest req) 
+            throws OaiPmhException {
         ListSets responseObject;
-        if (request.getResumptionToken() != null) {
-            ResumptionToken validated = validateResumptionToken(request.getResumptionToken());
+        if (req.getResumptionToken() != null) {
+            ResumptionToken validated = validateResumptionToken(req.getResumptionToken());
             responseObject = setsProvider.listSets(validated);
         } else {
-            responseObject = setsProvider.listSets(DateConverter.fromIsoDateTime(request.getFrom()),
-                    DateConverter.fromIsoDateTime(request.getUntil()));
+            responseObject = setsProvider.listSets(
+                DateConverter.fromIsoDateTime(req.getFrom()),
+                DateConverter.fromIsoDateTime(req.getUntil()));
         }
-        if (! responseObject.getSets().isEmpty()) {
-            return serialize(responseObject.getResponse(request));
+        try ( responseObject ) {
+            if (! responseObject.isEmpty()) {
+                return new OAIResponse(req, responseObject);
+            }
         }
-        OAIError error = new OAIError(ErrorCode.NO_SETS_MATCH, "No sets exist!");
-        return serialize(error.getResponse(request));
+        catch (Exception e) { throw new OaiPmhException(e); }
+
+        return new OAIResponse(req, new OAIError(ErrorCode.NO_SETS_MATCH
+                                               , NO_SETS_MATCH_MSG));
     }
 
     /**
      * Retrieve list of records that match given filter parameters: metadata format, date between from and until and set.
      * When no records were found then NoRecordsMatch error is returned.
      *
-     * @param request request containing all necessary parameters
+     * @param req request containing all necessary parameters
      * @return list of records matching the given filter parameters
      * @throws OaiPmhException
      */
-    public String listRecords(ListRecordsRequest request) throws OaiPmhException {
-        ListIdentifiers identifiers = getListIdentifiersObject(request.getMetadataPrefix(),
-                DateConverter.fromIsoDateTime(request.getFrom()),
-                DateConverter.fromIsoDateTime(request.getUntil()),
-                request.getSet(),
-                request.getResumptionToken(),
-                recordsPerPage);
-        if (! identifiers.getHeaders().isEmpty()) {
-            ListRecords responseObject = recordProvider.listRecords(identifiers.getHeaders());
-            if (! responseObject.getRecords().isEmpty()) {
-                responseObject.setResumptionToken(identifiers.getResumptionToken());
-                return serialize(responseObject.getResponse(request));
-            }
+    public OAIResponse listRecords(ListRecordsRequest req) throws OaiPmhException {
+        ListIdentifiers identifiers = getListIdentifiersObject(
+                req.getMetadataPrefix(),
+                DateConverter.fromIsoDateTime(req.getFrom()),
+                DateConverter.fromIsoDateTime(req.getUntil()),
+                req.getSet(),
+                req.getResumptionToken(),
+                settings.getRecordsPerPage());
+        List<String> ids;
+        try ( identifiers ) {
+            ids = identifiers.stream().map(t -> t.getIdentifier())
+                                      .toList();
         }
-        OAIError error = new OAIError(ErrorCode.NO_RECORDS_MATCH, "No records found!");
-        return serialize(error.getResponse(request));
+        catch ( OaiPmhException e ) { throw e; }
+        catch (Exception e        ) { throw new OaiPmhException(e); }
+
+        if (!ids.isEmpty()) {
+            /**
+             * The response contains a lazily evaluated stream, so it will always appear empty at this stage.
+             * Skip null/empty checks for the ListRecord, as it will be consumed by the mapper in the VerbController,
+             * which evaluates the stream and generates the final response.
+             */
+            ListRecords responseObject = recordProvider.listRecords(
+                    ids, identifiers.getResumptionToken());
+                return new OAIResponse(req, responseObject);
+        }
+        return new OAIResponse(req, new OAIError(ErrorCode.NO_RECORDS_MATCH
+                                                 , NO_RECORDS_MATCH_MSG));
     }
 
     /**
@@ -203,12 +209,43 @@ public class OaiPmhService extends BaseService {
         try {
             temporaryToken = ResumptionTokenHelper.decodeResumptionToken(resumptionToken);
         } catch (IllegalArgumentException e) {
-            throw new BadResumptionToken("Resumption token " + resumptionToken + " is not correct.");
+            throw new BadResumptionToken(msg(BAD_RESUMPTION_TOKEN_MSG
+                                           , resumptionToken));
         }
         if (new Date().after(temporaryToken.getExpirationDate())) {
-            throw new BadResumptionToken("Resumption token expired at " + temporaryToken.getExpirationDate());
+            throw new BadResumptionToken(msg(BAD_RESUMPTION_TOKEN_EXPIRED_MSG
+                                           , temporaryToken.getExpirationDate()));
         }
         return temporaryToken;
+    }
+
+    /**
+     * Prepare the ListIdentifiers object according to the specified parameters.
+     *
+     * @param metadataPrefix metadata prefix
+     * @param from start date
+     * @param until end date
+     * @param set dataset identifier
+     * @param resumptionToken resumption token (encoded)
+     * @param pageSize page size
+     * @return ListIdentifiers object containing max pageSize number of identifiers
+     * @throws OaiPmhException
+     */
+    private ListIdentifiers getListIdentifiersObject(
+            String metadataPrefix, Date from, Date until, String set
+          , String resumptionToken, int pageSize) throws OaiPmhException {
+
+        if (resumptionToken != null) {
+            ResumptionToken validated = validateResumptionToken(resumptionToken);
+            return identifierProvider.listIdentifiers(validated, pageSize);
+        } 
+
+        if (!metadataFormats.canDisseminate(metadataPrefix)) {
+            throw new CannotDisseminateFormatException(metadataPrefix);
+        }
+
+        return identifierProvider.listIdentifiers(metadataPrefix, from, until
+                                                , set, pageSize);
     }
 
     @PreDestroy
@@ -217,17 +254,5 @@ public class OaiPmhService extends BaseService {
         identifierProvider.close();
         recordProvider.close();
         LOG.info("OAI-PMH service closed.");
-    }
-
-    public String listMetadataFormats(ListMetadataFormatsRequest request) throws OaiPmhException {
-        if (request.getIdentifier() != null) {
-            recordProvider.checkRecordExists(request.getIdentifier());
-        }
-        ListMetadataFormats responseObject = metadataFormats.listMetadataFormats();
-        if (! responseObject.getMetadataFormats().isEmpty()) {
-            return serialize(responseObject.getResponse(request));
-        }
-        OAIError error = new OAIError(ErrorCode.NO_METADATA_FORMATS, "There are no metadata formats available.");
-        return serialize(error.getResponse(request));
     }
 }

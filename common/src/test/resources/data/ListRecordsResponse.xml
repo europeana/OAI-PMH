@@ -1,0 +1,612 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+  <responseDate>2026-06-23T09:12:25Z</responseDate>
+  <request verb="ListRecords" metadataPrefix="edm" set="2021672" from="2000-01-01T00:00:00Z" until="2025-01-01T00:00:00Z">https://api.europeana.eu/oai</request>
+  <ListRecords>
+    <record>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <metadata>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:edm="http://www.europeana.eu/schemas/edm/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:wgs84_pos="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:ebucore="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:odrl="http://www.w3.org/ns/odrl/2/" xmlns:cc="http://creativecommons.org/ns#" xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:svcs="http://rdfs.org/sioc/services#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:dqv="http://www.w3.org/ns/dqv#" xmlns:schema="https://schema.org/">
+          <edm:ProvidedCHO rdf:about="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1"/>
+          <edm:WebResource rdf:about="https://www.mauritshuis.nl/media/k2bndlyn/0001_repro.jpg">
+            <ebucore:hasMimeType>image/jpeg</ebucore:hasMimeType>
+            <ebucore:fileByteSize rdf:datatype="http://www.w3.org/2001/XMLSchema#long">224811</ebucore:fileByteSize>
+            <ebucore:width rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">979</ebucore:width>
+            <ebucore:height rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1280</ebucore:height>
+            <edm:hasColorSpace>sRGB</edm:hasColorSpace>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#000000</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#DB7093</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#696969</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#191970</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#FFE4C4</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#F0FFF0</edm:componentColor>
+            <ebucore:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">portrait</ebucore:orientation>
+          </edm:WebResource>
+          <edm:TimeSpan rdf:about="http://data.europeana.eu/timespan/16">
+            <skos:prefLabel xml:lang="de">16. Jahrhundert</skos:prefLabel>
+            <skos:prefLabel xml:lang="ru">XVI век</skos:prefLabel>
+            <skos:prefLabel xml:lang="fi">1500-luku</skos:prefLabel>
+            <skos:prefLabel xml:lang="pt">Século XVI</skos:prefLabel>
+            <skos:prefLabel xml:lang="bg">16 век</skos:prefLabel>
+            <skos:prefLabel xml:lang="lt">XVI amžius</skos:prefLabel>
+            <skos:prefLabel xml:lang="hr">16. stoljeće</skos:prefLabel>
+            <skos:prefLabel xml:lang="lv">16. gadsimts</skos:prefLabel>
+            <skos:prefLabel xml:lang="fr">XVIe siècle</skos:prefLabel>
+            <skos:prefLabel xml:lang="hu">16. század</skos:prefLabel>
+            <skos:prefLabel xml:lang="sk">16. storočie</skos:prefLabel>
+            <skos:prefLabel xml:lang="sl">16. stoletje</skos:prefLabel>
+            <skos:prefLabel xml:lang="ga">16ú haois</skos:prefLabel>
+            <skos:prefLabel xml:lang="ca">Segle XVI</skos:prefLabel>
+            <skos:prefLabel xml:lang="sv">1500-talet</skos:prefLabel>
+            <skos:prefLabel xml:lang="el">16ος αιώνας</skos:prefLabel>
+            <skos:prefLabel xml:lang="en">16th century</skos:prefLabel>
+            <skos:prefLabel xml:lang="it">XVI secolo</skos:prefLabel>
+            <skos:prefLabel xml:lang="es">Siglo XVI</skos:prefLabel>
+            <skos:prefLabel xml:lang="et">16. sajand</skos:prefLabel>
+            <skos:prefLabel xml:lang="cs">16. století</skos:prefLabel>
+            <skos:prefLabel xml:lang="eu">XVI. mendea</skos:prefLabel>
+            <skos:prefLabel xml:lang="pl">XVI wiek</skos:prefLabel>
+            <skos:prefLabel xml:lang="da">16. århundrede</skos:prefLabel>
+            <skos:prefLabel xml:lang="ro">Secolul al XVI-lea</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">16e eeuw</skos:prefLabel>
+            <skos:altLabel xml:lang="sv">1500-tal</skos:altLabel>
+            <skos:altLabel xml:lang="sv">16:e århundradet</skos:altLabel>
+            <skos:altLabel xml:lang="sv">16:e seklet</skos:altLabel>
+            <skos:altLabel xml:lang="sv">1500-talet (århundrade)</skos:altLabel>
+            <skos:altLabel xml:lang="sv">1500-talet (sekel)</skos:altLabel>
+            <skos:altLabel xml:lang="ru">16 век</skos:altLabel>
+            <skos:altLabel xml:lang="en">16th-century</skos:altLabel>
+            <skos:altLabel xml:lang="en">Sixteenth century</skos:altLabel>
+            <skos:altLabel xml:lang="it">Cinquecento</skos:altLabel>
+            <skos:altLabel xml:lang="it">16° secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">Secolo XVI</skos:altLabel>
+            <skos:altLabel xml:lang="it">XVI Secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">Sedicesimo secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">'500</skos:altLabel>
+            <skos:altLabel xml:lang="fr">16e siècle</skos:altLabel>
+            <skos:altLabel xml:lang="nl">Zestiende eeuw</skos:altLabel>
+            <edm:begin>1501-01-11</edm:begin>
+            <edm:end>1600-12-31</edm:end>
+            <owl:sameAs rdf:resource="http://www.wikidata.org/entity/Q7017"/>
+            <owl:sameAs rdf:resource="http://id.loc.gov/authorities/names/sh85123070"/>
+            <owl:sameAs rdf:resource="http://id.loc.gov/authorities/names/sh2002012470"/>
+            <owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb11976033q"/>
+            <owl:sameAs rdf:resource="http://id.nlm.nih.gov/mesh/D049669"/>
+            <owl:sameAs rdf:resource="https://www.freebase.com/m/08b23"/>
+            <owl:sameAs rdf:resource="https://g.co/kg/m/08b23"/>
+            <owl:sameAs rdf:resource="http://id.nlm.nih.gov/mesh/K01.400.475.750"/>
+            <owl:sameAs rdf:resource="http://vocab.getty.edu/aat/300404510"/>
+            <owl:sameAs rdf:resource="http://id.worldcat.org/fast/1119851"/>
+            <owl:sameAs rdf:resource="http://babelnet.org/rdf/s02814512n"/>
+            <owl:sameAs rdf:resource="http://dbpedia.org/resource/16th_century"/>
+          </edm:TimeSpan>
+          <edm:TimeSpan rdf:about="#1524%2F1524">
+            <skos:prefLabel xml:lang="zxx">1524/1524</skos:prefLabel>
+            <dcterms:isPartOf rdf:resource="http://data.europeana.eu/timespan/16"/>
+            <edm:begin>1524-01-01</edm:begin>
+            <edm:end>1524-12-31</edm:end>
+            <skos:notation>1524/1524</skos:notation>
+          </edm:TimeSpan>
+          <ore:Aggregation rdf:about="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_1">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1"/>
+            <edm:dataProvider rdf:resource="http://data.europeana.eu/organization/2888"/>
+            <edm:isShownBy rdf:resource="https://www.mauritshuis.nl/media/k2bndlyn/0001_repro.jpg"/>
+            <edm:provider rdf:resource="http://data.europeana.eu/organization/1605"/>
+            <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2023-02-28T08:46:41.585847Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_1"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2023-02-28T08:46:41.585866Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_1"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierA"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </ore:Aggregation>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/europeana/2021672/resource_document_mauritshuis_1">
+            <dc:date rdf:resource="#1524%2F1524"/>
+            <dc:date rdf:resource="#1524%2F1524"/>
+            <dc:identifier>resource_document_mauritshuis_1</dc:identifier>
+            <edm:europeanaProxy>true</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_1"/>
+            <ore:lineage rdf:resource="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_1"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_1">
+            <dc:creator>Jacob Cornelisz van Oostsanen</dc:creator>
+            <dc:date>1524 - 1524</dc:date>
+            <dc:format>53.7 cm</dc:format>
+            <dc:format>72 cm</dc:format>
+            <dc:identifier>1</dc:identifier>
+            <dc:title xml:lang="nl-NL">Salome met het hoofd van Johannes de Doper</dc:title>
+            <dc:title xml:lang="en-GB">Salome with the Head of John the Baptist</dc:title>
+            <dc:type xml:lang="nl-NL">schilderij</dc:type>
+            <dc:type xml:lang="en-GB">painting</dc:type>
+            <dcterms:medium xml:lang="nl-NL">paneel</dcterms:medium>
+            <dcterms:medium xml:lang="en-GB">panel</dcterms:medium>
+            <edm:europeanaProxy>false</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_1"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <edm:EuropeanaAggregation rdf:about="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_1">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_1"/>
+            <edm:datasetName>2021672_Ag_NL_DigitaleCollectie_Mauritshuis</edm:datasetName>
+            <edm:country>Netherlands</edm:country>
+            <edm:preview rdf:resource="https://www.mauritshuis.nl/media/k2bndlyn/0001_repro.jpg"/>
+            <edm:landingPage rdf:resource="https://www.europeana.eu/item/2021672/resource_document_mauritshuis_1"/>
+            <edm:language>nl</edm:language>
+            <edm:completeness>0</edm:completeness>
+            <dcterms:created>2017-08-02T11:48:16.560Z</dcterms:created>
+            <dcterms:modified>2023-02-28T08:45:41.077Z</dcterms:modified>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2025-07-09T14:47:00.266571151Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_1"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2025-07-09T14:47:00.266581711Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_1"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierB"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </edm:EuropeanaAggregation>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/1605">
+            <skos:prefLabel xml:lang="en">Dutch Collections for Europe</skos:prefLabel>
+          </foaf:Organization>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/2888">
+            <skos:prefLabel xml:lang="en">Mauritshuis</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Mauritshuis</skos:prefLabel>
+          </foaf:Organization>
+        </rdf:RDF>
+      </metadata>
+    </record>
+    <record>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <metadata>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:edm="http://www.europeana.eu/schemas/edm/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:wgs84_pos="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:ebucore="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:odrl="http://www.w3.org/ns/odrl/2/" xmlns:cc="http://creativecommons.org/ns#" xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:svcs="http://rdfs.org/sioc/services#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:dqv="http://www.w3.org/ns/dqv#" xmlns:schema="https://schema.org/">
+          <edm:ProvidedCHO rdf:about="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100"/>
+          <edm:WebResource rdf:about="https://www.mauritshuis.nl/media/3mdd0wlh/0100.jpg">
+            <ebucore:hasMimeType>image/jpeg</ebucore:hasMimeType>
+            <ebucore:fileByteSize rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2735893</ebucore:fileByteSize>
+            <ebucore:width rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3580</ebucore:width>
+            <ebucore:height rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4700</ebucore:height>
+            <edm:hasColorSpace>sRGB</edm:hasColorSpace>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#BC8F8F</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#B0C4DE</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#2F4F4F</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#FAF0E6</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#BDB76B</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#000000</edm:componentColor>
+            <ebucore:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">portrait</ebucore:orientation>
+          </edm:WebResource>
+          <skos:Concept rdf:about="http://data.europeana.eu/concept/1770">
+            <skos:prefLabel xml:lang="de">Kupfer</skos:prefLabel>
+            <skos:prefLabel xml:lang="fi">Kupari</skos:prefLabel>
+            <skos:prefLabel xml:lang="ru">Медь</skos:prefLabel>
+            <skos:prefLabel xml:lang="pt">Cobre</skos:prefLabel>
+            <skos:prefLabel xml:lang="bg">Мед</skos:prefLabel>
+            <skos:prefLabel xml:lang="lt">Varis</skos:prefLabel>
+            <skos:prefLabel xml:lang="hr">Bakar</skos:prefLabel>
+            <skos:prefLabel xml:lang="lv">Varš</skos:prefLabel>
+            <skos:prefLabel xml:lang="fr">Cuivre</skos:prefLabel>
+            <skos:prefLabel xml:lang="hu">Réz</skos:prefLabel>
+            <skos:prefLabel xml:lang="sk">Meď</skos:prefLabel>
+            <skos:prefLabel xml:lang="sl">Baker</skos:prefLabel>
+            <skos:prefLabel xml:lang="ga">Copar</skos:prefLabel>
+            <skos:prefLabel xml:lang="ca">Coure</skos:prefLabel>
+            <skos:prefLabel xml:lang="sv">Koppar</skos:prefLabel>
+            <skos:prefLabel xml:lang="el">Χαλκός</skos:prefLabel>
+            <skos:prefLabel xml:lang="mt">Ram</skos:prefLabel>
+            <skos:prefLabel xml:lang="en">Copper</skos:prefLabel>
+            <skos:prefLabel xml:lang="it">Rame</skos:prefLabel>
+            <skos:prefLabel xml:lang="es">Cobre</skos:prefLabel>
+            <skos:prefLabel xml:lang="et">Vask</skos:prefLabel>
+            <skos:prefLabel xml:lang="cs">Měď</skos:prefLabel>
+            <skos:prefLabel xml:lang="eu">Kobre</skos:prefLabel>
+            <skos:prefLabel xml:lang="pl">Miedź</skos:prefLabel>
+            <skos:prefLabel xml:lang="da">Kobber</skos:prefLabel>
+            <skos:prefLabel xml:lang="ro">Cupru</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Koper</skos:prefLabel>
+            <skos:note xml:lang="de">Chemisches Element mit dem Symbol Cu und der Ordnungszahl 29</skos:note>
+            <skos:note xml:lang="sv">Grundämne</skos:note>
+            <skos:note xml:lang="fi">Alkuaine, jonka järjestysluku 29</skos:note>
+            <skos:note xml:lang="ru">Химический элемент с порядковым номером 29, металл</skos:note>
+            <skos:note xml:lang="pt">Elemento químico com número atómico 29</skos:note>
+            <skos:note xml:lang="bg">Химичен елемент с атомен номер 29</skos:note>
+            <skos:note xml:lang="el">Χημικό στοιχείο με σύμβολο Cu και ατομικό αριθμό 29</skos:note>
+            <skos:note xml:lang="en">Chemical element with symbol Cu and atomic number 29</skos:note>
+            <skos:note xml:lang="lv">Ķīmiskais elements</skos:note>
+            <skos:note xml:lang="hr">Kemijski element</skos:note>
+            <skos:note xml:lang="it">Elemento chimico con simbolo Cu e avente numero atomico 29</skos:note>
+            <skos:note xml:lang="fr">Élément chimique de numéro atomique 29 et de symbole Cu</skos:note>
+            <skos:note xml:lang="hu">Kémiai elem, rendszáma 29, vegyjele Cu</skos:note>
+            <skos:note xml:lang="es">Elemento químico de símbolo Cu y número atómico 29</skos:note>
+            <skos:note xml:lang="et">Keemiline element nr 29 (Cu)</skos:note>
+            <skos:note xml:lang="cs">Chemický prvek se značkou Cu a protonovým číslem 29</skos:note>
+            <skos:note xml:lang="eu">29 zenbaki atomikoa duen elementu kimikoa</skos:note>
+            <skos:note xml:lang="sk">Chemický prvok s protónovým číslom 29</skos:note>
+            <skos:note xml:lang="sl">Kemični element s simbolom Cu in atomskim številom 29</skos:note>
+            <skos:note xml:lang="pl">29. pierwiastek chemiczny</skos:note>
+            <skos:note xml:lang="ro">Elementul chimic cu numărul de ordine 29</skos:note>
+            <skos:note xml:lang="da">Grundstof med atomnummer 29</skos:note>
+            <skos:note xml:lang="ca">Element químic amb nombre atòmic 29</skos:note>
+            <skos:note xml:lang="nl">Scheikundig element met symbool Cu en atoomnummer 29</skos:note>
+            <skos:broader rdf:resource="http://data.europeana.eu/concept/2069"/>
+            <skos:broader rdf:resource="http://data.europeana.eu/concept/1766"/>
+            <skos:exactMatch rdf:resource="http://www.wikidata.org/entity/Q753"/>
+            <skos:exactMatch rdf:resource="https://d-nb.info/gnd/4033734-0"/>
+            <skos:exactMatch rdf:resource="http://id.loc.gov/authorities/names/sh85032278"/>
+            <skos:exactMatch rdf:resource="http://data.bnf.fr/ark:/12148/cb119470591"/>
+            <skos:exactMatch rdf:resource="http://id.ndl.go.jp/auth/ndlna/00561504"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D003300"/>
+            <skos:exactMatch rdf:resource="http://purl.org/bncf/tid/2735"/>
+            <skos:exactMatch rdf:resource="https://www.freebase.com/m/025rsfk"/>
+            <skos:exactMatch rdf:resource="https://g.co/kg/m/025rsfk"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D01.268.556.195"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D01.268.956.170"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D01.552.544.195"/>
+            <skos:exactMatch rdf:resource="http://datos.bne.es/resource/XX530125"/>
+            <skos:exactMatch rdf:resource="http://vocab.getty.edu/aat/300011020"/>
+            <skos:exactMatch rdf:resource="http://www.yso.fi/onto/yso/p19074"/>
+            <skos:exactMatch rdf:resource="http://babelnet.org/rdf/s00006859n"/>
+            <skos:exactMatch rdf:resource="http://nomisma.org/id/cu"/>
+            <skos:exactMatch rdf:resource="http://thesaurus.europeanafashion.eu/thesaurus/10548"/>
+            <skos:exactMatch rdf:resource="http://zbw.eu/stw/descriptor/14299-5"/>
+            <skos:exactMatch rdf:resource="http://vocabularies.unesco.org/thesaurus/concept5524"/>
+            <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Copper"/>
+          </skos:Concept>
+          <ore:Aggregation rdf:about="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_100">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100"/>
+            <edm:dataProvider rdf:resource="http://data.europeana.eu/organization/2888"/>
+            <edm:isShownBy rdf:resource="https://www.mauritshuis.nl/media/3mdd0wlh/0100.jpg"/>
+            <edm:provider rdf:resource="http://data.europeana.eu/organization/1605">
+            </edm:provider>
+            <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2023-02-28T08:46:32.854726Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_100"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2023-02-28T08:46:32.854744Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_100"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierA"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </ore:Aggregation>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_100">
+            <dc:creator>Michiel Jansz van Mierevelt</dc:creator>
+            <dc:format>23 cm</dc:format>
+            <dc:format>28 cm</dc:format>
+            <dc:identifier>100</dc:identifier>
+            <dc:title xml:lang="nl-NL">Portret van Frederik Hendrik (1584-1647), prins van Oranje</dc:title>
+            <dc:title xml:lang="en-GB">Portrait of Frederik Hendrik (1584-1647), Prince of Orange</dc:title>
+            <dc:type xml:lang="nl-NL">schilderij</dc:type>
+            <dc:type xml:lang="en-GB">painting</dc:type>
+            <dcterms:medium xml:lang="nl-NL">koper</dcterms:medium>
+            <dcterms:medium xml:lang="en-GB">copper</dcterms:medium>
+            <edm:europeanaProxy>false</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_100"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/europeana/2021672/resource_document_mauritshuis_100">
+            <dc:identifier>resource_document_mauritshuis_100</dc:identifier>
+            <dcterms:medium rdf:resource="http://data.europeana.eu/concept/1770"/>
+            <edm:europeanaProxy>true</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_100"/>
+            <ore:lineage rdf:resource="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_100"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <edm:EuropeanaAggregation rdf:about="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_100">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_100"/>
+            <edm:datasetName>2021672_Ag_NL_DigitaleCollectie_Mauritshuis</edm:datasetName>
+            <edm:country>Netherlands</edm:country>
+            <edm:preview rdf:resource="https://www.mauritshuis.nl/media/3mdd0wlh/0100.jpg"/>
+            <edm:landingPage rdf:resource="https://www.europeana.eu/item/2021672/resource_document_mauritshuis_100"/>
+            <edm:language>nl</edm:language>
+            <edm:completeness>0</edm:completeness>
+            <dcterms:created>2017-08-02T11:48:16.561Z</dcterms:created>
+            <dcterms:modified>2023-02-28T08:45:41.077Z</dcterms:modified>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2025-07-09T14:47:00.395132227Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_100"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2025-07-09T14:47:00.395138629Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_100"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierB"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </edm:EuropeanaAggregation>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/1605">
+            <skos:prefLabel xml:lang="en">Dutch Collections for Europe</skos:prefLabel>
+          </foaf:Organization>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/2888">
+            <skos:prefLabel xml:lang="en">Mauritshuis</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Mauritshuis</skos:prefLabel>
+          </foaf:Organization>
+        </rdf:RDF>
+      </metadata>
+    </record>
+    <record>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101</identifier>
+        <datestamp>2023-02-28T08:45:41Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <metadata>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:edm="http://www.europeana.eu/schemas/edm/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:wgs84_pos="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:ebucore="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:odrl="http://www.w3.org/ns/odrl/2/" xmlns:cc="http://creativecommons.org/ns#" xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:svcs="http://rdfs.org/sioc/services#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:dqv="http://www.w3.org/ns/dqv#" xmlns:schema="https://schema.org/">
+          <edm:ProvidedCHO rdf:about="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101"/>
+          <edm:WebResource rdf:about="https://www.mauritshuis.nl/media/jtod4e5a/0101.jpg">
+            <ebucore:hasMimeType>image/jpeg</ebucore:hasMimeType>
+            <ebucore:fileByteSize rdf:datatype="http://www.w3.org/2001/XMLSchema#long">3428232</ebucore:fileByteSize>
+            <ebucore:width rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3214</ebucore:width>
+            <ebucore:height rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4000</ebucore:height>
+            <edm:hasColorSpace>sRGB</edm:hasColorSpace>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#F5F5DC</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#F5DEB3</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#000000</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#F5F5F5</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#F5FFFA</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#BDB76B</edm:componentColor>
+            <ebucore:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">portrait</ebucore:orientation>
+          </edm:WebResource>
+          <edm:TimeSpan rdf:about="http://data.europeana.eu/timespan/17">
+            <skos:prefLabel xml:lang="de">17. Jahrhundert</skos:prefLabel>
+            <skos:prefLabel xml:lang="fi">1600-luku</skos:prefLabel>
+            <skos:prefLabel xml:lang="ru">XVII век</skos:prefLabel>
+            <skos:prefLabel xml:lang="pt">Século XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="bg">17 век</skos:prefLabel>
+            <skos:prefLabel xml:lang="lt">XVII amžius</skos:prefLabel>
+            <skos:prefLabel xml:lang="hr">17. stoljeće</skos:prefLabel>
+            <skos:prefLabel xml:lang="lv">17. gadsimts</skos:prefLabel>
+            <skos:prefLabel xml:lang="fr">XVIIe siècle</skos:prefLabel>
+            <skos:prefLabel xml:lang="hu">17. század</skos:prefLabel>
+            <skos:prefLabel xml:lang="sk">17. storočie</skos:prefLabel>
+            <skos:prefLabel xml:lang="sl">17. stoletje</skos:prefLabel>
+            <skos:prefLabel xml:lang="ga">17ú haois</skos:prefLabel>
+            <skos:prefLabel xml:lang="ca">Segle XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="sv">1600-talet</skos:prefLabel>
+            <skos:prefLabel xml:lang="el">17ος αιώνας</skos:prefLabel>
+            <skos:prefLabel xml:lang="mt">Seklu XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="en">17th century</skos:prefLabel>
+            <skos:prefLabel xml:lang="it">XVII secolo</skos:prefLabel>
+            <skos:prefLabel xml:lang="es">Siglo XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="et">17. sajand</skos:prefLabel>
+            <skos:prefLabel xml:lang="cs">17. století</skos:prefLabel>
+            <skos:prefLabel xml:lang="eu">XVII. mendea</skos:prefLabel>
+            <skos:prefLabel xml:lang="pl">XVII wiek</skos:prefLabel>
+            <skos:prefLabel xml:lang="da">17. århundrede</skos:prefLabel>
+            <skos:prefLabel xml:lang="ro">Secolul al XVII-lea</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">17e eeuw</skos:prefLabel>
+            <skos:altLabel xml:lang="sv">1600-tal</skos:altLabel>
+            <skos:altLabel xml:lang="sv">17:e århundradet</skos:altLabel>
+            <skos:altLabel xml:lang="sv">17:e seklet</skos:altLabel>
+            <skos:altLabel xml:lang="sv">1600-talet (århundrade)</skos:altLabel>
+            <skos:altLabel xml:lang="sv">1600-talet (sekel)</skos:altLabel>
+            <skos:altLabel xml:lang="ru">17 век</skos:altLabel>
+            <skos:altLabel xml:lang="mt">Seklu 17</skos:altLabel>
+            <skos:altLabel xml:lang="en">17th-century</skos:altLabel>
+            <skos:altLabel xml:lang="en">History, 17th century</skos:altLabel>
+            <skos:altLabel xml:lang="en">Seventeenth century</skos:altLabel>
+            <skos:altLabel xml:lang="it">Seicento</skos:altLabel>
+            <skos:altLabel xml:lang="it">17° secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">Secolo XVII</skos:altLabel>
+            <skos:altLabel xml:lang="it">XVII Secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">Diciassettesimo secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">'600</skos:altLabel>
+            <skos:altLabel xml:lang="it">17º secolo</skos:altLabel>
+            <skos:altLabel xml:lang="fr">17e siècle</skos:altLabel>
+            <skos:altLabel xml:lang="nl">Zeventiende eeuw</skos:altLabel>
+            <edm:begin>1601-01-01</edm:begin>
+            <edm:end>1700-12-31</edm:end>
+            <owl:sameAs rdf:resource="http://www.wikidata.org/entity/Q7016"/>
+            <owl:sameAs rdf:resource="http://id.loc.gov/authorities/names/sh85120427"/>
+            <owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb120419182"/>
+            <owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb11975998j"/>
+            <owl:sameAs rdf:resource="http://id.nlm.nih.gov/mesh/D049670"/>
+            <owl:sameAs rdf:resource="https://www.freebase.com/m/08b2m"/>
+            <owl:sameAs rdf:resource="https://g.co/kg/m/08b2m"/>
+            <owl:sameAs rdf:resource="http://id.nlm.nih.gov/mesh/K01.400.504.750"/>
+            <owl:sameAs rdf:resource="http://vocab.getty.edu/aat/300404511"/>
+            <owl:sameAs rdf:resource="http://id.worldcat.org/fast/1113663"/>
+            <owl:sameAs rdf:resource="http://babelnet.org/rdf/s02814624n"/>
+            <owl:sameAs rdf:resource="http://dbpedia.org/resource/17th_century"/>
+          </edm:TimeSpan>
+          <edm:TimeSpan rdf:about="#1613%2F1613">
+            <skos:prefLabel xml:lang="zxx">1613/1613</skos:prefLabel>
+            <dcterms:isPartOf rdf:resource="http://data.europeana.eu/timespan/17"/>
+            <edm:begin>1613-01-01</edm:begin>
+            <edm:end>1613-12-31</edm:end>
+            <skos:notation>1613/1613</skos:notation>
+          </edm:TimeSpan>
+          <skos:Concept rdf:about="http://data.europeana.eu/concept/1770">
+            <skos:prefLabel xml:lang="de">Kupfer</skos:prefLabel>
+            <skos:prefLabel xml:lang="fi">Kupari</skos:prefLabel>
+            <skos:prefLabel xml:lang="ru">Медь</skos:prefLabel>
+            <skos:prefLabel xml:lang="pt">Cobre</skos:prefLabel>
+            <skos:prefLabel xml:lang="bg">Мед</skos:prefLabel>
+            <skos:prefLabel xml:lang="lt">Varis</skos:prefLabel>
+            <skos:prefLabel xml:lang="hr">Bakar</skos:prefLabel>
+            <skos:prefLabel xml:lang="lv">Varš</skos:prefLabel>
+            <skos:prefLabel xml:lang="fr">Cuivre</skos:prefLabel>
+            <skos:prefLabel xml:lang="hu">Réz</skos:prefLabel>
+            <skos:prefLabel xml:lang="sk">Meď</skos:prefLabel>
+            <skos:prefLabel xml:lang="sl">Baker</skos:prefLabel>
+            <skos:prefLabel xml:lang="ga">Copar</skos:prefLabel>
+            <skos:prefLabel xml:lang="ca">Coure</skos:prefLabel>
+            <skos:prefLabel xml:lang="sv">Koppar</skos:prefLabel>
+            <skos:prefLabel xml:lang="el">Χαλκός</skos:prefLabel>
+            <skos:prefLabel xml:lang="mt">Ram</skos:prefLabel>
+            <skos:prefLabel xml:lang="en">Copper</skos:prefLabel>
+            <skos:prefLabel xml:lang="it">Rame</skos:prefLabel>
+            <skos:prefLabel xml:lang="es">Cobre</skos:prefLabel>
+            <skos:prefLabel xml:lang="et">Vask</skos:prefLabel>
+            <skos:prefLabel xml:lang="cs">Měď</skos:prefLabel>
+            <skos:prefLabel xml:lang="eu">Kobre</skos:prefLabel>
+            <skos:prefLabel xml:lang="pl">Miedź</skos:prefLabel>
+            <skos:prefLabel xml:lang="da">Kobber</skos:prefLabel>
+            <skos:prefLabel xml:lang="ro">Cupru</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Koper</skos:prefLabel>
+            <skos:note xml:lang="de">Chemisches Element mit dem Symbol Cu und der Ordnungszahl 29</skos:note>
+            <skos:note xml:lang="sv">Grundämne</skos:note>
+            <skos:note xml:lang="fi">Alkuaine, jonka järjestysluku 29</skos:note>
+            <skos:note xml:lang="ru">Химический элемент с порядковым номером 29, металл</skos:note>
+            <skos:note xml:lang="pt">Elemento químico com número atómico 29</skos:note>
+            <skos:note xml:lang="bg">Химичен елемент с атомен номер 29</skos:note>
+            <skos:note xml:lang="el">Χημικό στοιχείο με σύμβολο Cu και ατομικό αριθμό 29</skos:note>
+            <skos:note xml:lang="en">Chemical element with symbol Cu and atomic number 29</skos:note>
+            <skos:note xml:lang="lv">Ķīmiskais elements</skos:note>
+            <skos:note xml:lang="hr">Kemijski element</skos:note>
+            <skos:note xml:lang="it">Elemento chimico con simbolo Cu e avente numero atomico 29</skos:note>
+            <skos:note xml:lang="fr">Élément chimique de numéro atomique 29 et de symbole Cu</skos:note>
+            <skos:note xml:lang="hu">Kémiai elem, rendszáma 29, vegyjele Cu</skos:note>
+            <skos:note xml:lang="es">Elemento químico de símbolo Cu y número atómico 29</skos:note>
+            <skos:note xml:lang="et">Keemiline element nr 29 (Cu)</skos:note>
+            <skos:note xml:lang="cs">Chemický prvek se značkou Cu a protonovým číslem 29</skos:note>
+            <skos:note xml:lang="eu">29 zenbaki atomikoa duen elementu kimikoa</skos:note>
+            <skos:note xml:lang="sk">Chemický prvok s protónovým číslom 29</skos:note>
+            <skos:note xml:lang="sl">Kemični element s simbolom Cu in atomskim številom 29</skos:note>
+            <skos:note xml:lang="pl">29. pierwiastek chemiczny</skos:note>
+            <skos:note xml:lang="ro">Elementul chimic cu numărul de ordine 29</skos:note>
+            <skos:note xml:lang="da">Grundstof med atomnummer 29</skos:note>
+            <skos:note xml:lang="ca">Element químic amb nombre atòmic 29</skos:note>
+            <skos:note xml:lang="nl">Scheikundig element met symbool Cu en atoomnummer 29</skos:note>
+            <skos:broader rdf:resource="http://data.europeana.eu/concept/2069"/>
+            <skos:broader rdf:resource="http://data.europeana.eu/concept/1766"/>
+            <skos:exactMatch rdf:resource="http://www.wikidata.org/entity/Q753"/>
+            <skos:exactMatch rdf:resource="https://d-nb.info/gnd/4033734-0"/>
+            <skos:exactMatch rdf:resource="http://id.loc.gov/authorities/names/sh85032278"/>
+            <skos:exactMatch rdf:resource="http://data.bnf.fr/ark:/12148/cb119470591"/>
+            <skos:exactMatch rdf:resource="http://id.ndl.go.jp/auth/ndlna/00561504"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D003300"/>
+            <skos:exactMatch rdf:resource="http://purl.org/bncf/tid/2735"/>
+            <skos:exactMatch rdf:resource="https://www.freebase.com/m/025rsfk"/>
+            <skos:exactMatch rdf:resource="https://g.co/kg/m/025rsfk"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D01.268.556.195"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D01.268.956.170"/>
+            <skos:exactMatch rdf:resource="http://id.nlm.nih.gov/mesh/D01.552.544.195"/>
+            <skos:exactMatch rdf:resource="http://datos.bne.es/resource/XX530125"/>
+            <skos:exactMatch rdf:resource="http://vocab.getty.edu/aat/300011020"/>
+            <skos:exactMatch rdf:resource="http://www.yso.fi/onto/yso/p19074"/>
+            <skos:exactMatch rdf:resource="http://babelnet.org/rdf/s00006859n"/>
+            <skos:exactMatch rdf:resource="http://nomisma.org/id/cu"/>
+            <skos:exactMatch rdf:resource="http://thesaurus.europeanafashion.eu/thesaurus/10548"/>
+            <skos:exactMatch rdf:resource="http://zbw.eu/stw/descriptor/14299-5"/>
+            <skos:exactMatch rdf:resource="http://vocabularies.unesco.org/thesaurus/concept5524"/>
+            <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Copper"/>
+          </skos:Concept>
+          <ore:Aggregation rdf:about="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_101">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101"/>
+            <edm:dataProvider rdf:resource="http://data.europeana.eu/organization/2888"/>
+            <edm:isShownBy rdf:resource="https://www.mauritshuis.nl/media/jtod4e5a/0101.jpg"/>
+            <edm:provider rdf:resource="http://data.europeana.eu/organization/1605"/>
+            <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2023-02-28T08:46:19.629500Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_101"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2023-02-28T08:46:19.629520Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_101"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierA"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </ore:Aggregation>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_101">
+            <dc:creator>Michiel Jansz van Mierevelt</dc:creator>
+            <dc:date>1613 - 1613</dc:date>
+            <dc:format>23 cm</dc:format>
+            <dc:format>27.9 cm</dc:format>
+            <dc:identifier>101</dc:identifier>
+            <dc:title xml:lang="nl-NL">Portret van Friedrich V (1596-1632)</dc:title>
+            <dc:title xml:lang="en-GB">Portrait of Friedrich V (1596-1632)</dc:title>
+            <dc:type xml:lang="nl-NL">schilderij</dc:type>
+            <dc:type xml:lang="en-GB">painting</dc:type>
+            <dcterms:medium xml:lang="nl-NL">koper</dcterms:medium>
+            <dcterms:medium xml:lang="en-GB">copper</dcterms:medium>
+            <edm:europeanaProxy>false</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_101"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/europeana/2021672/resource_document_mauritshuis_101">
+            <dc:date rdf:resource="#1613%2F1613"/>
+            <dc:date rdf:resource="#1613%2F1613"/>
+            <dc:identifier>resource_document_mauritshuis_101</dc:identifier>
+            <dcterms:medium rdf:resource="http://data.europeana.eu/concept/1770"/>
+            <edm:europeanaProxy>true</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_101"/>
+            <ore:lineage rdf:resource="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_101"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <edm:EuropeanaAggregation rdf:about="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_101">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_101"/>
+            <edm:datasetName>2021672_Ag_NL_DigitaleCollectie_Mauritshuis</edm:datasetName>
+            <edm:country>Netherlands</edm:country>
+            <edm:preview rdf:resource="https://www.mauritshuis.nl/media/jtod4e5a/0101.jpg"/>
+            <edm:landingPage rdf:resource="https://www.europeana.eu/item/2021672/resource_document_mauritshuis_101"/>
+            <edm:language>nl</edm:language>
+            <edm:completeness>0</edm:completeness>
+            <dcterms:created>2017-08-02T11:48:16.567Z</dcterms:created>
+            <dcterms:modified>2023-02-28T08:45:41.077Z</dcterms:modified>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2025-07-09T14:47:00.504082718Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_101"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2025-07-09T14:47:00.504091073Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_101"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierC"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </edm:EuropeanaAggregation>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/1605">
+            <skos:prefLabel xml:lang="en">Dutch Collections for Europe</skos:prefLabel>
+          </foaf:Organization>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/2888">
+            <skos:prefLabel xml:lang="en">Mauritshuis</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Mauritshuis</skos:prefLabel>
+          </foaf:Organization>
+        </rdf:RDF>
+      </metadata>
+    </record>
+    <resumptionToken completeListSize="832" expirationDate="2026-06-24T09:12:24Z" cursor="0">MjAwMC0wMS0wMVQwMDowMDowMFp8MjAyNS0wMS0wMVQwMDowMDowMFp8MjAyMTY3MnxlZG18MTc4MjI5MjM0NDkxMXw4MzJ8MHxBb0oxOWR6TXk0WURQd3d2TWpBeU1UWTNNaTl5WlhOdmRYSmpaVjlrYjJOMWJXVnVkRjl0WVhWeWFYUnphSFZwYzE4eE1EZzU=</resumptionToken>
+  </ListRecords>
+</OAI-PMH>

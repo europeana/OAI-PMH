@@ -1,27 +1,25 @@
 package eu.europeana.oaipmh.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import eu.europeana.oaipmh.model.serialize.RDFMetadataSerializer;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.io.Serializable;
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
 
-public class Record implements Serializable {
+@XmlRootElement(name=record)
+public class Record {
 
-    private static final long serialVersionUID = 4269209744172447773L;
-
-    @XmlElement
+    @XmlElement(name=SerializationConstants.header)
     private Header header;
 
-    @JsonSerialize(using = RDFMetadataSerializer.class)
-    private RDFMetadata metadata;
+    @XmlElement(name=SerializationConstants.metadata)
+    private Metadata metadata;
 
-    public Record() {
+    protected Record() {
         this.metadata = null;
         this.header = null;
     }
 
-    public Record(Header header, RDFMetadata metadata) {
+    public Record(Header header, Metadata metadata) {
         this.header = header;
         this.metadata = metadata;
     }
@@ -34,11 +32,11 @@ public class Record implements Serializable {
         this.header = header;
     }
 
-    public RDFMetadata getMetadata() {
+    public Metadata getMetadata() {
         return metadata;
     }
 
-    public void setMetadata(RDFMetadata metadata) {
+    public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
 }

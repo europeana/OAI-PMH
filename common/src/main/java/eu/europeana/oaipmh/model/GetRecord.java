@@ -1,39 +1,20 @@
 package eu.europeana.oaipmh.model;
 
-import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.model.response.GetRecordResponse;
-import eu.europeana.oaipmh.model.response.OAIResponse;
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import eu.europeana.oaipmh.model.impl.GetRecordImpl;
 
 /**
  * Container for record xml information
  * @author Patrick Ehlert
  * Created on 28-02-2018
  */
-public class GetRecord extends OAIPMHVerb {
+@XmlRootElement(name=GetRecord)
+@XmlJavaTypeAdapter(GetRecordImpl.Adapter.class)
+public interface GetRecord extends OAIPMHVerb {
 
-    private static final long serialVersionUID = -8111845326100870425L;
-
-    @XmlElement
-    private Record record;
-
-    public GetRecord() { this.record = null; }
-
-    public GetRecord(Record record) {
-        this.record = record;
-    }
-
-    public Record getRecord() {
-        return record;
-    }
-
-    public void setRecord(Record record) {
-        this.record = record;
-    }
-
-    @Override
-    public OAIResponse getResponse(OAIRequest request) {
-        return new GetRecordResponse(this, request);
-    }
+    public Record getRecord();
 }

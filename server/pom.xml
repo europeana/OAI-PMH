@@ -92,6 +92,10 @@
                     <groupId>org.mockito</groupId>
                     <artifactId>mockito-all</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-jackson</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!-- Compression for mongo driver -->
@@ -100,13 +104,27 @@
             <artifactId>snappy-java</artifactId>
             <version>${snappy.version}</version>
         </dependency>
-        <!-- Metis EDM definitions -->
+
+        <!-- Source: https://mvnrepository.com/artifact/jakarta.ws.rs/jakarta.ws.rs-api -->
         <dependency>
-            <groupId>eu.europeana.metis</groupId>
-            <artifactId>metis-schema</artifactId>
-            <version>${metis-schema.version}</version>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>4.0.0</version>
+            <scope>compile</scope>
         </dependency>
 
+        <!-- Metis -->
+        <dependency>
+            <groupId>eu.europeana.metis</groupId>
+            <artifactId>metis-common-mongo</artifactId>
+            <version>${metis.common.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-jackson</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <!-- for parsing record json -->
         <dependency>
             <groupId>com.jayway.jsonpath</groupId>
@@ -151,18 +169,6 @@
         </dependency>
 
 
-        <!-- Profiling using Spring AOP -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-instrument</artifactId>
-            <version>${spring-instrument.version}</version>
-        </dependency>
-
         <!-- bcel is coming from metis-schema and is vulnerable. Hence overriding the version -->
         <dependency>
             <groupId>org.apache.bcel</groupId>
@@ -170,22 +176,6 @@
             <version>6.6.1</version>
         </dependency>
 
-
-        <!--        <dependency>-->
-<!--            <groupId>org.aspectj</groupId>-->
-<!--            <artifactId>aspectjrt</artifactId>-->
-<!--            <version>${aspectj.version}</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.aspectj</groupId>-->
-<!--            <artifactId>aspectjweaver</artifactId>-->
-<!--            <version>${aspectj.version}</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-
-        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
@@ -197,20 +187,13 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>central-repo</id>-->
-<!--            <url>https://mvnrepository.com/repos/central</url>-->
-<!--        </repository>-->
-<!--    </repositories>-->
-
     <build>
+        <!-- set fixed name for easy deployment -->
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
-                <!-- add mainclass so we can use it as standalone application -->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
@@ -226,58 +209,7 @@
                 </executions>
             </plugin>
         </plugins>
-
-        <!-- set static name for easy deployment -->
-        <finalName>oai-pmh-server</finalName>
     </build>
-
-    <profiles>
-        <profile>
-            <id>profiling</id>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>aspectj-maven-plugin</artifactId>
-                            <version>1.7</version>
-                            <configuration>
-                                <showWeaveInfo>false</showWeaveInfo>
-                                <source>${java.version}</source>
-                                <target>${java.version}</target>
-                                <Xlint>ignore</Xlint>
-                                <complianceLevel>11</complianceLevel>
-                                <encoding>UTF-8</encoding>
-                                <verbose>false</verbose>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <!-- IMPORTANT -->
-                                    <phase>process-sources</phase>
-                                    <goals>
-                                        <goal>compile</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-<!--                            <dependencies>-->
-<!--                                <dependency>-->
-<!--                                    <groupId>org.aspectj</groupId>-->
-<!--                                    <artifactId>aspectjtools</artifactId>-->
-<!--                                    <version>${aspectj.version}</version>-->
-<!--                                </dependency>-->
-<!--                            </dependencies>-->
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-<!--                <plugins>-->
-<!--                    <plugin>-->
-<!--                        <groupId>org.codehaus.mojo</groupId>-->
-<!--                        <artifactId>aspectj-maven-plugin</artifactId>-->
-<!--                    </plugin>-->
-<!--                </plugins>-->
-            </build>
-        </profile>
-    </profiles>
 
 
 </project>

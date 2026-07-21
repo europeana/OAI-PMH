@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+  <responseDate>2026-06-26T10:11:54Z</responseDate>
+  <request verb="GetRecord" metadataPrefix="edm" identifier="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670">https://api.europeana.eu/oai</request>
+  <GetRecord>
+    <record>
+      <header>
+        <identifier>http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670</identifier>
+        <datestamp>2017-08-02T11:48:26Z</datestamp>
+        <setSpec>2021672</setSpec>
+      </header>
+      <metadata>
+        <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:edm="http://www.europeana.eu/schemas/edm/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:wgs84_pos="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:ebucore="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:odrl="http://www.w3.org/ns/odrl/2/" xmlns:cc="http://creativecommons.org/ns#" xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:svcs="http://rdfs.org/sioc/services#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:dqv="http://www.w3.org/ns/dqv#" xmlns:schema="https://schema.org/">
+          <edm:ProvidedCHO rdf:about="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670"/>
+          <edm:WebResource rdf:about="https://www.mauritshuis.nl/media/wlola5to/0670_repro_2.jpg">
+            <ebucore:hasMimeType>image/jpeg</ebucore:hasMimeType>
+            <ebucore:fileByteSize rdf:datatype="http://www.w3.org/2001/XMLSchema#long">859996</ebucore:fileByteSize>
+            <ebucore:width rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2112</ebucore:width>
+            <ebucore:height rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2500</ebucore:height>
+            <edm:hasColorSpace>sRGB</edm:hasColorSpace>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#F5F5DC</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#696969</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#BDB76B</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#778899</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#FFE4E1</edm:componentColor>
+            <edm:componentColor rdf:datatype="http://www.w3.org/2001/XMLSchema#hexBinary">#191970</edm:componentColor>
+            <ebucore:orientation rdf:datatype="http://www.w3.org/2001/XMLSchema#string">portrait</ebucore:orientation>
+          </edm:WebResource>
+          <edm:TimeSpan rdf:about="#1665%2F1665">
+            <skos:prefLabel xml:lang="zxx">1665/1665</skos:prefLabel>
+            <dcterms:isPartOf rdf:resource="http://data.europeana.eu/timespan/17"/>
+            <edm:begin>1665-01-01</edm:begin>
+            <edm:end>1665-12-31</edm:end>
+            <skos:notation>1665/1665</skos:notation>
+          </edm:TimeSpan>
+          <edm:TimeSpan rdf:about="http://data.europeana.eu/timespan/17">
+            <skos:prefLabel xml:lang="de">17. Jahrhundert</skos:prefLabel>
+            <skos:prefLabel xml:lang="fi">1600-luku</skos:prefLabel>
+            <skos:prefLabel xml:lang="ru">XVII век</skos:prefLabel>
+            <skos:prefLabel xml:lang="pt">Século XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="bg">17 век</skos:prefLabel>
+            <skos:prefLabel xml:lang="lt">XVII amžius</skos:prefLabel>
+            <skos:prefLabel xml:lang="hr">17. stoljeće</skos:prefLabel>
+            <skos:prefLabel xml:lang="lv">17. gadsimts</skos:prefLabel>
+            <skos:prefLabel xml:lang="fr">XVIIe siècle</skos:prefLabel>
+            <skos:prefLabel xml:lang="hu">17. század</skos:prefLabel>
+            <skos:prefLabel xml:lang="sk">17. storočie</skos:prefLabel>
+            <skos:prefLabel xml:lang="sl">17. stoletje</skos:prefLabel>
+            <skos:prefLabel xml:lang="ga">17ú haois</skos:prefLabel>
+            <skos:prefLabel xml:lang="ca">Segle XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="sv">1600-talet</skos:prefLabel>
+            <skos:prefLabel xml:lang="el">17ος αιώνας</skos:prefLabel>
+            <skos:prefLabel xml:lang="mt">Seklu XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="en">17th century</skos:prefLabel>
+            <skos:prefLabel xml:lang="it">XVII secolo</skos:prefLabel>
+            <skos:prefLabel xml:lang="es">Siglo XVII</skos:prefLabel>
+            <skos:prefLabel xml:lang="et">17. sajand</skos:prefLabel>
+            <skos:prefLabel xml:lang="cs">17. století</skos:prefLabel>
+            <skos:prefLabel xml:lang="eu">XVII. mendea</skos:prefLabel>
+            <skos:prefLabel xml:lang="pl">XVII wiek</skos:prefLabel>
+            <skos:prefLabel xml:lang="da">17. århundrede</skos:prefLabel>
+            <skos:prefLabel xml:lang="ro">Secolul al XVII-lea</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">17e eeuw</skos:prefLabel>
+            <skos:altLabel xml:lang="sv">1600-tal</skos:altLabel>
+            <skos:altLabel xml:lang="sv">17:e århundradet</skos:altLabel>
+            <skos:altLabel xml:lang="sv">17:e seklet</skos:altLabel>
+            <skos:altLabel xml:lang="sv">1600-talet (århundrade)</skos:altLabel>
+            <skos:altLabel xml:lang="sv">1600-talet (sekel)</skos:altLabel>
+            <skos:altLabel xml:lang="ru">17 век</skos:altLabel>
+            <skos:altLabel xml:lang="mt">Seklu 17</skos:altLabel>
+            <skos:altLabel xml:lang="en">17th-century</skos:altLabel>
+            <skos:altLabel xml:lang="en">History, 17th century</skos:altLabel>
+            <skos:altLabel xml:lang="en">Seventeenth century</skos:altLabel>
+            <skos:altLabel xml:lang="it">Seicento</skos:altLabel>
+            <skos:altLabel xml:lang="it">17° secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">Secolo XVII</skos:altLabel>
+            <skos:altLabel xml:lang="it">XVII Secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">Diciassettesimo secolo</skos:altLabel>
+            <skos:altLabel xml:lang="it">'600</skos:altLabel>
+            <skos:altLabel xml:lang="it">17º secolo</skos:altLabel>
+            <skos:altLabel xml:lang="fr">17e siècle</skos:altLabel>
+            <skos:altLabel xml:lang="nl">Zeventiende eeuw</skos:altLabel>
+            <edm:begin>1601-01-01</edm:begin>
+            <edm:end>1700-12-31</edm:end>
+            <owl:sameAs rdf:resource="http://www.wikidata.org/entity/Q7016"/>
+            <owl:sameAs rdf:resource="http://id.loc.gov/authorities/names/sh85120427"/>
+            <owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb120419182"/>
+            <owl:sameAs rdf:resource="http://data.bnf.fr/ark:/12148/cb11975998j"/>
+            <owl:sameAs rdf:resource="http://id.nlm.nih.gov/mesh/D049670"/>
+            <owl:sameAs rdf:resource="https://www.freebase.com/m/08b2m"/>
+            <owl:sameAs rdf:resource="https://g.co/kg/m/08b2m"/>
+            <owl:sameAs rdf:resource="http://id.nlm.nih.gov/mesh/K01.400.504.750"/>
+            <owl:sameAs rdf:resource="http://vocab.getty.edu/aat/300404511"/>
+            <owl:sameAs rdf:resource="http://id.worldcat.org/fast/1113663"/>
+            <owl:sameAs rdf:resource="http://babelnet.org/rdf/s02814624n"/>
+            <owl:sameAs rdf:resource="http://dbpedia.org/resource/17th_century"/>
+          </edm:TimeSpan>
+          <skos:Concept rdf:about="http://data.europeana.eu/concept/2728">
+            <skos:prefLabel xml:lang="de">Leinwand</skos:prefLabel>
+            <skos:prefLabel xml:lang="fi">Kangas</skos:prefLabel>
+            <skos:prefLabel xml:lang="ru">Холст</skos:prefLabel>
+            <skos:prefLabel xml:lang="pt">Tela</skos:prefLabel>
+            <skos:prefLabel xml:lang="bg">Брезент</skos:prefLabel>
+            <skos:prefLabel xml:lang="lt">Drobė</skos:prefLabel>
+            <skos:prefLabel xml:lang="lv">Audekls</skos:prefLabel>
+            <skos:prefLabel xml:lang="fr">Toile</skos:prefLabel>
+            <skos:prefLabel xml:lang="hu">Vászon</skos:prefLabel>
+            <skos:prefLabel xml:lang="sk">Plátno</skos:prefLabel>
+            <skos:prefLabel xml:lang="sl">Platno</skos:prefLabel>
+            <skos:prefLabel xml:lang="ga">Canbhás</skos:prefLabel>
+            <skos:prefLabel xml:lang="ca">Llenç</skos:prefLabel>
+            <skos:prefLabel xml:lang="sv">Kanvas</skos:prefLabel>
+            <skos:prefLabel xml:lang="el">Μουσαμάς</skos:prefLabel>
+            <skos:prefLabel xml:lang="en">Canvas</skos:prefLabel>
+            <skos:prefLabel xml:lang="it">Canovaccio</skos:prefLabel>
+            <skos:prefLabel xml:lang="es">Lienzo</skos:prefLabel>
+            <skos:prefLabel xml:lang="et">Lõuend</skos:prefLabel>
+            <skos:prefLabel xml:lang="cs">Plátno</skos:prefLabel>
+            <skos:prefLabel xml:lang="eu">Mihise</skos:prefLabel>
+            <skos:prefLabel xml:lang="pl">Kanwa</skos:prefLabel>
+            <skos:prefLabel xml:lang="ro">Pânză (pictură)</skos:prefLabel>
+            <skos:prefLabel xml:lang="da">Lærred</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Canvas</skos:prefLabel>
+            <skos:note xml:lang="de">Festes, strapazierfähiges Gewebe in Leinwandbindung</skos:note>
+            <skos:note xml:lang="sv">Tygmaterial</skos:note>
+            <skos:note xml:lang="ru">Плотная ткань</skos:note>
+            <skos:note xml:lang="pt">Tipo de tecido extremamente resistente</skos:note>
+            <skos:note xml:lang="en">Extremely heavy-duty plain-woven fabric</skos:note>
+            <skos:note xml:lang="it">Tessuto con armatura in tela, dalla trama larga e grossolana</skos:note>
+            <skos:note xml:lang="fr">Pièce de tissu résistante</skos:note>
+            <skos:note xml:lang="es">Tela extremadamente resistente utilizada en velas, lonas, mochilas, obras pictóricas...</skos:note>
+            <skos:note xml:lang="cs">Druh tkaniny</skos:note>
+            <skos:note xml:lang="eu">Iraupen handiko ehuna, bizkar zorroetan, itsasontzietarako beletan, lonetan... erabilia</skos:note>
+            <skos:note xml:lang="sl">Izredno trpežna navadna tkanina</skos:note>
+            <skos:note xml:lang="pl">Rodzaj wyjątkowo wytrzymałej, gładkiej tkaniny używanej w malarstwie olejnym</skos:note>
+            <skos:note xml:lang="ro">Bucată de țesătură deasă fixată pe un cadru, pe care se pictează</skos:note>
+            <skos:note xml:lang="da">Glat vævede stoffer</skos:note>
+            <skos:note xml:lang="ca">Tela que serveix de suport per a treballs pictòrics</skos:note>
+            <skos:note xml:lang="nl">Stevig weefsel van hennep, vlas of katoen</skos:note>
+            <skos:exactMatch rdf:resource="http://www.wikidata.org/entity/Q4259259"/>
+            <skos:exactMatch rdf:resource="https://www.freebase.com/m/0jmpt"/>
+            <skos:exactMatch rdf:resource="https://g.co/kg/m/0jmpt"/>
+            <skos:exactMatch rdf:resource="http://babelnet.org/rdf/s00015381n"/>
+            <skos:exactMatch rdf:resource="http://thesaurus.europeanafashion.eu/thesaurus/10376"/>
+            <skos:exactMatch rdf:resource="http://dbpedia.org/resource/Canvas"/>
+          </skos:Concept>
+          <ore:Aggregation rdf:about="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_670">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670"/>
+            <edm:dataProvider rdf:resource="http://data.europeana.eu/organization/2888"/>
+            <edm:isShownBy rdf:resource="https://www.mauritshuis.nl/media/wlola5to/0670_repro_2.jpg"/>
+            <edm:provider rdf:resource="http://data.europeana.eu/organization/1605"/>
+            <edm:rights rdf:resource="http://creativecommons.org/publicdomain/mark/1.0/"/>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2024-09-27T13:22:22.442873682Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_670"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2024-09-27T13:22:22.442906462Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_670"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierA"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </ore:Aggregation>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_670">
+            <dc:creator>Johannes Vermeer</dc:creator>
+            <dc:date>1665 - 1665</dc:date>
+            <dc:description xml:lang="nl-NL">Meisje met de parel is het beroemdste schilderij van Vermeer. Het is geen portret, maar een ‘tronie’: een fantasiekop. Tronies beelden een bepaald type of karakter uit, in dit geval een meisje in exotische kledij, met een oosterse tulband en een onwaarschijnlijk grote parel in het oor. Vermeer was de meester van het licht. Hier is dat te zien aan het zachte in het meisjesgezicht, de glimlichtjes op haar vochtige lippen. En aan de glanzende parel.</dc:description>
+            <dc:description xml:lang="en-GB">Girl with a Pearl Earring is Vermeer’s most famous painting. It is not a portrait, but a ‘tronie’ – a painting of an imaginary figure. Tronies depict a certain type or character; in this case a girl in exotic dress, wearing an oriental turban and an improbably large pearl in her ear. Johannes Vermeer was the master of light. This is shown here in the softness of the girl’s face and the glimmers of light on her moist lips. And of course, the shining pearl.</dc:description>
+            <dc:format>65 cm</dc:format>
+            <dc:format>39 cm</dc:format>
+            <dc:format>44.5 cm</dc:format>
+            <dc:format>74 cm</dc:format>
+            <dc:identifier>670</dc:identifier>
+            <dc:title xml:lang="nl-NL">Meisje met de parel</dc:title>
+            <dc:title xml:lang="en-GB">Girl with a Pearl Earring</dc:title>
+            <dc:type xml:lang="nl-NL">schilderij</dc:type>
+            <dc:type xml:lang="en-GB">painting</dc:type>
+            <dcterms:medium xml:lang="nl-NL">doek</dcterms:medium>
+            <dcterms:medium xml:lang="en-GB">canvas</dcterms:medium>
+            <edm:europeanaProxy>false</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/provider/2021672/resource_document_mauritshuis_670"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <ore:Proxy rdf:about="http://data.europeana.eu/proxy/europeana/2021672/resource_document_mauritshuis_670">
+            <dc:date rdf:resource="#1665%2F1665"/>
+            <dc:identifier>resource_document_mauritshuis_670</dc:identifier>
+            <dcterms:medium rdf:resource="http://data.europeana.eu/concept/2728"/>
+            <edm:europeanaProxy>true</edm:europeanaProxy>
+            <ore:proxyFor rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670"/>
+            <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_670"/>
+            <ore:lineage rdf:resource="http://data.europeana.eu/proxy/provider/2021672/resource_document_mauritshuis_670"/>
+            <edm:type>IMAGE</edm:type>
+          </ore:Proxy>
+          <edm:EuropeanaAggregation rdf:about="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_670">
+            <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/2021672/resource_document_mauritshuis_670"/>
+            <edm:datasetName>2021672_Ag_NL_DigitaleCollectie_Mauritshuis</edm:datasetName>
+            <edm:country>Netherlands</edm:country>
+            <edm:preview rdf:resource="https://www.mauritshuis.nl/media/wlola5to/0670_repro_2.jpg"/>
+            <edm:landingPage rdf:resource="https://www.europeana.eu/item/2021672/resource_document_mauritshuis_670"/>
+            <edm:language>nl</edm:language>
+            <edm:completeness>0</edm:completeness>
+            <dcterms:created>2017-08-02T11:48:26.069Z</dcterms:created>
+            <dcterms:modified>2024-09-27T13:22:15.958Z</dcterms:modified>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2024-09-27T13:22:22.443911896Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_670"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier4"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+            <dqv:hasQualityAnnotation>
+              <dqv:QualityAnnotation>
+                <dcterms:created>2024-09-27T13:22:22.443932614Z</dcterms:created>
+                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/2021672/resource_document_mauritshuis_670"/>
+                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierC"/>
+              </dqv:QualityAnnotation>
+            </dqv:hasQualityAnnotation>
+          </edm:EuropeanaAggregation>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/1605">
+            <skos:prefLabel xml:lang="en">Dutch Collections for Europe</skos:prefLabel>
+          </foaf:Organization>
+          <foaf:Organization rdf:about="http://data.europeana.eu/organization/2888">
+            <skos:prefLabel xml:lang="en">Mauritshuis</skos:prefLabel>
+            <skos:prefLabel xml:lang="nl">Mauritshuis</skos:prefLabel>
+          </foaf:Organization>
+        </rdf:RDF>
+      </metadata>
+    </record>
+  </GetRecord>
+</OAI-PMH>

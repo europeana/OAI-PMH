@@ -113,7 +113,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
         ListIdentifiers result = searchApi.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
-        assertTrue(result.getHeaders().isEmpty());
+        assertTrue(result.isEmpty());
     }
 
     @Test
@@ -129,9 +129,9 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
 
     private void assertResults(ListIdentifiers results, Date from, Date until, String set) {
         assertNotNull(results);
-        assertNotNull(results.getHeaders());
-        assertFalse(results.getHeaders().isEmpty());
-        for (Header header : results.getHeaders()) {
+        assertNotNull(results.stream());
+        assertFalse(results.isEmpty());
+        results.stream().forEach(header -> {
             assertNotNull(header.getIdentifier());
             Date timestamp = header.getDatestamp();
             assertNotNull(timestamp);
@@ -145,7 +145,7 @@ public class SearchApiTest extends SolrBasedProviderTestCase {
                 assertEquals(1, header.getSetSpec().size());
                 assertTrue(header.getSetSpec().get(0).equals(set));
             }
-        }
+        });
         ResumptionToken token = results.getResumptionToken();
         if (token != null) {
             assertNotNull(token.getValue());

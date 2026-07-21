@@ -1,53 +1,26 @@
 package eu.europeana.oaipmh.model;
 
-import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
-import eu.europeana.oaipmh.model.response.OAIResponse;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import java.util.ArrayList;
-import java.util.List;
+import eu.europeana.oaipmh.model.impl.ListIdentifiersImpl;
+
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
+
+import java.util.stream.Stream;
 
 /**
  * This class represents the ListIdentifiers tag in the ListIdentifiers verb XML response
  */
-@XmlRootElement(name="ListIdentifiers")
-@XmlType(propOrder={"headers", "resumptionToken"})
-public class ListIdentifiers extends OAIPMHVerb {
+@XmlRootElement(name=ListIdentifiers)
+@XmlJavaTypeAdapter(ListIdentifiersImpl.Adapter.class)
+@XmlType(propOrder={ headers, resumptionToken })
+public interface ListIdentifiers extends OAIPMHVerb {
 
-    private static final long serialVersionUID = -8111855326100870425L;
+    public boolean isEmpty();
 
-    @XmlElement(name="header")
-    private List<Header> headers;
+    public Stream<Header> stream();
 
-    @XmlElement
-    private ResumptionToken resumptionToken;
-
-    public ListIdentifiers() {
-        this.headers = new ArrayList<>();
-    }
-
-    public ListIdentifiers(List<Header> headers, ResumptionToken resumptionToken) {
-        this.headers = headers;
-        this.resumptionToken = resumptionToken;
-    }
-
-    public List<Header> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(List<Header> headers) {
-        this.headers = headers;
-    }
-
-    public ResumptionToken getResumptionToken() { return resumptionToken; }
-
-    public void setResumptionToken(ResumptionToken resumptionToken) { this.resumptionToken = resumptionToken; }
-
-    @Override
-    public OAIResponse getResponse(OAIRequest request) {
-        return new ListIdentifiersResponse(this, request);
-    }
+    public ResumptionToken getResumptionToken();
 }

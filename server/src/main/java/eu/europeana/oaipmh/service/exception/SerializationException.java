@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Patrick Ehlert
  * Created on 27-02-2018
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@SuppressWarnings("serial")
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 public class SerializationException extends OaiPmhException {
 
     public SerializationException(String msg, Throwable t) {

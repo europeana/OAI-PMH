@@ -2,9 +2,10 @@ package eu.europeana.oaipmh.client;
 
 import eu.europeana.oaipmh.model.GetRecord;
 import eu.europeana.oaipmh.model.Header;
-import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
-import eu.europeana.oaipmh.model.response.GetRecordResponse;
+import eu.europeana.oaipmh.model.response.OAIResponse;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,8 +61,8 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
         long start = System.currentTimeMillis();
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), currentIdentifier);
-        GetRecordResponse response = (GetRecordResponse) oaipmhServer.makeRequest(request, GetRecordResponse.class);
-        GetRecord responseObject = response.getGetRecord();
+        OAIResponse response = oaipmhServer.makeRequest(request, OAIResponse.class);
+        GetRecord responseObject = (GetRecord)response.getVerb();
         try (final ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(
                 new File(directoryLocation + PATH_SEPERATOR + ZipUtility.getDirectoryName(currentIdentifier) + ZIP_EXTENSION)));
              OutputStreamWriter writer = new OutputStreamWriter(zout, StandardCharsets.UTF_8)) {
@@ -73,8 +74,8 @@ public class GetRecordQuery extends BaseQuery implements OAIPMHQuery {
                 }
                 Header header = record.getHeader();
                 if (header != null && currentIdentifier.equals(header.getIdentifier())) {
-                    RDFMetadata metadata = record.getMetadata();
-                    if (metadata == null || metadata.getMetadata() == null || metadata.getMetadata().isEmpty()) {
+                    Metadata metadata = record.getMetadata();
+                    if (metadata == null || metadata.getMetadata() == null ) {
                         LOG.error("Empty metadata for identifier {}", currentIdentifier);
                     }
                 }

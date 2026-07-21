@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * Exception when badResumptionToken error should be returned.
  */
+@SuppressWarnings("serial")
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class BadResumptionToken extends OaiPmhException {
     public BadResumptionToken(String msg) {

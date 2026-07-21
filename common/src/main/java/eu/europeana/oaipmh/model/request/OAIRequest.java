@@ -2,25 +2,33 @@ package eu.europeana.oaipmh.model.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import java.io.Serializable;
+import eu.europeana.oaipmh.model.SerializationConstants;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  * Basic OAI request data (always part of OAI response)
  * @author Patrick Ehlert
  * Created on 27-02-2018
- */
-public class OAIRequest implements Serializable {
+ */ 
+@XmlSeeAlso({ ErrorRequest.class,
+              ListIdentifiersRequest.class, GetRecordRequest.class
+            , IdentifyRequest.class, ListMetadataFormatsRequest.class
+            , ListSetsRequest.class, ListRecordsRequest.class})
+@XmlJavaTypeAdapter(OAIRequestAdapter.class)
+@XmlAccessorType(XmlAccessType.FIELD)
+public abstract class OAIRequest {
 
-    private static final long serialVersionUID = 2395818412589427046L;
-
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.verb)
     private String verb;
 
     @JacksonXmlText
     private String baseUrl;
 
-    public OAIRequest() {}
+    protected OAIRequest() {}
 
     public OAIRequest(String verb, String baseUrl) {
         this.verb = verb;

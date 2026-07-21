@@ -60,12 +60,12 @@ public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
 
     private void assertResults(ListSets results) {
         assertNotNull(results);
-        assertNotNull(results.getSets());
-        assertFalse(results.getSets().isEmpty());
-        for (Set set : results.getSets()) {
+        assertNotNull(results.stream());
+        assertFalse(results.isEmpty());
+        results.stream().forEach(set -> {
             assertNotNull(set.getSetSpec());
             assertNotNull(set.getSetName());
-        }
+        });
         ResumptionToken token = results.getResumptionToken();
         if (token != null) {
             assertNotNull(token.getValue());

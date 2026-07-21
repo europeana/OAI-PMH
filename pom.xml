@@ -26,20 +26,26 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
 
-        <spring-boot.version>2.7.18</spring-boot.version>
-        <spring-instrument.version>5.3.34</spring-instrument.version>
+        <!--  Sonar cloud properties -->
+        <sonar.organization>europeana</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-        <corelib.version>2.17.5</corelib.version>
-        <metis-schema.version>12</metis-schema.version>
+        <spring-boot.version>3.5.12</spring-boot.version>
+<!--        <spring-instrument.version>5.3.34</spring-instrument.version>-->
+
+        <corelib.version>2.17.8-SNAPSHOT</corelib.version>
+        <metis-schema.version>15-SNAPSHOT</metis-schema.version>
         <!-- Old metis Mongo classes are moved to metis-common-->
-        <metis.common.version>16.1</metis.common.version>
+        <metis.common.version>20-SNAPSHOT</metis.common.version>
         <snappy.version>1.1.10.3</snappy.version>
         <solrj.version>8.11.3</solrj.version>
-        <log4j2.version>2.23.1</log4j2.version>
+        <log4j2.version>2.26.1</log4j2.version>
 
-        <jackson.version>2.17.1</jackson.version>
+        <jakarta-bind.version>4.0.5</jakarta-bind.version>
+        <jackson.version>2.18.2</jackson.version>
+
         <json-path.version>2.9.0</json-path.version>
-        <commons-lang3.version>3.14.0</commons-lang3.version>
+        <commons-lang3.version>3.20.0</commons-lang3.version>
         <mockito.version>3.3.3</mockito.version>
     </properties>
 
@@ -81,6 +87,12 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+    <version>3.4.2</version> <!-- Downgrading to 3.4.2 bypasses the m2e Guice scope bug -->
+</plugin>        </plugins>
     </build>
 
 

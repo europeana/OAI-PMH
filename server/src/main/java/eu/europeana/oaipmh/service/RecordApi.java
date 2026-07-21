@@ -2,14 +2,16 @@ package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
-import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
+import eu.europeana.oaipmh.model.ResumptionToken;
+import eu.europeana.oaipmh.model.impl.ListRecordsImpl;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -29,24 +31,35 @@ public class RecordApi extends BaseProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(RecordApi.class);
 
-    @Value("${recordApiUrl}")
-    private String recordApiUrl;
-
-    @Value("${wskey}")
-    private String wskey;
-
     /**
      * @see RecordProvider#getRecord(String)
      */
     @Override
     public Record getRecord(String id) throws OaiPmhException {
         ResponseEntity<String> response = getResponseForRecord(id);
-        RDFMetadata rdf = new RDFMetadata(response.getBody());
+        Metadata rdf = new Metadata(response.getBody());
 
-        Header header = new Header();
-        header.setIdentifier(id);
-        header.setDatestamp(new Date());
+        Header header = new Header(id, new Date(), new ArrayList<>());
         return new Record(header, rdf);
+    }
+
+    @Override
+    public void checkRecordExists(String id) throws OaiPmhException {
+        ResponseEntity<String> response = getResponseForRecord(id);
+        if (response == null) {
+            throw new IdDoesNotExistException("Record with id '" + id + "' not found");
+        }
+    }
+
+    @Override
+    public ListRecords listRecords(
+            List<String> identifiers, ResumptionToken token) 
+                throws OaiPmhException {
+        List<Record> records = new ArrayList<>();
+        for (String id : identifiers) {
+            records.add(getRecord(id));
+        }
+        return new ListRecordsImpl(records, null);
     }
 
     private ResponseEntity<String> getResponseForRecord(String id) throws OaiPmhException {
@@ -65,7 +78,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);
         LOG.debug("Response = {}", response);
 
-        HttpStatus responseCode = response.getStatusCode();
+        HttpStatusCode responseCode = response.getStatusCode();
         if (HttpStatus.UNAUTHORIZED == responseCode) {
             throw new OaiPmhException("API key is not valid");
         } else if (HttpStatus.NOT_FOUND == responseCode) {
@@ -76,27 +89,8 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         return response;
     }
 
-    @Override
-    public void checkRecordExists(String id) throws OaiPmhException {
-        ResponseEntity<String> response = getResponseForRecord(id);
-        if (response == null) {
-            throw new IdDoesNotExistException("Record with id '" + id + "' not found");
-        }
-    }
-
-    @Override
-    public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
-        ListRecords listRecords = new ListRecords();
-        List<Record> records = new ArrayList<>();
-        for (Header header : identifiers) {
-            records.add(getRecord(header.getIdentifier()));
-        }
-        listRecords.setRecords(records);
-        return listRecords;
-    }
-
     private String constructRequestUrl(String id) {
-        StringBuilder url = new StringBuilder(recordApiUrl);
+        StringBuilder url = new StringBuilder(settings.getRecordApiUrl());
         url.append(id);
         url.append(".rdf?");
         url.append(appendWskey());
@@ -104,7 +98,7 @@ public class RecordApi extends BaseProvider implements RecordProvider {
     }
 
     private String appendWskey() {
-        return String.format("wskey=%s", wskey);
+        return String.format("wskey=%s", settings.getWskey());
     }
 
     /**

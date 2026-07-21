@@ -2,17 +2,17 @@ package eu.europeana.oaipmh.client;
 
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
-import eu.europeana.oaipmh.model.response.ListIdentifiersResponse;
+import eu.europeana.oaipmh.model.response.OAIResponse;
+
+import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ListIterator;
 
 @Component
 public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
@@ -89,28 +89,31 @@ public class ListIdentifiersQuery extends BaseQuery implements OAIPMHQuery {
 
         String request = getRequest(oaipmhServer.getOaipmhServer(), setName);
 
-        ListIdentifiersResponse response = (ListIdentifiersResponse) oaipmhServer.makeRequest(request, ListIdentifiersResponse.class);
-        ListIdentifiers responseObject = response.getListIdentifiers();
+        OAIResponse response = oaipmhServer.makeRequest(request, OAIResponse.class);
+        ListIdentifiers responseObject = (ListIdentifiers)response.getVerb();
         if (responseObject != null) {
-            counter += responseObject.getHeaders().size();
+            List<Header> headers = responseObject.stream().toList();
+
+            counter += headers.size();
             if (responseObject.getResumptionToken() != null) {
                 logger.setTotalItems(responseObject.getResumptionToken().getCompleteListSize());
             } else {
-                logger.setTotalItems(responseObject.getHeaders().size());
+                logger.setTotalItems(headers.size());
             }
-            collectIdentifiers(responseObject.getHeaders(), identifiers);
+            collectIdentifiers(headers, identifiers);
             //writeDataToLogFile(responseObject);
 
             while (responseObject.getResumptionToken() != null) {
                 request = getResumptionRequest(oaipmhServer.getOaipmhServer(), responseObject.getResumptionToken().getValue());
-                response = (ListIdentifiersResponse) oaipmhServer.makeRequest(request, ListIdentifiersResponse.class);
-                responseObject = response.getListIdentifiers();
+                response = oaipmhServer.makeRequest(request, OAIResponse.class);
+                responseObject = (ListIdentifiers)response.getVerb();
                 if (responseObject == null) {
                     break;
                 }
-                counter += responseObject.getHeaders().size();
+                headers = responseObject.stream().toList();
+                counter += headers.size();
                 logger.logProgress(counter);
-                collectIdentifiers(responseObject.getHeaders(), identifiers);
+                collectIdentifiers(headers, identifiers);
               //  writeDataToLogFile(responseObject);
             }
         }

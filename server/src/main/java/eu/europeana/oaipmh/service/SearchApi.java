@@ -3,7 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListIdentifiers;
 import eu.europeana.oaipmh.model.ResumptionToken;
-import eu.europeana.oaipmh.profile.TrackTime;
+import eu.europeana.oaipmh.model.impl.ListIdentifiersImpl;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -32,7 +31,6 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
 
     private static final Date DEFAULT_IDENTIFIER_TIMESTAMP = DateConverter.fromIsoDateTime("1970-01-01T00:00:00Z");
 
-    @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
     private Date defaultIdentifierTimestamp;
 
     /**
@@ -40,7 +38,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      */
     @PostConstruct
     private void initDefaults() {
-        if (defaultIdentifierTimestamp == null) {
+        if (settings.getDefaultIdentifierTimestamp() == null) {
             defaultIdentifierTimestamp = DEFAULT_IDENTIFIER_TIMESTAMP;
         }
     }
@@ -99,13 +97,13 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      */
     private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark, int pageSize) throws OaiPmhException {
         QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, pageSize));
-        ListIdentifiers result = responseToListIdentifiers(response);
+        ListIdentifiersImpl result = responseToListIdentifiers(response);
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(DateConverter.toIsoDate(from),
                     DateConverter.toIsoDate(until),
                     set,
                     metadataPrefix,
-                    new Date(System.currentTimeMillis() + getResumptionTokenTTL()),
+                    new Date(System.currentTimeMillis() + settings.getResumptionTokenTTL()),
                     response.getResults().getNumFound(),
                     cursor,
                     response.getNextCursorMark());
@@ -123,17 +121,13 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @param response response retrieved from Solr
      * @return next page of the list of identifiers
      */
-    @TrackTime
-    private ListIdentifiers responseToListIdentifiers(QueryResponse response) {
+    private ListIdentifiersImpl responseToListIdentifiers(QueryResponse response) {
         List<Header> headers = new ArrayList<>();
-
         SolrDocumentList docs = response.getResults();
         for (SolrDocument document : docs) {
             headers.add(documentToHeader(document));
         }
-        ListIdentifiers listIdentifiersResult = new ListIdentifiers();
-        listIdentifiersResult.setHeaders(headers);
-        return listIdentifiersResult;
+        return new ListIdentifiersImpl(headers);
     }
 
     /**

@@ -1,28 +1,33 @@
 package eu.europeana.oaipmh.model.request;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+
+import eu.europeana.oaipmh.model.SerializationConstants;
 
 /**
  * This class represents the ListIdentifiers verb request.
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ListIdentifiersRequest extends OAIRequest {
 
-    private static final long serialVersionUID = 2761469193591873856L;
-
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.metadataPrefix)
     private String metadataPrefix;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.set)
     private String set;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.from)
     private String from;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.until)
     private String until;
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.resumptionToken)
     private String resumptionToken;
+
+    protected ListIdentifiersRequest() {}
 
     public ListIdentifiersRequest(String verb, String baseUrl) {
         super(verb, baseUrl);

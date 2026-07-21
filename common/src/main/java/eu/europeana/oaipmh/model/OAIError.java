@@ -1,19 +1,18 @@
 package eu.europeana.oaipmh.model;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
-import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.model.response.ErrorResponse;
-import eu.europeana.oaipmh.model.response.OAIResponse;
 import eu.europeana.oaipmh.service.exception.ErrorCode;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
 
-public class OAIError extends OAIPMHVerb {
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
-    private static final long serialVersionUID = 8377284038295398272L;
+@XmlRootElement(name = error)
+public class OAIError implements OAIPMHVerb {
 
-    @XmlAttribute
+    @XmlAttribute(name=SerializationConstants.code)
     private String code;
 
     @JacksonXmlText
@@ -31,8 +30,8 @@ public class OAIError extends OAIPMHVerb {
         return code;
     }
 
-    public void setCode(ErrorCode code) {
-        this.code = code.toString();
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getValue() {
@@ -44,7 +43,6 @@ public class OAIError extends OAIPMHVerb {
     }
 
     @Override
-    public OAIResponse getResponse(OAIRequest request) {
-        return new ErrorResponse(this, request);
+    public void close() throws Exception {
     }
 }

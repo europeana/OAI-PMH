@@ -3,6 +3,8 @@ package eu.europeana.oaipmh.model.metadata;
 import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormat;
 import eu.europeana.oaipmh.model.MetadataFormatConverter;
+import eu.europeana.oaipmh.model.impl.ListMetadataFormatsImpl;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -93,29 +95,26 @@ public class MetadataFormatsTest {
 
     @Test
     public void listMetadataFormats() {
-        ListMetadataFormats formats = createListMetadataFormats();
+        ListMetadataFormatsImpl formats = createListMetadataFormats();
         ListMetadataFormats retrieved = testedMetadataFormats.listMetadataFormats();
 
         assertEquals(formats.getMetadataFormats().size(), retrieved.getMetadataFormats().size());
         assertEquals(1, retrieved.getMetadataFormats().size());
-        assertEquals(formats.getMetadataFormats().get(0).getMetadataPrefix(), retrieved.getMetadataFormats().get(0).getMetadataPrefix());
-        assertEquals(formats.getMetadataFormats().get(0).getSchema(), retrieved.getMetadataFormats().get(0).getSchema());
-        assertEquals(formats.getMetadataFormats().get(0).getMetadataNamespace(), retrieved.getMetadataFormats().get(0).getMetadataNamespace());
-        assertEquals(formats.getMetadataFormats().get(0).getConverter().getClass(), retrieved.getMetadataFormats().get(0).getConverter().getClass());
+
+        MetadataFormat f1 = formats.getMetadataFormats().stream().findFirst().get();
+        MetadataFormat f2 = retrieved.getMetadataFormats().stream().findFirst().get();
+        assertEquals(f1.getMetadataPrefix(), f2.getMetadataPrefix());
+        assertEquals(f1.getSchema(), f2.getSchema());
+        assertEquals(f1.getMetadataNamespace(), f2.getMetadataNamespace());
+        assertEquals(f1.getConverter().getClass(), f2.getConverter().getClass());
     }
 
-    private ListMetadataFormats createListMetadataFormats() {
-        ListMetadataFormats formats = new ListMetadataFormats();
+    private ListMetadataFormatsImpl createListMetadataFormats() {
         List<MetadataFormat> metadataFormats = new ArrayList<>();
-        MetadataFormat format = new MetadataFormat();
-
-        format.setConverter(new XML2EDMConverter());
-        format.setSchema(METADATA_FORMAT_SCHEMA);
-        format.setMetadataPrefix(METADATA_FORMAT_PREFIX);
-        format.setMetadataNamespace(METADATA_FORMAT_NAMESPACE);
-
+        MetadataFormat format = new MetadataFormat(
+                METADATA_FORMAT_PREFIX, METADATA_FORMAT_SCHEMA
+              , METADATA_FORMAT_NAMESPACE, new XML2EDMConverter());
         metadataFormats.add(format);
-        formats.setMetadataFormats(metadataFormats);
-        return formats;
+        return new ListMetadataFormatsImpl(metadataFormats);
     }
 }

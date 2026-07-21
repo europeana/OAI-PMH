@@ -1,30 +1,31 @@
 package eu.europeana.oaipmh.model;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.io.Serializable;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
+
 /**
  * This class represents header tag in the ListIdentifiers response XML
  */
-public class Header implements Serializable {
+@XmlRootElement(name=header)
+public class Header {
 
-    private static final long serialVersionUID = 4303710121544438193L;
-
-    @XmlElement
+    @XmlElement(name = SerializationConstants.identifier)
     private String identifier;
 
-    @XmlElement
+    @XmlElement(name = SerializationConstants.datestamp)
     private Date datestamp;
 
-    @XmlElement
+    @XmlElement(name = SerializationConstants.setSpec)
     private List<String> setSpec;
 
-    public Header() {
-        // empty constructor to allow deserialization
-    }
+    // empty constructor to allow deserialization
+    protected Header() {}
 
     public Header(String identifier, Date datestamp, String setSpec) {
         this.identifier = identifier;

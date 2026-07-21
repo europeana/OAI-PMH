@@ -5,7 +5,9 @@ import java.util.Set;
 
 public enum OaiParameterName {
 
-    METADATA_PREFIX("metadataPrefix"), FROM("from"), UNTIL("until"), SET("set"), RESUMPTION_TOKEN("resumptionToken"), VERB("verb"), IDENTIFIER("identifier");
+    METADATA_PREFIX("metadataPrefix"), FROM("from"), UNTIL("until")
+  , SET("set"), RESUMPTION_TOKEN("resumptionToken"), VERB("verb")
+  , IDENTIFIER("identifier");
 
     private final String parameterName;
 

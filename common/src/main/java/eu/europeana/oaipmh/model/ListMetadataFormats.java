@@ -1,43 +1,21 @@
 package eu.europeana.oaipmh.model;
 
-import eu.europeana.oaipmh.model.request.OAIRequest;
-import eu.europeana.oaipmh.model.response.ListMetadataFormatsResponse;
-import eu.europeana.oaipmh.model.response.OAIResponse;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
-import java.util.List;
+import eu.europeana.oaipmh.model.impl.ListMetadataFormatsImpl;
+
+import static eu.europeana.oaipmh.model.SerializationConstants.*;
+
+import java.util.Collection;
 
 /**
- * This class represents the ListIdentifiers tag in the ListIdentifiers verb XML response
+ * This class represents the ListMetadataFormats tag in 
+ * the ListMetadataFormats verb XML response
  */
-@XmlRootElement(name="ListMetadataFormats")
-public class ListMetadataFormats extends OAIPMHVerb {
+@XmlRootElement(name=ListMetadataFormats)
+@XmlJavaTypeAdapter(ListMetadataFormatsImpl.Adapter.class)
+public interface ListMetadataFormats extends OAIPMHVerb {
 
-    private static final long serialVersionUID = -8111855326108565425L;
-
-    @XmlElement(name="metadataFormat")
-    private List<MetadataFormat> metadataFormats;
-
-    public ListMetadataFormats() {
-        this.metadataFormats = new ArrayList<>();
-    }
-
-    public ListMetadataFormats(List<MetadataFormat> metadataFormats) {
-        this.metadataFormats = metadataFormats;
-    }
-
-    public List<MetadataFormat> getMetadataFormats() {
-        return metadataFormats;
-    }
-
-    public void setMetadataFormats(List<MetadataFormat> metadataFormats) {
-        this.metadataFormats = metadataFormats;
-    }
-
-    @Override
-    public OAIResponse getResponse(OAIRequest request) {
-        return new ListMetadataFormatsResponse(this, request);
-    }
+    public Collection<MetadataFormat> getMetadataFormats();
 }

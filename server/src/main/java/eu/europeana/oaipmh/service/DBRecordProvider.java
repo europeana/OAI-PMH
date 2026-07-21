@@ -4,108 +4,68 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClient;
 import com.mongodb.event.*;
 import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.edm.utils.EdmUtils;
-import eu.europeana.corelib.record.api.WebMetaInfo;
-import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
 import eu.europeana.metis.mongo.connection.MongoClientProvider;
 import eu.europeana.metis.mongo.dao.RecordDao;
-import eu.europeana.metis.schema.jibx.DatasetName;
-import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
-import eu.europeana.metis.schema.jibx.RDF;
-import eu.europeana.metis.utils.ExternalRequestUtil;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
-import eu.europeana.oaipmh.model.RDFMetadata;
+import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
-import eu.europeana.oaipmh.profile.TrackTime;
+import eu.europeana.oaipmh.model.ResumptionToken;
+import eu.europeana.oaipmh.model.impl.StreamListRecords;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.InternalServerErrorException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
+import java.util.stream.Stream;
 
+import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
+
+/**
+ * Provides functionality to interact with a MongoDB database for retrieving and managing records.
+ * Implements the {@link RecordProvider} interface, which facilitates OAI-PMH record operations,
+ * and the {@link ConnectionPoolListener} interface to manage MongoDB connection pool events.
+ * Extends {@link BaseProvider} for common utility methods.
+ */
 public class DBRecordProvider extends BaseProvider implements RecordProvider, ConnectionPoolListener {
 
     private static final Logger LOG                   = LogManager.getLogger(DBRecordProvider.class);
-    private static final String RECORD_WITH_ID        = "Record with id %s ";
-    private static final int    THREADS_THRESHOLD     = 10;
-    private static final int    MAX_THREADS_THRESHOLD = 20;
-
-    @Value("${mongodb.connectionUrl}")
-    private String connectionUrl;
-
-    @Value("${mongodb.record.dbname}")
-    private String recordDBName;
-
-    @Value("${enhanceWithTechnicalMetadata:true}")
-    private boolean enhanceWithTechnicalMetadata;
-
-    @Value("${expandWithFullText:false}")
-    private boolean expandWithFullText;
-
-    // number of threads from configuration
-    @Value("${threadsCount:1}")
-    private int threadsCount;
-
-    // TODO figure out difference between threadsCount and maxThreadCount.
-    // Looks like both are static numbers from the configuration and never changed (at least not after initialization in initThreadPool method)
-    @Value("${maxThreadsCount:20}")
-    private int maxThreadsCount;
 
     // for some reason we always get 2 connections directly after start-up that are not registered by the ConnectionPoolListener
     private int nrConnections = 2;
 
-    private ExecutorService threadPool;
     private MongoClient mongoClient;
     private RecordDao recordDao;
-
 
     @PostConstruct
     private void init() {
         initMongo();
-        initThreadPool();
-    }
-
-    private void initMongo() {
-        // We add a connectionPoolListener so we can keep track of the number of connections
-        // MongoClientOptions.Builder clientOptions = new MongoClientOptions.Builder().addConnectionPoolListener(this);
-        this.mongoClient = MongoClientProvider.create(connectionUrl).createMongoClient();
-        this.recordDao = new RecordDao(mongoClient, recordDBName, false);
-        LOG.info("Connected to mongo database {} at {}", recordDBName, new MongoClientURI(connectionUrl).getHosts());
     }
 
     /**
-     * Threads count must be at least 1. When it's bigger than <code>THREADS_THRESHOLD</code> but smaller than <code>maxThreadsCount</code>
-     * a warning is displayed. When it exceeds <code>maxThreadsCount</code> a warning is displayed and the value is set to <code>MAX_THREADS_THRESHOLD</code>
+     * Initializes the MongoDB connection and sets up required DAOs.
+     * This method creates a MongoClient instance using the specified
+     * connection URL and initializes the {@code RecordDao} object
+     * for database operations. It also logs the connection details.
+     *
+     * Note:
+     * - This method uses a connection pool listener to monitor the
+     *   number of active connections in the MongoDB connection pool.
      */
-    private void initThreadPool() {
-        // init thread pool
-        if (maxThreadsCount < THREADS_THRESHOLD) {
-            maxThreadsCount = MAX_THREADS_THRESHOLD;
-        }
-
-        if (threadsCount < 1) {
-            threadsCount = 1;
-        } else if (threadsCount > THREADS_THRESHOLD && threadsCount <= maxThreadsCount) {
-            LOG.warn("Number of threads exceeds " + THREADS_THRESHOLD + " which may narrow the number of clients working in parallel");
-        } else if (threadsCount > maxThreadsCount) {
-            LOG.warn("Number of threads exceeds {}, which may highly narrow the number of clients working in parallel. Changing to {}",
-                     maxThreadsCount, MAX_THREADS_THRESHOLD);
-            threadsCount = MAX_THREADS_THRESHOLD;
-        }
-        LOG.info("Creating new thread pool with {} threads.", threadsCount);
-        threadPool = Executors.newFixedThreadPool(threadsCount);
+    private void initMongo() {
+        this.mongoClient = MongoClientProvider.create(settings.getConnectionUrl()).createMongoClient();
+        this.recordDao = new RecordDao(mongoClient, settings.getRecordDBName(), false);
+        LOG.info("Connected to mongo database {} at {}", settings.getRecordDBName(), new MongoClientURI(settings.getConnectionUrl()).getHosts());
     }
 
     @Override
-    public void connectionPoolOpened(ConnectionPoolOpenedEvent connectionPoolOpenedEvent) {
+    public void connectionPoolCreated(ConnectionPoolCreatedEvent connectionPoolOpenedEvent) {
         LOG.debug("Connection pool opened {}", connectionPoolOpenedEvent);
     }
 
@@ -125,13 +85,13 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
     }
 
     @Override
-    public synchronized void connectionAdded(ConnectionAddedEvent connectionAddedEvent) {
+    public synchronized void connectionCreated(ConnectionCreatedEvent connectionAddedEvent) {
         nrConnections++;
         LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionAddedEvent, this.hashCode(), nrConnections);
     }
 
     @Override
-    public synchronized void connectionRemoved(ConnectionRemovedEvent connectionRemovedEvent) {
+    public synchronized void connectionClosed(ConnectionClosedEvent connectionRemovedEvent) {
         nrConnections--;
         LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionRemovedEvent, this.hashCode(), nrConnections);
     }
@@ -144,170 +104,92 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
      * @throws OaiPmhException
      */
     @Override
-    @TrackTime
     public Record getRecord(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
+        try {
+            Optional<FullBean> opt = recordDao.getRecord(recordId);
+            if ( opt.isEmpty() ) { return null; }
 
-        FullBean bean = getFullBean(recordId);
-        return new Record(getHeader(id, bean), prepareRDFMetadata(recordId, (FullBeanImpl) bean));
+            FullBean bean = opt.get();
+            return new Record(getHeader(id, bean), new Metadata(bean));
+        } catch (RuntimeException  e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
     }
 
+    /**
+     * Verifies the existence of a record based on the provided identifier and throws an exception if it does not exist.
+     *
+     * This method transforms the given identifier into the appropriate record ID format using the {@code prepareRecordId}
+     * method, then checks for its existence in the database via the {@code recordDao} object. If the record does not exist,
+     * an {@code IdDoesNotExistException} is thrown. If any unexpected runtime error occurs during the operation,
+     * an {@code InternalServerErrorException} is raised.
+     *
+     * @param id the identifier of the record to check
+     * @throws OaiPmhException if the record does not exist or if an unexpected error is encountered
+     */
     @Override
     public void checkRecordExists(String id) throws OaiPmhException {
         String recordId = prepareRecordId(id);
-
-        FullBean bean = getFullBean(recordId);
-        if (bean == null) {
-            throw new IdDoesNotExistException("Record with identifier " + id + " not found!");
-        }
-    }
-
-    @TrackTime
-    private FullBean getFullBean(String recordId) throws InternalServerErrorException {
         try {
-            return ExternalRequestUtil.retryableExternalRequest(() -> {
-                try {
-                    return recordDao.getFullBean(recordId);
-                } catch (Exception e) {
-                    throw new RuntimeException("Error retrieving fullbean for record "+recordId, e);
-                }
-            });
-        } catch (Exception e) {
-            LOG.error(String.format(RECORD_WITH_ID, recordId) + " could not be retrieved.", e);
-            throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be retrieved due to database problems.");
+            if ( recordDao.hasRecord(recordId) ) { return; }
+            throw new IdDoesNotExistException(msg(ID_DOES_NOT_EXIST_MSG, id));
+        } catch (RuntimeException  e) {
+            throw new InternalServerErrorException(e.getMessage());
         }
     }
 
-    private RDFMetadata prepareRDFMetadata(String recordId, FullBeanImpl bean) throws OaiPmhException {
-        if (bean != null) {
-            enhanceWithTechnicalMetadata(bean);
-            RDF rdf = getRDF(bean);
-            if (rdf == null) {
-                throw new InternalServerErrorException(String.format(RECORD_WITH_ID, recordId) + " could not be converted to EDM.");
-            }
-            updateDatasetName(rdf);
-            String edm = getEDM(rdf);
-            return new RDFMetadata(removeXMLHeader(edm));
-        }
-        throw new IdDoesNotExistException(recordId);
-    }
-
-    @TrackTime
-    public String getEDM(RDF rdf) {
-        try {
-            return EdmUtils.toEDM(rdf);
-        } catch (RuntimeException e) {
-            // in the past we've had records that threw a JibX marshalling error because of missing data,
-            // so we catch those to log which record fails
-            String id = "unknown";
-            if (!rdf.getEuropeanaAggregationList().isEmpty()) {
-                id = rdf.getEuropeanaAggregationList().get(0).getAbout();
-            }
-            LOG.error("Error converting RDF to EDM for record {}", id);
-            throw e;
-        }
-    }
-
-    @TrackTime
-    public RDF getRDF(FullBeanImpl bean) {
-        return EdmUtils.toRDF(bean);
-    }
-
+    /**
+     * Retrieves a list of records based on provided identifiers and an optional resumption token.
+     *
+     * @param identifiers a list of unique record identifiers used to fetch specific records.
+     * @param token an optional resumption token for paginated retrieval of records.
+     * @return a ListRecords instance containing the retrieved records and information about pagination.
+     * @throws OaiPmhException if an unexpected error occurs during the retrieval process.
+     */
     @Override
-    public ListRecords listRecords(List<Header> identifiers) throws OaiPmhException {
+    public ListRecords listRecords(List<String> identifiers,
+                                   ResumptionToken token) throws OaiPmhException {
         long startTime = System.currentTimeMillis();
-
-        List<Record> records = new ArrayList<>(identifiers.size());
-
-        // split identifiers into several threads
-        List<Future<CollectRecordsResult>> results;
-        List<Callable<CollectRecordsResult>> tasks = new ArrayList<>();
-
-        // when creating threads we round off, any remaining record is added to the last created thread
-        double perThread = identifiers.size() / (double) threadsCount;
-        LOG.debug("{} identifiers and {} threads, so {} records per thread", identifiers.size(), threadsCount, perThread);
-
-        // create task for each thread
-        for (int i = 0; i < threadsCount; i++) {
-            int start = (int) (i * perThread);
-            int end = (int) ((i + 1) * perThread);
-            List<Header> headers = identifiers.subList(start, end);
-            LOG.debug("Creating task {} to retrieve records {} to {}", i, start, end);
-            tasks.add(new CollectRecordsTask(headers, i));
-        }
+        List<String> preparedIdentifiers = identifiers.stream().map(this::prepareRecordId).toList();
         try {
-            // invoke a separate thread for each provider
-            results = threadPool.invokeAll(tasks);
-
-            CollectRecordsResult collectRecordsResult;
-            for (Future<CollectRecordsResult> result : results) {
-                collectRecordsResult = result.get();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Thread {} collected {} records.",
-                            collectRecordsResult.getThreadId(), collectRecordsResult.getRecords().size());
-                }
-                records.addAll((int) (collectRecordsResult.getThreadId() * perThread), collectRecordsResult.getRecords());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            LOG.error("Thread interrupted.", e);
-        } catch (ExecutionException e) {
-            String msg = "Error retrieving data";
-            LOG.error(msg, e);
-            throw new InternalServerErrorException(msg);
+            Stream<FullBean> stream = recordDao.getRecords(preparedIdentifiers);
+            return new StreamListRecords(
+                    stream.map(t -> createRecord(t)),
+                    token
+            );
         }
-
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("ListRecords using {} threads finished in {} ms.", threadsCount, (System.currentTimeMillis() - startTime));
-        }
-
-        ListRecords result = new ListRecords();
-        result.setRecords(records);
-        return result;
-    }
-
-    @TrackTime
-    private void updateDatasetName(RDF rdf) {
-        EuropeanaAggregationType aggregationType = rdf.getEuropeanaAggregationList().get(0);
-        if (aggregationType.getCollectionName() != null) {
-            DatasetName dsName = new DatasetName();
-            dsName.setString(aggregationType.getCollectionName().getString());
-            aggregationType.setDatasetName(dsName);
-            aggregationType.setCollectionName(null);
-        }
-    }
-
-    @TrackTime
-    private void enhanceWithTechnicalMetadata(FullBean bean) {
-        long start = System.currentTimeMillis();
-        if (enhanceWithTechnicalMetadata && bean != null) {
-            WebMetaInfo.injectWebMetaInfoBatch(bean, recordDao, null);
+        catch (RuntimeException e) {
+            throw new OaiPmhException(e);
+        } finally {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Technical metadata injected in {} ms.", String.valueOf(System.currentTimeMillis() - start));
+                LOG.debug("ListRecords finished in {} ms.", (System.currentTimeMillis() - startTime));
             }
         }
     }
 
-    @TrackTime
-    private String removeXMLHeader(String xml) {
-        int index = xml.indexOf("?>");
-        if (index != -1) {
-            return xml.substring(index + "?>".length());
-        }
-        return xml;
-    }
-
+    /**
+     * Creates a {@code Header} object based on the provided identifier and {@code FullBean}.
+     *
+     * The method extracts collection names and timestamps from the given {@code FullBean}
+     * to construct a {@code Header} containing the identifier, creation timestamp, and a
+     * list of set specifications. If the {@code FullBean} is {@code null}, or if the
+     * identifier does not exist, an {@code IdDoesNotExistException} is thrown.
+     *
+     * @param id the unique identifier for the record
+     * @param bean the {@code FullBean} containing metadata to construct the {@code Header};
+     *             includes collection names and creation timestamp
+     * @return a {@code Header} instance populated with the identifier, creation timestamp,
+     *         and list of set specifications
+     * @throws IdDoesNotExistException if the {@code id} does not correspond to an existing record
+     */
     private Header getHeader(String id, FullBean bean) throws IdDoesNotExistException {
         if (bean != null) {
-            Header header = new Header();
-            header.setIdentifier(id);
-            header.setDatestamp(bean.getTimestampCreated());
             List<String> setSpec = new ArrayList<>();
             for (String setName : bean.getEuropeanaCollectionName()) {
                 setSpec.add(getSetIdentifier(setName));
             }
-            header.setSetSpec(setSpec);
-            return header;
+            return new Header(id, bean.getTimestampCreated(), setSpec);
         }
         throw new IdDoesNotExistException(id);
     }
@@ -319,52 +201,25 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
         if (mongoClient != null) {
             mongoClient.close();
         }
-        if (threadPool != null) {
-            threadPool.shutdown();
-        }
     }
 
-
-    private class CollectRecordsTask implements Callable<CollectRecordsResult> {
-
-        private int threadId;
-
-        private List<Header> identifiers;
-
-        CollectRecordsTask(List<Header> identifiers, int threadId) {
-            this.identifiers = identifiers;
-            this.threadId = threadId;
-            LOG.trace("Create thread {}", threadId);
-        }
-
-        @Override
-        public CollectRecordsResult call() throws Exception {
-            List<Record> records = new ArrayList<>();
-
-            for (Header header : identifiers) {
-                String recordId = prepareRecordId(header.getIdentifier());
-                FullBean bean = getFullBean(recordId);
-                records.add(new Record(header, prepareRDFMetadata(recordId, (FullBeanImpl) bean)));
-            }
-            return new CollectRecordsResult(threadId, records);
-        }
-    }
-
-    private static class CollectRecordsResult {
-
-        private int threadId;
-        private List<Record> records;
-
-        CollectRecordsResult(int threadId, List<Record> records) {
-            this.threadId = threadId;
-            this.records = records;
-            LOG.trace("Thread {} returning {} records", threadId, records.size());
-        }
-        int getThreadId() {
-            return threadId;
-        }
-        List<Record> getRecords() {
-            return records;
-        }
+    /**
+     * Creates a new {@code Record} object using the provided {@code FullBean}.
+     *
+     * The method constructs a {@code Record} with a {@code Header} and {@code Metadata} initialized
+     * based on the data from the {@code FullBean} parameter. The {@code Header} is created using
+     * the ID, the first entry of the Europeana Collection Name array, and a null timestamp.
+     * The {@code Metadata} is initialized with the {@code FullBean}.
+     *
+     * @param bean the {@code FullBean} containing data for constructing the {@code Record}.
+     *             It provides the ID, collection name, and other relevant metadata.
+     *
+     * @return a {@code Record} instance containing a populated {@code Header} and {@code Metadata}.
+     */
+    private Record createRecord(FullBean bean) {
+        return new Record(
+                 getHeader(prepareFullId(bean.getAbout()), bean)
+                , new Metadata(bean));
     }
 }
+

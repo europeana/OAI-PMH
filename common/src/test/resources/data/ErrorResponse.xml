@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-07-01T19:48:18Z</responseDate>
+    <request verb="ListMetadataFormats" identifier="test">https://api.europeana.eu/oai</request>
+    <error code="idDoesNotExist">Record with identifier test not found!</error>
+</OAI-PMH>
