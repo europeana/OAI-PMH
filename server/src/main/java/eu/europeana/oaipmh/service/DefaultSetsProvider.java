@@ -11,13 +11,19 @@ import eu.europeana.oaipmh.util.SolrQueryBuilder;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FieldStatsInfo;
 import org.apache.solr.client.solrj.response.QueryResponse;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static eu.europeana.oaipmh.util.AppConfigConstants.OAI_PMH_SOLR_SERVICE;
 import static eu.europeana.oaipmh.util.SolrConstants.DATASET_NAME;
 
-public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvider {
+public class DefaultSetsProvider extends BaseProvider implements SetsProvider {
+
+    @Resource(name = OAI_PMH_SOLR_SERVICE)
+    SolrService solrService;
 
     /**
      * List the first or the only page of sets.
@@ -27,7 +33,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
      */
     @Override
     public ListSets listSets(Date from, Date until) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listSets(settings.getSetsPerPage(), from, until, 0));
+        QueryResponse response = solrService.executeQuery(SolrQueryBuilder.listSets(settings.getSetsPerPage(), from, until, 0));
         FieldStatsInfo info = response.getFieldStatsInfo().get(DATASET_NAME);
         if (info == null) {
             throw new InternalServerErrorException("An error occurred while retrieving information from the index.");
@@ -45,7 +51,7 @@ public class DefaultSetsProvider extends SolrBasedProvider implements SetsProvid
     @Override
     public ListSets listSets(ResumptionToken resumptionToken) throws OaiPmhException {
         long offset = resumptionToken.getCursor() + settings.getSetsPerPage();
-        QueryResponse response = executeQuery(
+        QueryResponse response = solrService.executeQuery(
                 SolrQueryBuilder.listSets(settings.getSetsPerPage(), null, null, offset));
         return responseToListSets(response, offset
                                 , resumptionToken.getCompleteListSize());

@@ -1,34 +1,38 @@
 package eu.europeana.oaipmh.web;
 
+import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.GlobalExceptionHandler;
 import org.apache.commons.io.Charsets;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+
+
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
 
 import java.nio.charset.StandardCharsets;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 /**
  * Test the application's controller
@@ -41,8 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * flexible assertion of the content-type using contentTypeCompatibleWith()
  * We can improvide this later with Junit5
  */
-@RunWith(MockitoJUnitRunner.class)
-public class VerbControllerTest {
+@SpringBootTest
+public class VerbControllerTest extends AbstractIntegrationIT {
 
     private static final String IDENTIFY_RESPONSE = "<OAI-PMH><responseDate>2018-03-16T10:10:32Z</responseDate><request verb=\"Identify\">\"https://oai.europeana.eu/oai\"</request><Identify><repositoryName>Europeana Repository</repositoryName><earliestDateStamp>2013-02-15T13:04:50Z</earliestDateStamp><deletedRecord>no</deletedRecord><adminEmail>api@europeana.eu</adminEmail></Identify></OAI-PMH>";
 
@@ -69,353 +73,356 @@ public class VerbControllerTest {
     private static final String MEDIA_TYPE_TEXT_XML = "text/xml;charset=UTF-8";
     private static final String MEDIA_TYPE_APPLICATION_XML = "application/xml;charset=UTF-8";
 
-    private MockMvc mockMvc;
 
-    @Mock
-    private OaiPmhService ops;
-
-    @InjectMocks
-    private VerbController verbController;
 
     /**
      * Loads the entire webapplication as mock server
-     */
-    @Before
-    public void setup() {
-        GlobalExceptionHandler globalExceptionHandler = spy(GlobalExceptionHandler.class);
-        mockMvc = MockMvcBuilders.standaloneSetup(verbController).setControllerAdvice(globalExceptionHandler).build();
-        assertThat(this.mockMvc).isNotNull();
+//     */
+//    @Before
+//    public void setup() {
+//        GlobalExceptionHandler globalExceptionHandler = spy(GlobalExceptionHandler.class);
+//        mockMvc = MockMvcBuilders.standaloneSetup(verbController).setControllerAdvice(globalExceptionHandler).build();
+//        assertThat(this.mockMvc).isNotNull();
+//    }
+
+    private static final String OAI_ENDPOINT = "/oai?verb=Identify";
+
+    // verb=Identify tests
+    @Test
+    void shouldReturnXmlForGetRequestWithTextXmlAcceptHeader() throws Exception {
+        String response = mockMvc.perform(get(OAI_ENDPOINT)
+                        .accept(MediaType.TEXT_XML))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML)).andReturn().getResponse().getContentAsString();
+        System.out.println(response);
     }
 
     @Test
-    public void testIdentify() throws Exception {
-      //  given(ops.getIdentify(any(IdentifyRequest.class))).willReturn(IDENTIFY_RESPONSE);
-
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=Identify").accept(MediaType.parseMediaType("text/xml")))
+    void shouldReturnXmlForPostRequestWithApplicationXmlAcceptHeader() throws Exception {
+        mockMvc.perform(post(OAI_ENDPOINT)
+                        .accept(MediaType.APPLICATION_XML))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
-
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/oai?verb=Identify").accept(MediaType.parseMediaType("application/xml")))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
-
-        // if no headers - default to application/xml
-        this.mockMvc.perform(MockMvcRequestBuilders.post("/oai?verb=Identify"))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML));
     }
 
+    @Test
+    void shouldDefaultToApplicationXmlWhenNoAcceptHeaderProvided() throws Exception {
+        mockMvc.perform(post(OAI_ENDPOINT))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML));
+    }
+    
     @Test
     public void testListMetadataFormats() throws Exception {
       //  given(ops.listMetadataFormats(any(ListMetadataFormatsRequest.class))).willReturn(LIST_METADATA_FORMATS_RESPONSE);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("application/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("application/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats"))
+        this.mockMvc.perform(get("/oai?verb=ListMetadataFormats"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
     }
 
     @Test
     public void testListMetadataFormatsWrongArgument() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListMetadataFormats&resumptionToken=XXX").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListMetadataFormats&resumptionToken=XXX").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListMetadataFormatsWrongMethod() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.put("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(put("/oai?verb=ListMetadataFormats").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isMethodNotAllowed())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testGetRecord() throws Exception {
      //   given(ops.getRecord(any(GetRecordRequest.class))).willReturn(RECORD_RESPONSE);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399").accept(MediaType.parseMediaType("application/xml")))
+        this.mockMvc.perform(get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399").accept(MediaType.parseMediaType("application/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399"))
+        this.mockMvc.perform(get("/oai?verb=GetRecord&metadataPrefix=edm&identifier=90402/BK_1978_399"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
     }
 
     @Test
     public void testListIdentifiersWithResumptionToken() throws Exception {
      //   given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE_WITH_TOKEN);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("application/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("application/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_TOKEN))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
     }
 
     @Test
     public void testListIdentifiersWithCorruptedResumptionToken() throws Exception {
-        given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willCallRealMethod();
+       // given(oaiPmhService.listIdentifiers(any(ListIdentifiersRequest.class))).willCallRealMethod();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_CORRUPTED_TOKEN).accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&resumptionToken=" + LIST_IDENTIFIERS_CORRUPTED_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiers() throws Exception {
     //    given(ops.listIdentifiers(any(ListIdentifiersRequest.class))).willReturn(LIST_IDENTIFIERS_RESPONSE);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
                         .accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
                         .accept(MediaType.parseMediaType("application/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
 
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z"))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
     }
 
     @Test
     public void testInvalidVerb() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=XXX").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=XXX").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithEmptySet() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithMultipleSets() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=123&set=1234").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&set=123&set=1234").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithEmptyFrom() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithExclusiveParameters() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&resumptionToken=ABBB").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&resumptionToken=ABBB").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithExclusiveParametersForToken() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&resumptionToken=ABBB&set=123").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&resumptionToken=ABBB&set=123").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithMultipleFroms() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017-02-02T01:03:00Z&from=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017-02-02T01:03:00Z&from=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     public void testListIdentifiersWithEmptyUntil() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&until=").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&until=").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithMultipleUntils() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&until=2017-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&until=2017-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithIncorrectFrom() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithIncorrectUntil() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&until=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&until=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithIncorrectPeriod() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2018-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2018-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListIdentifiersWithIncorrectParameterName() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017-02-02T01:03:00Z&to=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListIdentifiers&metadataPrefix=edm&from=2017-02-02T01:03:00Z&to=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithResumptionToken() throws Exception {
     //    given(ops.listRecords(any(ListRecordsRequest.class))).willReturn(LIST_RECORDS_RESPONSE_WITH_TOKEN);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN).accept(MediaType.parseMediaType("application/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN).accept(MediaType.parseMediaType("application/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_TOKEN))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
     }
 
     @Test
     public void testListRecordsWithCorruptedResumptionToken() throws Exception {
-        given(ops.listRecords(any(ListRecordsRequest.class))).willCallRealMethod();
+       // given(oaiPmhService.listRecords(any(ListRecordsRequest.class))).willCallRealMethod();
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_CORRUPTED_TOKEN).accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&resumptionToken=" + LIST_RECORDS_CORRUPTED_TOKEN).accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecords() throws Exception {
     //    given(ops.listRecords(any(ListRecordsRequest.class))).willReturn(LIST_RECORDS_RESPONSE);
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
                         .accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.TEXT_XML));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_XML));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z")
                         .accept(MediaType.parseMediaType("application/xml")))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z"))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&set=2026011&from=2017-02-02T01:03:00Z&until=2017-03-02T01:03:00Z"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_XML_VALUE));
     }
 
     @Test
     public void testListRecordsWithEmptySet() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&set=").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&set=").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithMultipleSets() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&set=123&set=345").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&set=123&set=345").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithEmptyFrom() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&from=").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&from=").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithExclusiveParameters() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&resumptionToken=ABBB").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&resumptionToken=ABBB").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithExclusiveParametersForToken() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&resumptionToken=ABBB&set=1232").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&resumptionToken=ABBB&set=1232").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithMultipleFroms() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017-02-02T01:03:00Z&from=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017-02-02T01:03:00Z&from=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithEmptyUntil() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&until=").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&until=").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithMultipleUntils() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&until=2017-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&until=2017-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithIncorrectFrom() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithIncorrectUntil() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&until=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&until=2017.02.02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithIncorrectPeriod() throws Exception {
 
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&from=2018-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&from=2018-02-02T01:03:00Z&until=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 
     @Test
     public void testListRecordsWithIncorrectParameterName() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017-02-02T01:03:00Z&to=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
+        this.mockMvc.perform(get("/oai?verb=ListRecords&metadataPrefix=edm&from=2017-02-02T01:03:00Z&to=2017-02-02T01:03:00Z").accept(MediaType.parseMediaType("text/xml")))
                 .andExpect(status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().contentType(MEDIA_TYPE_TEXT_XML));
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
     }
 }

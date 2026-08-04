@@ -59,6 +59,7 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
      *   number of active connections in the MongoDB connection pool.
      */
     private void initMongo() {
+        System.out.println(settings.getConnectionUrl());
         this.mongoClient = MongoClientProvider.create(settings.getConnectionUrl()).createMongoClient();
         this.recordDao = new RecordDao(mongoClient, settings.getRecordDBName(), false);
         LOG.info("Connected to mongo database {} at {}", settings.getRecordDBName(), new MongoClientURI(settings.getConnectionUrl()).getHosts());
@@ -220,6 +221,10 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
         return new Record(
                  getHeader(prepareFullId(bean.getAbout()), bean)
                 , new Metadata(bean));
+    }
+
+    public RecordDao getRecordDao() {
+        return recordDao;
     }
 }
 

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+    <responseDate>2026-07-28T19:22:54Z</responseDate>
+    <request verb="GetRecord" metadataPrefix="edm" identifier="/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A">https://oai-pmh-acceptance.eanadev.org/oai</request>
+    <GetRecord>
+        <record>
+            <header>
+                <identifier>/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A</identifier>
+                <datestamp>1970-01-01T00:00:00Z</datestamp>
+                <setSpec>00101</setSpec>
+            </header>
+            <metadata>
+                <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:edm="http://www.europeana.eu/schemas/edm/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:wgs84_pos="http://www.w3.org/2003/01/geo/wgs84_pos#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:rdaGr2="http://rdvocab.info/ElementsGr2/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:ebucore="http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#" xmlns:doap="http://usefulinc.com/ns/doap#" xmlns:odrl="http://www.w3.org/ns/odrl/2/" xmlns:cc="http://creativecommons.org/ns#" xmlns:ore="http://www.openarchives.org/ore/terms/" xmlns:svcs="http://rdfs.org/sioc/services#" xmlns:oa="http://www.w3.org/ns/oa#" xmlns:dqv="http://www.w3.org/ns/dqv#" xmlns:schema="https://schema.org/" xmlns:prov="http://www.w3.org/ns/prov#">
+                    <edm:ProvidedCHO rdf:about="http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                    <edm:WebResource rdf:about="http://www.biblartepac.gulbenkian.pt/ipac20/ipac.jsp?&profile=ba&uri=full=3100024~!189295~!0">
+                        <rdf:type rdf:resource="http://www.europeana.eu/schemas/edm/FullTextResource"/>
+                        <ebucore:hasMimeType>text/html</ebucore:hasMimeType>
+                        <ebucore:fileByteSize rdf:datatype="http://www.w3.org/2001/XMLSchema#long">58944</ebucore:fileByteSize>
+                    </edm:WebResource>
+                    <edm:TimeSpan rdf:about="http://semium.org/time/AD2xxx">
+                        <skos:prefLabel xml:lang="en">Second millenium AD</skos:prefLabel>
+                        <skos:prefLabel xml:lang="en">Second millenium AD, years 1001-2000</skos:prefLabel>
+                        <skos:prefLabel xml:lang="fr">2e millénaire après J.-C.</skos:prefLabel>
+                        <dcterms:isPartOf rdf:resource="http://semium.org/time/ChronologicalPeriod"/>
+                    </edm:TimeSpan>
+                    <edm:TimeSpan rdf:about="http://semium.org/time/Time">
+                        <skos:prefLabel xml:lang="en">Time</skos:prefLabel>
+                    </edm:TimeSpan>
+                    <edm:TimeSpan rdf:about="http://semium.org/time/ChronologicalPeriod">
+                        <skos:prefLabel xml:lang="en">Chronological period</skos:prefLabel>
+                        <dcterms:isPartOf rdf:resource="http://semium.org/time/Time"/>
+                    </edm:TimeSpan>
+                    <edm:TimeSpan rdf:about="#1931">
+                        <skos:prefLabel xml:lang="zxx">1931</skos:prefLabel>
+                        <dcterms:isPartOf rdf:resource="http://data.europeana.eu/timespan/20"/>
+                        <edm:begin>1931-01-01</edm:begin>
+                        <edm:end>1931-12-31</edm:end>
+                        <skos:notation>1931</skos:notation>
+                    </edm:TimeSpan>
+                    <ore:Aggregation rdf:about="http://data.europeana.eu/aggregation/provider/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A">
+                        <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <edm:dataProvider rdf:resource="http://data.europeana.eu/organization/3634"/>
+                        <edm:isShownAt rdf:resource="http://www.biblartepac.gulbenkian.pt/ipac20/ipac.jsp?&profile=ba&uri=full=3100024~!189295~!0"/>
+                        <edm:provider rdf:resource="http://data.europeana.eu/organization/3634"/>
+                        <edm:rights rdf:resource="http://creativecommons.org/licenses/by/3.0/"/>
+                        <dqv:hasQualityAnnotation>
+                            <dqv:QualityAnnotation>
+                                <dcterms:created>2019-07-17T09:42:01.193Z</dcterms:created>
+                                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier0"/>
+                            </dqv:QualityAnnotation>
+                        </dqv:hasQualityAnnotation>
+                        <dqv:hasQualityAnnotation>
+                            <dqv:QualityAnnotation>
+                                <dcterms:created>2019-07-17T09:42:01.193Z</dcterms:created>
+                                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/provider/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTier0"/>
+                            </dqv:QualityAnnotation>
+                        </dqv:hasQualityAnnotation>
+                    </ore:Aggregation>
+                    <ore:Proxy rdf:about="http://data.europeana.eu/proxy/europeana/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A">
+                        <dc:coverage xml:lang="pt">Teatros, Arganil (Portugal), Séc. 20</dc:coverage>
+                        <dc:coverage xml:lang="pt">Arquitectura, Arganil (Portugal), Séc. 20</dc:coverage>
+                        <dc:coverage xml:lang="en">Teatros, Arganil (Portugal), Séc. 20</dc:coverage>
+                        <dc:creator xml:lang="pt">Lino, Raul, 1879-1974</dc:creator>
+                        <dc:creator xml:lang="en">Lino, Raul, 1879-1974</dc:creator>
+                        <dc:description xml:lang="pt">Monografia</dc:description>
+                        <dc:description xml:lang="pt">Monographic bibliographic item</dc:description>
+                        <dc:description xml:lang="en">Monographic bibliographic item</dc:description>
+                        <dc:subject xml:lang="pt">Teatros, Arganil (Portugal), Séc. 20</dc:subject>
+                        <dc:subject xml:lang="pt">Arquitectura, Arganil (Portugal), Séc. 20</dc:subject>
+                        <dc:subject xml:lang="pt">725.822(469.322)"19"(084.11)</dc:subject>
+                        <dc:subject xml:lang="en">Teatros, Arganil (Portugal), Séc. 20</dc:subject>
+                        <dc:subject xml:lang="en">725.822 (469.322) “19” (084.11)</dc:subject>
+                        <dc:title xml:lang="pt">Projecto de um teatro-clube, Arganil</dc:title>
+                        <dc:title xml:lang="en">A teatro-club project, Arganil</dc:title>
+                        <dc:type xml:lang="pt">material gráfico a duas dimensões</dc:type>
+                        <dc:type xml:lang="en">twodimensional graphics</dc:type>
+                        <dc:type xml:lang="es">Projectos de arquitectura</dc:type>
+                        <dcterms:hasPart xml:lang="es">Espólio Raul Lino; 1902-1974</dcterms:hasPart>
+                        <dcterms:issued rdf:resource="#1931"/>
+                        <dcterms:issued xml:lang="zxx">1931</dcterms:issued>
+                        <dcterms:spatial xml:lang="pt">Arganil (Portugal)</dcterms:spatial>
+                        <dcterms:spatial xml:lang="en">Arganil (Portugal)</dcterms:spatial>
+                        <dcterms:temporal xml:lang="pt">Séc. 20</dcterms:temporal>
+                        <dcterms:temporal xml:lang="en">Séc. 20</dcterms:temporal>
+                        <edm:europeanaProxy>true</edm:europeanaProxy>
+                        <edm:year>1931</edm:year>
+                        <ore:proxyFor rdf:resource="http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/europeana/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <edm:type>IMAGE</edm:type>
+                    </ore:Proxy>
+                    <ore:Proxy rdf:about="http://data.europeana.eu/proxy/provider/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A">
+                        <dc:coverage>Teatros, Arganil (Portugal), Séc. 20</dc:coverage>
+                        <dc:coverage>Arquitectura, Arganil (Portugal), Séc. 20</dc:coverage>
+                        <dc:creator>Lino, Raul, 1879-1974</dc:creator>
+                        <dc:description>Monografia</dc:description>
+                        <dc:description>Monographic bibliographic item</dc:description>
+                        <dc:description>Alçados, cortes, [s.d.]. 2 desenhos originais; 1:100; 24,5 x 86,5 cm, 39 x 80 cm. RLDA 288.0-288.1</dc:description>
+                        <dc:description>Cortes, [s.d.]. 3 desenhos originais; 1:100; 17 x 28 cm a 26,5 x 35,5 cm. RLDA 288.2-288.4</dc:description>
+                        <dc:description>Plantas, [s.d.]. 7 desenhos originais; 1:100; 30 x 29 cm a 39 x 86 cm. RLDA 288.5-288.11</dc:description>
+                        <dc:description>Pormenores, [s.d.]. 1 desenho original; 1:1 a 1:20; 39,5 x 80,5 cm . RLDA 288.12</dc:description>
+                        <dc:format>13 desenhos de arquitectura</dc:format>
+                        <dc:identifier>189295</dc:identifier>
+                        <dc:identifier>CALLNUMBER-RL 288</dc:identifier>
+                        <dc:rights rdf:resource="http://www.biblartepac.gulbenkian.pt/hipres/disclaimers/disclaimerBuse.htm"/>
+                        <dc:rights rdf:resource="http://www.biblartepac.gulbenkian.pt/hipres/disclaimers/disclaimerBeng.htm"/>
+                        <dc:subject>Teatros, Arganil (Portugal), Séc. 20</dc:subject>
+                        <dc:subject>Arquitectura, Arganil (Portugal), Séc. 20</dc:subject>
+                        <dc:subject>725.822(469.322)"19"(084.11)</dc:subject>
+                        <dc:title>Projecto de um teatro-clube, Arganil</dc:title>
+                        <dc:type>material gráfico a duas dimensões</dc:type>
+                        <dc:type>twodimensional graphics</dc:type>
+                        <dc:type>Projectos de arquitectura</dc:type>
+                        <dcterms:hasPart>Espólio Raul Lino; 1902-1974</dcterms:hasPart>
+                        <dcterms:issued>1931</dcterms:issued>
+                        <dcterms:spatial>Arganil (Portugal)</dcterms:spatial>
+                        <dcterms:temporal>Séc. 20</dcterms:temporal>
+                        <edm:europeanaProxy>false</edm:europeanaProxy>
+                        <ore:proxyFor rdf:resource="http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <ore:proxyIn rdf:resource="http://data.europeana.eu/aggregation/provider/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <edm:type>IMAGE</edm:type>
+                    </ore:Proxy>
+                    <edm:EuropeanaAggregation rdf:about="http://data.europeana.eu/aggregation/europeana/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A">
+                        <edm:aggregatedCHO rdf:resource="http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <edm:datasetName>00101_M_PT_Gulbenkian_biblioteca_digital</edm:datasetName>
+                        <edm:country>Portugal</edm:country>
+                        <edm:landingPage rdf:resource="https://www.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                        <edm:language>pt</edm:language>
+                        <edm:completeness>0</edm:completeness>
+                        <dcterms:created>1970-01-01T00:00:00.000Z</dcterms:created>
+                        <dcterms:modified>1970-01-01T00:00:00.000Z</dcterms:modified>
+                        <dqv:hasQualityAnnotation>
+                            <dqv:QualityAnnotation>
+                                <dcterms:created>2025-07-09T14:26:17.281762847Z</dcterms:created>
+                                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/contentTier0"/>
+                            </dqv:QualityAnnotation>
+                        </dqv:hasQualityAnnotation>
+                        <dqv:hasQualityAnnotation>
+                            <dqv:QualityAnnotation>
+                                <dcterms:created>2025-07-09T14:26:17.281769340Z</dcterms:created>
+                                <oa:hasTarget rdf:resource="http://data.europeana.eu/aggregation/europeana/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A"/>
+                                <oa:hasBody rdf:resource="http://www.europeana.eu/schemas/epf/metadataTierB"/>
+                            </dqv:QualityAnnotation>
+                        </dqv:hasQualityAnnotation>
+                    </edm:EuropeanaAggregation>
+                    <foaf:Organization rdf:about="http://data.europeana.eu/organization/3634">
+                        <skos:prefLabel xml:lang="pt">Fundação Calouste Gulbenkian</skos:prefLabel>
+                        <skos:prefLabel xml:lang="en">Calouste Gulbenkian Foundation</skos:prefLabel>
+                    </foaf:Organization>
+                </rdf:RDF>
+            </metadata>
+        </record>
+    </GetRecord>
+</OAI-PMH>

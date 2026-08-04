@@ -2,7 +2,6 @@ package eu.europeana.oaipmh.service;
 
 import eu.europeana.oaipmh.model.ListSets;
 import eu.europeana.oaipmh.model.ResumptionToken;
-import eu.europeana.oaipmh.model.Set;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
 import eu.europeana.oaipmh.util.ResumptionTokenHelper;
@@ -11,41 +10,32 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.params.SolrParams;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.PropertySources;
-
 import java.io.IOException;
 import java.util.Date;
 
-import static org.junit.Assert.*;
-
+/**
+ * Test class for validating the functionality of the DefaultSetsProvider implementation.
+ * Extends the SolrBasedProviderTestCase to utilize common test utilities and mock setup
+ * for Solr-based OAI-PMH providers.
+ *
+ * This class contains unit tests to validate the behavior of the `listSets` method under
+ * different conditions, including cases with date filters and resumption tokens. The tests
+ * rely on the use of mocked CloudSolrClient and utility methods for generating test responses.
+ */
 @RunWith(MockitoJUnitRunner.class)
-@PropertySources(value = {})
 @SpringBootTest
-public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
-    private static final String LIST_SETS       = "listSets";
-    private static final String LIST_SETS_FROM  = "listSetsFrom";
+public class DefaultSetsProviderTest extends SolrServiceTestCase {
 
-    private static final String LIST_SETS_WITH_RESUMPTION_TOKEN_SECOND_PAGE = "listSetsWithResumptionTokenSecondPage";
-
-    private static final long RESUMPTION_TOKEN_TTL = 86400000;
-
-    private static final long COMPLETE_LIST_SIZE = 500;
-
-    private static final String DATE_1 = "2018-11-01T00:00:00.00Z";
-
-    @InjectMocks
-    private DefaultSetsProvider setsProvider;
 
     @Test
     public void listSets() throws IOException, SolrServerException, OaiPmhException {
         QueryResponse response = getResponse(LIST_SETS);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
 
-        ListSets result = setsProvider.listSets(null, null);
+        ListSets result =  setsProvider.listSets(null, null);
         assertResults(result);
     }
 
@@ -53,27 +43,21 @@ public class DefaultSetsProviderTest extends SolrBasedProviderTestCase {
     public void listSetsFrom() throws IOException, SolrServerException, OaiPmhException {
         QueryResponse response = getResponse(LIST_SETS_FROM);
         Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
+
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         ListSets result = setsProvider.listSets(from, null);
         assertResults(result);
     }
 
-    private void assertResults(ListSets results) {
-        assertNotNull(results);
-        assertNotNull(results.stream());
-        assertFalse(results.isEmpty());
-        results.stream().forEach(set -> {
-            assertNotNull(set.getSetSpec());
-            assertNotNull(set.getSetName());
-        });
-        ResumptionToken token = results.getResumptionToken();
-        if (token != null) {
-            assertNotNull(token.getValue());
-            assertTrue(token.getCursor() >= 0 && token.getCursor() < token.getCompleteListSize());
-            assertNotNull(token.getExpirationDate());
-        }
-    }
+    @Test
+    public void listSetsUntil() throws IOException, SolrServerException, OaiPmhException {
+        QueryResponse response = getResponse(LIST_SETS_FROM);
+        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
 
+        Date until = DateConverter.fromIsoDateTime(DATE_2);
+        ListSets result = setsProvider.listSets(null, until);
+        assertResults(result);
+    }
 
     @Test
     public void listSetsWithResumptionToken() throws IOException, SolrServerException, OaiPmhException {
