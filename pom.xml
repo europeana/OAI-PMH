@@ -50,6 +50,8 @@
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <mockito.version>5.23.0</mockito.version>
         <junit5.version>6.1.1</junit5.version>
+        <testcontainers.version>1.21.4</testcontainers.version>
+
     </properties>
 
     <repositories>

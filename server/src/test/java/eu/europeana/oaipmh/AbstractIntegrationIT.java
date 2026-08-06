@@ -5,17 +5,22 @@ import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
 import eu.europeana.oaipmh.model.serialize.SerializationHandler;
 import eu.europeana.oaipmh.model.serialize.ServerSerializationProvider;
 import eu.europeana.oaipmh.service.*;
+import eu.europeana.oaipmh.utils.MongoContainer;
+import eu.europeana.oaipmh.utils.SolrContainer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.TestInstance;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.SolrContainer;
+import org.testcontainers.containers.output.ToStringConsumer;
+import org.testcontainers.containers.output.WaitingConsumer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
@@ -38,6 +43,8 @@ import java.io.InputStream;
 @SpringBootTest
 @Testcontainers
 @AutoConfigureMockMvc
+@DirtiesContext
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AbstractIntegrationIT extends OaiPmhITConstants {
 
     private static final Logger logger = LogManager.getLogger(AbstractIntegrationIT.class);
@@ -62,33 +69,30 @@ public class AbstractIntegrationIT extends OaiPmhITConstants {
     @Autowired
     protected MockMvc mockMvc;
 
-    // container with default dbname test
-    @Container
-    static MongoDBContainer mongo = new MongoDBContainer("mongo:7.0");
 
-    //  used anywhere only added for the startu of application. we use mocked solr client later in all the IT as we can not save the data
-//    @Container
-//    static SolrContainer solr =
-//            new SolrContainer(DockerImageName.parse("solr:9.9.0")) // we use solrj 8.11.3
-//                    .withExposedPorts(8983)
-//                    .withZookeeper(true)
-//                    .withCommand("solr start -c") // The -c flag starts Solr in SolrCloud mode.
-//                    .withCollection("testcollection")
-//                    .withStartupTimeout(Duration.ofMinutes(3));
-    // Create the solr container.
-    @Container
-    static SolrContainer solr = new SolrContainer(DockerImageName.parse("solr:8.11.3"));
+    private static final MongoContainer MONGO_CONTAINER;
+    private static final SolrContainer SOLR_CONTAINER;
 
+    static {
+        MONGO_CONTAINER = new MongoContainer("oaipmh-it")
+                .withLogConsumer(new WaitingConsumer().andThen(new ToStringConsumer()));
+
+        MONGO_CONTAINER.start();
+
+        SOLR_CONTAINER = new SolrContainer("oaipmh-solr-search")
+                .withLogConsumer(new WaitingConsumer().andThen(new ToStringConsumer()));
+
+        SOLR_CONTAINER.start();
+//        SOLR_CONTAINER.createCollection();
+    }
 
     @DynamicPropertySource
     static void setProperties(DynamicPropertyRegistry registry) {
-        registry.add("mongodb.connectionUrl", mongo::getReplicaSetUrl);
-        registry.add("mongodb.record.dbname", () -> "test");
-        //"http://" + container.getHost() + ":" + container.getSolrPort() + "/solr"
-        registry.add("solr.url", () -> "http://" + solr.getHost() + ":" + solr.getSolrPort() + "/solr");
+        registry.add("mongodb.connectionUrl", MONGO_CONTAINER::getConnectionUrl);
+        registry.add("mongodb.record.dbname",  MONGO_CONTAINER::getRecordDb);
+        registry.add("solr.url", SOLR_CONTAINER::getConnectionUrl);
         registry.add("zookeeper.url ", () -> "");
-//        registry.add("solr.url", () -> "http://mock-solr:8983/solr");
-        registry.add("solr.core", () -> "testcollection");
+        registry.add("solr.core", SOLR_CONTAINER::getSearchCore);
 
         registry.add("recordProviderClass", () -> "eu.europeana.oaipmh.service.DBRecordProvider");
         registry.add("enhanceWithTechnicalMetadata", () -> true);
@@ -110,7 +114,6 @@ public class AbstractIntegrationIT extends OaiPmhITConstants {
         registry.add("protocolVersion", () -> PROTOCOL_VERSION);
         registry.add("earliestDatestamp", () -> EARLIEST_DATESTAMP);
         registry.add("deletedRecord", () -> DELETED_RECORD);
-        registry.add("deletedRecord", () -> DELETED_RECORD);
         registry.add("granularity", () -> GRANULARITY);
         registry.add("adminEmail", () -> ADMIN_EMAIL);
         registry.add("compression", () -> COMPRESSION);
@@ -119,9 +122,6 @@ public class AbstractIntegrationIT extends OaiPmhITConstants {
 
     @BeforeAll
     public static void init() {
-        mongo.start();
-        solr.start();
-
         SerializationHandler.register(new ServerSerializationProvider());
         xmlMapper = SerializationHandler.getSerialization();
     }
@@ -130,14 +130,5 @@ public class AbstractIntegrationIT extends OaiPmhITConstants {
         try (InputStream is = AbstractIntegrationIT.class.getClassLoader().getResourceAsStream(testFilename)) {
             return ( is == null ? null : xmlMapper.readValue(is, c) );
         }
-    }
-
-    @AfterAll
-    public static void tearDown() {
-        logger.info(
-                "Shutdown solr server : host = {}; port={}", solr.getHost(), solr.getMappedPort(8983) );
-        solr.stop();
-        logger.info("Shutdown mongo server : host = {}; port={}", mongo.getHost(), mongo.getReplicaSetUrl());
-        mongo.stop();
     }
 }

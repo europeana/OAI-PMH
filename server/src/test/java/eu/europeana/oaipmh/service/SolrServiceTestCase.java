@@ -49,6 +49,7 @@ public class SolrServiceTestCase extends AbstractIntegrationIT  {
     protected static final String LIST_SETS        = "listSets";
     protected static final String LIST_SETS_FROM   = "listSetsFrom";
     protected static final long COMPLETE_LIST_SIZE = 500;
+    protected static final String EARLIEST_TIMESTAMP= "earliestTimestampResponse";
 
     protected static final String LIST_IDENTIFIERS      = "listIdentifiers";
     protected static final String LIST_IDENTIFIERS_SET  = "listIdentifiersSet";
@@ -68,6 +69,11 @@ public class SolrServiceTestCase extends AbstractIntegrationIT  {
     @BeforeEach
     public void set() {
         Mockito.when(settings.getSetsPerPage()).thenReturn(2000);
+        Mockito.when(settings.getRepositoryName()).thenReturn(REPOSITORY_NAME);
+        Mockito.when(settings.getBaseUrl()).thenReturn(BASE_URL);
+        Mockito.when(settings.getProtocolVersion()).thenReturn(PROTOCOL_VERSION);
+        Mockito.when(settings.getDeletedRecord()).thenReturn(DELETED_RECORD);
+        Mockito.when(settings.getGranularity()).thenReturn(GRANULARITY);
     }
 
     QueryResponse getResponse(String fileName) throws IOException {

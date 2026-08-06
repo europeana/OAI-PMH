@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.LBHttpSolrClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,26 +33,27 @@ public class SolrConfig {
             return initSolrCloudClient(settings.getZookeeperURL(), settings.getSolrTimeout(),
                     settings.getSolrCore());
         } else {
-            return initSolrClient(settings.getSolrUrl(), settings.getSolrTimeout(), settings.getSolrCore());
+            return initSolrClient(settings.getSolrUrl(), settings.getSolrTimeout());
         }
     }
 
-    private SolrClient initSolrClient(String solrUrl, int timeoutMillis, String collectionName) {
-        LOG.info("Configuring solr client at the url: {}", solrUrl);
+    private SolrClient initSolrClient(String solrUrl, int timeoutMillis) {
+        LOG.info(
+                "Configuring solr client at the url: {}", solrUrl);
 
-        List<String> solrHosts;
         if (solrUrl.contains(",")) {
-            solrHosts = Arrays.asList(solrUrl.split(","));
+            LBHttpSolrClient.Builder builder = new LBHttpSolrClient.Builder();
+            return builder
+                    .withBaseSolrUrls(solrUrl.split(","))
+                    .withConnectionTimeout(timeoutMillis)
+                    .build();
         } else {
-            solrHosts = new ArrayList<>();
-            solrHosts.add(solrUrl);
+            HttpSolrClient.Builder builder = new HttpSolrClient.Builder();
+            return builder
+                    .withBaseSolrUrl(solrUrl)
+                    .withConnectionTimeout(timeoutMillis)
+                    .build();
         }
-
-        CloudSolrClient client = new CloudSolrClient.Builder(solrHosts).
-        withConnectionTimeout(timeoutMillis)
-                .build();
-        client.setDefaultCollection(collectionName);
-        return client;
     }
 
     private SolrClient initSolrCloudClient(String solrZookeeperUrl, int timeout, String solrCollection) {

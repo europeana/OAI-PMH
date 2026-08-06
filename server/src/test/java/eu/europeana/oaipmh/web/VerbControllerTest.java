@@ -4,7 +4,6 @@ import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.request.*;
 import eu.europeana.oaipmh.service.OaiPmhService;
 import eu.europeana.oaipmh.service.exception.GlobalExceptionHandler;
-import org.apache.commons.io.Charsets;
 
 
 import org.junit.jupiter.api.Test;
