@@ -30,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * - {@code @Disabled}: Marks some tests as disabled as we need now real time apikey or token mechanisam.
  *                     as we don't use the RecordAPi to fetch records, few tests are disabled.
  */
+@Disabled
 @SpringBootTest
 public class RecordApiTest {
 
