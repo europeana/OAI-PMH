@@ -29,12 +29,12 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
         BadVerbException ex1 = assertThrows(BadVerbException.class, ()
                 ->  OaiPmhValidationService.validateVerb(UNSUPPORTED_VERB));
 
-        assertEquals("Verb GetIdentifiers is invalid!", ex1.getMessage());
+        assertEquals("Verb \"GetIdentifiers\" is invalid!", ex1.getMessage());
 
         BadVerbException ex2 = assertThrows(BadVerbException.class, ()
                 ->          OaiPmhValidationService.validateVerb(UNSUPPORTED_VERB_REQUEST));
 
-        assertEquals("Verb verb=XYZ is invalid!", ex2.getMessage());
+        assertEquals("Verb \"verb=XYZ\" is invalid!", ex2.getMessage());
     }
 
     @Test
