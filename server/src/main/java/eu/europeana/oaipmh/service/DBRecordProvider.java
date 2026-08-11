@@ -30,15 +30,11 @@ import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
 /**
  * Provides functionality to interact with a MongoDB database for retrieving and managing records.
  * Implements the {@link RecordProvider} interface, which facilitates OAI-PMH record operations,
- * and the {@link ConnectionPoolListener} interface to manage MongoDB connection pool events.
  * Extends {@link BaseProvider} for common utility methods.
  */
-public class DBRecordProvider extends BaseProvider implements RecordProvider, ConnectionPoolListener {
+public class DBRecordProvider extends BaseProvider implements RecordProvider {
 
-    private static final Logger LOG                   = LogManager.getLogger(DBRecordProvider.class);
-
-    // for some reason we always get 2 connections directly after start-up that are not registered by the ConnectionPoolListener
-    private int nrConnections = 2;
+    private static final Logger LOG    = LogManager.getLogger(DBRecordProvider.class);
 
     private MongoClient mongoClient;
     private RecordDao recordDao;
@@ -59,42 +55,9 @@ public class DBRecordProvider extends BaseProvider implements RecordProvider, Co
      *   number of active connections in the MongoDB connection pool.
      */
     private void initMongo() {
-        System.out.println(settings.getConnectionUrl());
         this.mongoClient = MongoClientProvider.create(settings.getConnectionUrl()).createMongoClient();
         this.recordDao = new RecordDao(mongoClient, settings.getRecordDBName(), false);
         LOG.info("Connected to mongo database {} at {}", settings.getRecordDBName(), new MongoClientURI(settings.getConnectionUrl()).getHosts());
-    }
-
-    @Override
-    public void connectionPoolCreated(ConnectionPoolCreatedEvent connectionPoolOpenedEvent) {
-        LOG.debug("Connection pool opened {}", connectionPoolOpenedEvent);
-    }
-
-    @Override
-    public void connectionPoolClosed(ConnectionPoolClosedEvent connectionPoolClosedEvent) {
-        LOG.debug("Connection pool closed {}", connectionPoolClosedEvent);
-    }
-
-    @Override
-    public void connectionCheckedOut(ConnectionCheckedOutEvent connectionCheckedOutEvent) {
-        // ignore
-    }
-
-    @Override
-    public void connectionCheckedIn(ConnectionCheckedInEvent connectionCheckedInEvent) {
-        // ignore
-    }
-
-    @Override
-    public synchronized void connectionCreated(ConnectionCreatedEvent connectionAddedEvent) {
-        nrConnections++;
-        LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionAddedEvent, this.hashCode(), nrConnections);
-    }
-
-    @Override
-    public synchronized void connectionClosed(ConnectionClosedEvent connectionRemovedEvent) {
-        nrConnections--;
-        LOG.debug("{} for dbProvider {}, total Mongo connections = {}", connectionRemovedEvent, this.hashCode(), nrConnections);
     }
 
     /**

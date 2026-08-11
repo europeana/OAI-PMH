@@ -65,10 +65,10 @@
 			multiValued="true" stored="true" />
 
 		<field name="timestamp_created" type="date" indexed="false"
-			required="true" multiValued="false" stored="true" />
+			required="true" multiValued="false" stored="true" docValues="true" />
 
 		<field name="timestamp_update" type="date" indexed="false"
-			   required="true" multiValued="false" stored="true" />
+			   required="true" multiValued="false" stored="true" docValues="true" />
 
 		<!-- required field -->
 		<field name="_version_" type="long" indexed="true" stored="true"

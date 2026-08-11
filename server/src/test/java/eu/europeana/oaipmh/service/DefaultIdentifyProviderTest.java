@@ -3,13 +3,8 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.Identify;
 import static org.junit.jupiter.api.Assertions.*;
-
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
 import java.io.IOException;
 
 /**
@@ -32,7 +27,11 @@ public class DefaultIdentifyProviderTest extends AbstractIntegrationIT {
         assertEquals(REPOSITORY_NAME, identify.getRepositoryName());
         assertEquals(BASE_URL, identify.getBaseURL());
         assertEquals(PROTOCOL_VERSION, identify.getProtocolVersion());
-        assertEquals(EARLIEST_DATESTAMP, identify.getEarliestDatestamp());
+
+        // should not be the default timestamp but rather today's date
+        assertNotNull(identify.getEarliestDatestamp());
+        assertNotEquals(EARLIEST_DATESTAMP, identify.getEarliestDatestamp());
+
         assertEquals(DELETED_RECORD, identify.getDeletedRecord());
         assertEquals(1, identify.getAdminEmail().length);
         assertEquals(ADMIN_EMAIL, identify.getAdminEmail()[0]);

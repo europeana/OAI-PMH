@@ -11,4 +11,4 @@ EXPOSE 27017
 
 #scripts need to be fixed, but anyway redundant as Morphia creates the database
 #COPY init-mongo.sh /docker-entrypoint-initdb.d/init-mongo.sh
-#COPY init-mongo.sh /docker-entrypoint-initdb.d/init-annotation-db.js
+#COPY init-mongo.sh /docker-entrypoint-initdb.d/init-oaipmh-record-db.js

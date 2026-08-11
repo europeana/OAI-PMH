@@ -41,6 +41,7 @@ public class SolrContainer extends GenericContainer<SolrContainer> {
     }
 
     this.withEnv("SEARCH_CORE", searchCore);
+    this.withEnv("SOLR_HOST", "localhost");
 //    this.withNetwork(network);
 //    this.withNetworkAliases("solr");
     this.waitStrategy =
@@ -67,18 +68,4 @@ public class SolrContainer extends GenericContainer<SolrContainer> {
     return searchCore;
   }
 
-  public void createCollection() {
-      try {
-          this.execInContainer(
-                  "solr",
-                  "create_collection",
-                  "-c",
-                 searchCore,
-                  "-d",
-                 searchCore
-          );
-      } catch (IOException | InterruptedException e) {
-          throw new RuntimeException("Could not solr collection : " +searchCore, e);
-      }
-  }
 }

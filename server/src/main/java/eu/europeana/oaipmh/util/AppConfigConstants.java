@@ -14,5 +14,6 @@ public class AppConfigConstants {
     public static final String SOLR_CLIENT_BEAN          = "solrClient";
     public static final String OAI_PMH_SOLR_SERVICE      = "oaiPmhSolrService";
     public static final String MEDIA_TYPE_TEXT_XML       = "text/xml;charset=UTF-8";
+    public static final String MEDIA_TYPE_APPLICATION_XML= "application/xml;charset=UTF-8";
 
 }

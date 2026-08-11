@@ -1,101 +1,113 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.ListIdentifiers;
+import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import eu.europeana.oaipmh.util.DateConverter;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.params.SolrParams;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import java.io.IOException;
+import java.time.Instant;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test class for validating the functionality of the {@code IdentifierProvider}.
- * This class contains unit tests for different scenarios related to listing
- * identifiers using the Open Archives Initiative Protocol for Metadata Harvesting (OAI-PMH).
- * The tests ensure that the {@code listIdentifiers} method correctly processes multiple
- * combinations of parameters and handles responses from the Solr server appropriately.
- *
- * This class extends {@code SolrBasedProviderTestCase}, which provides
- * the required test setup and shared functionality.
+ * Test class for verifying the functionality of the IdentifierProvider.
+ * It conducts a series of tests to validate the behavior of the listIdentifiers method
+ * under various conditions such as filtering by dates, sets, and pagination limits.
+ * Extends the AbstractIntegrationIT to provide integration test capabilities.
  */
-public class IdentifierProviderTest extends SolrServiceTestCase {
+public class IdentifierProviderTest extends AbstractIntegrationIT {
 
     @Test
-    public void listIdentifiers() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = getResponse(LIST_IDENTIFIERS);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-
+    public void listIdentifiers() throws OaiPmhException {
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, null, null, IDENTIFIERS_PER_PAGE);
-        assertResults(result, null, null, null);
+        assertResults(result, null, null, null, 26);
     }
 
     @Test
-    public void listIdentifiersWithSet() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = getResponse(LIST_IDENTIFIERS_SET);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-
+    public void listIdentifiersWithSet() throws OaiPmhException {
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, null, SET_1, IDENTIFIERS_PER_PAGE);
-        assertResults(result, null, null, SET_1);
+        assertResults(result, null, null, SET_1, 5);
     }
 
     @Test
-    public void listIdentifiersFrom() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-        Date from = DateConverter.fromIsoDateTime(DATE_1);
+    public void listIdentifiersFrom() throws OaiPmhException {
+        Date from = DateConverter.fromIsoDateTime(DATE_3);
 
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, from, null, null, IDENTIFIERS_PER_PAGE);
-        assertResults(result, from, null, null);
+        assertResults(result, from, null, null, 23);
     }
 
     @Test
-    public void listIdentifiersUntil() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = getResponse(LIST_IDENTIFIERS_UNTIL);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-        Date until = DateConverter.fromIsoDateTime(DATE_1);
+    public void listIdentifiersUntil() throws OaiPmhException {
+        Date until = DateConverter.fromIsoDateTime(DATE_3);
 
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, until, null, IDENTIFIERS_PER_PAGE);
-        assertResults(result, null, until, null);
+        assertResults(result, null, until, null, 15);
     }
 
     @Test
-    public void listIdentifiersFromUntil() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM_UNTIL);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-        Date from = DateConverter.fromIsoDateTime(DATE_2);
+    public void listIdentifiersFromUntil() throws OaiPmhException {
+        Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, from, until, null, IDENTIFIERS_PER_PAGE);
-        assertResults(result, from, until, null);
+        assertResults(result, from, until, null, 15);
     }
 
     @Test
-    public void listIdentifiersWithEmptyResult() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = Mockito.mock(QueryResponse.class);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-        Mockito.when(response.getResults()).thenReturn(new SolrDocumentList());
-        Date from = DateConverter.fromIsoDateTime(DATE_1);
-        Date until = DateConverter.fromIsoDateTime(DATE_3);
+    public void listIdentifiersWithEmptyResult() throws OaiPmhException {
+        Date from = DateConverter.fromIsoDateTime(DATE_3);
+        Date until = DateConverter.fromIsoDateTime(Instant.now().toString());
 
-        ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
+        ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, from, until, SET_4, IDENTIFIERS_PER_PAGE);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    public void listIdentifiersFromUntilSet() throws OaiPmhException, IOException, SolrServerException {
-        QueryResponse response = getResponse(LIST_IDENTIFIERS_FROM_UNTIL_SET);
-        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
+    public void listIdentifiersFromUntilSet() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
-        Date until = DateConverter.fromIsoDateTime(DATE_3);
+        Date until = DateConverter.fromIsoDateTime(Instant.now().toString());
 
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, from, until, SET_2, IDENTIFIERS_PER_PAGE);
-        assertResults(result, from, until, SET_2);
+        assertResults(result, from, until, SET_2,7);
     }
+
+    @Test
+    public void listIdentifiersInvalid() throws OaiPmhException {
+        ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, null, "test", IDENTIFIERS_PER_PAGE);
+        assertTrue(result.isEmpty());
+    }
+
+
+    private void assertResults(ListIdentifiers results, Date from, Date until, String set, int identifiersExpected) {
+        assertNotNull(results);
+        assertNotNull(results.stream());
+        assertEquals(identifiersExpected, results.stream().count());
+        assertFalse(results.isEmpty());
+        results.stream().forEach(header -> {
+            assertNotNull(header.getIdentifier());
+            Date timestamp = header.getDatestamp();
+            assertNotNull(timestamp);
+            if (from != null) {
+                assertTrue(timestamp.equals(from) || timestamp.after(from));
+            }
+            if (until != null) {
+                assertTrue(timestamp.before(until) || timestamp.equals(until));
+            }
+            if (set != null) {
+                assertEquals(1, header.getSetSpec().size());
+                assertTrue(header.getSetSpec().get(0).equals(set));
+            }
+        });
+        ResumptionToken token = results.getResumptionToken();
+        if (token != null) {
+            assertNotNull(token.getValue());
+            assertTrue(token.getCursor() >= 0 && token.getCursor() < token.getCompleteListSize());
+            assertNotNull(token.getExpirationDate());
+        }
+    }
+
 }
 

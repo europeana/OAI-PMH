@@ -9,12 +9,8 @@ import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.LBHttpSolrClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import javax.annotation.Resource;
-
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static eu.europeana.oaipmh.util.AppConfigConstants.SOLR_CLIENT_BEAN;
@@ -46,12 +42,14 @@ public class SolrConfig {
             return builder
                     .withBaseSolrUrls(solrUrl.split(","))
                     .withConnectionTimeout(timeoutMillis)
+                    .withSocketTimeout(timeoutMillis)
                     .build();
         } else {
             HttpSolrClient.Builder builder = new HttpSolrClient.Builder();
             return builder
                     .withBaseSolrUrl(solrUrl)
                     .withConnectionTimeout(timeoutMillis)
+                    .withSocketTimeout(timeoutMillis)
                     .build();
         }
     }

@@ -7,7 +7,7 @@ public interface ErrorConstants {
     
     public static final String BAD_ARGUMENT_VERB_MISSING_MSG = "Verb parameter is missing...";
 
-    public static final String BAD_VERB_INVALID_MSG = "Verb %s is invalid!";
+    public static final String BAD_VERB_INVALID_MSG = "Verb \"%s\" is invalid!";
     
     public static final String BAD_VERB_MISSING_MSG = "Verb is missing.";
 
