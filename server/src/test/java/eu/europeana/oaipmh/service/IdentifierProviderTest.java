@@ -20,19 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IdentifierProviderTest extends AbstractIntegrationIT {
 
     @Test
-    public void listIdentifiers() throws OaiPmhException {
+    void listIdentifiers() throws OaiPmhException {
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, null, null, IDENTIFIERS_PER_PAGE);
         assertResults(result, null, null, null, 26);
     }
 
     @Test
-    public void listIdentifiersWithSet() throws OaiPmhException {
+    void listIdentifiersWithSet() throws OaiPmhException {
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, null, SET_1, IDENTIFIERS_PER_PAGE);
         assertResults(result, null, null, SET_1, 5);
     }
 
     @Test
-    public void listIdentifiersFrom() throws OaiPmhException {
+    void listIdentifiersFrom() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_3);
 
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, from, null, null, IDENTIFIERS_PER_PAGE);
@@ -40,7 +40,7 @@ public class IdentifierProviderTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void listIdentifiersUntil() throws OaiPmhException {
+    void listIdentifiersUntil() throws OaiPmhException {
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, until, null, IDENTIFIERS_PER_PAGE);
@@ -48,7 +48,7 @@ public class IdentifierProviderTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void listIdentifiersFromUntil() throws OaiPmhException {
+    void listIdentifiersFromUntil() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(DATE_3);
 
@@ -57,7 +57,7 @@ public class IdentifierProviderTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void listIdentifiersWithEmptyResult() throws OaiPmhException {
+    void listIdentifiersWithEmptyResult() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_3);
         Date until = DateConverter.fromIsoDateTime(Instant.now().toString());
 
@@ -66,7 +66,7 @@ public class IdentifierProviderTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void listIdentifiersFromUntilSet() throws OaiPmhException {
+    void listIdentifiersFromUntilSet() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         Date until = DateConverter.fromIsoDateTime(Instant.now().toString());
 
@@ -75,7 +75,7 @@ public class IdentifierProviderTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void listIdentifiersInvalid() throws OaiPmhException {
+    void listIdentifiersInvalid() throws OaiPmhException {
         ListIdentifiers result = identifierProvider.listIdentifiers(METADATA_FORMAT, null, null, "test", IDENTIFIERS_PER_PAGE);
         assertTrue(result.isEmpty());
     }

@@ -3,9 +3,7 @@ package eu.europeana.oaipmh.service;
 import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.Identify;
 import static org.junit.jupiter.api.Assertions.*;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.jupiter.api.Test;
-import java.io.IOException;
 
 /**
  * Test class for verifying the functionality of the DefaultIdentifyProvider implementation.
@@ -18,10 +16,7 @@ public class DefaultIdentifyProviderTest extends AbstractIntegrationIT {
 
 
     @Test
-    public void provideIdentify() throws IOException, SolrServerException {
-//        QueryResponse response = getResponse(EARLIEST_TIMESTAMP);
-//        Mockito.when(solrClient.query(Mockito.any(SolrParams.class))).thenReturn(response);
-
+    void provideIdentify() {
         Identify identify = identifyProvider.provideIdentify();
         assertNotNull(identify);
         assertEquals(REPOSITORY_NAME, identify.getRepositoryName());

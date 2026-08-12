@@ -23,27 +23,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DefaultSetsProviderTest extends AbstractIntegrationIT {
 
     @Test
-    public void listSets() throws OaiPmhException {
+    void listSets() throws OaiPmhException {
         ListSets result =  setsProvider.listSets(null, null);
         assertResults(result);
     }
 
     @Test
-    public void listSetsFrom() throws OaiPmhException {
+    void listSetsFrom() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         ListSets result = setsProvider.listSets(from, null);
         assertResults(result);
     }
 
     @Test
-    public void listSetsUntil() throws OaiPmhException {
+    void listSetsUntil() throws OaiPmhException {
         Date until = DateConverter.fromIsoDateTime(DATE_2);
         ListSets result = setsProvider.listSets(null, until);
         assertResults(result);
     }
 
     @Test
-    public void listSetsWithResumptionToken() throws OaiPmhException {
+    void listSetsWithResumptionToken() throws OaiPmhException {
         Date from = DateConverter.fromIsoDateTime(DATE_1);
         ListSets result = setsProvider.listSets(from, null);
         assertNotNull(result.getResumptionToken());

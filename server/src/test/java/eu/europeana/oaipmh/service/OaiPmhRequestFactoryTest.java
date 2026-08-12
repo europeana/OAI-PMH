@@ -20,12 +20,12 @@ import static org.junit.Assert.assertNull;
 public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
 
     @Test
-    public void validateParameterNamesValid() {
+    void validateParameterNamesValid() {
         OaiPmhValidationService.validateParameterNames(VALID_REQUEST);
     }
 
     @Test
-    public void validateUnsupportedVerb() throws BadVerbException, BadArgumentException {
+    void validateUnsupportedVerb() throws BadVerbException, BadArgumentException {
         BadVerbException ex1 = assertThrows(BadVerbException.class, ()
                 ->  OaiPmhValidationService.validateVerb(UNSUPPORTED_VERB));
 
@@ -38,7 +38,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateMandatoryParametersListIdentifiers() throws BadVerbException, BadArgumentException {
+    void validateMandatoryParametersListIdentifiers() throws BadVerbException, BadArgumentException {
         OaiPmhValidationService.validateParameterNames(LIST_IDENTIFIERS_GENERAL_REQUEST); // OK
 
         BadArgumentException ex2 = assertThrows(BadArgumentException.class, ()
@@ -48,7 +48,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateMandatoryParametersGetRecord() throws BadVerbException, BadArgumentException {
+    void validateMandatoryParametersGetRecord() throws BadVerbException, BadArgumentException {
         OaiPmhValidationService.validateParameterNames(GET_RECORD_GENERAL_REQUEST); // OK
         BadArgumentException ex2 = assertThrows(BadArgumentException.class, ()
                 -> OaiPmhValidationService.validateParameterNames(GET_RECORD_NO_MANDATORY_REQUEST)); // Exception
@@ -57,12 +57,12 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateMandatoryParametersIdentify() throws BadVerbException, BadArgumentException {
+    void validateMandatoryParametersIdentify() throws BadVerbException, BadArgumentException {
         OaiPmhValidationService.validateParameterNames(IDENTIFY_REQUEST); // OK always
     }
 
     @Test
-    public void validateParameterNamesEmptyOrNull() throws BadArgumentException, BadVerbException {
+    void validateParameterNamesEmptyOrNull() throws BadArgumentException, BadVerbException {
         BadArgumentException ex2 = assertThrows(BadArgumentException.class, ()
                 ->        OaiPmhValidationService.validateParameterNames(EMPTY_PARAMETER_NAME_REQUEST)); // Exception
 
@@ -70,7 +70,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateParameterValueEmptyOrNull() throws BadArgumentException, BadVerbException {
+    void validateParameterValueEmptyOrNull() throws BadArgumentException, BadVerbException {
         BadArgumentException ex2 = assertThrows(BadArgumentException.class, ()
                 -> OaiPmhValidationService.validateParameterNames(EMPTY_PARAMETER_VALUE_REQUEST)); // Exception
 
@@ -78,7 +78,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateParameterNamesInvalidName() throws BadArgumentException, BadVerbException {
+    void validateParameterNamesInvalidName() throws BadArgumentException, BadVerbException {
         BadArgumentException ex2 = assertThrows(BadArgumentException.class, ()
                 -> OaiPmhValidationService.validateParameterNames(INVALID_PARAMETER_NAME_REQUEST)); // Exception
 
@@ -86,7 +86,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateParameterNamesMultiParameter() throws BadArgumentException, BadVerbException {
+    void validateParameterNamesMultiParameter() throws BadArgumentException, BadVerbException {
         BadArgumentException ex1 = assertThrows(BadArgumentException.class, ()
                 ->         OaiPmhValidationService.validateParameterNames(MULTI_PARAMETER_REQUEST_1)); // Exception
 
@@ -99,7 +99,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateParameterNamesWrongDates() throws BadArgumentException, BadVerbException {
+    void validateParameterNamesWrongDates() throws BadArgumentException, BadVerbException {
         BadArgumentException ex1 = assertThrows(BadArgumentException.class, ()
                 -> OaiPmhValidationService.
                 validateParameterNames("verb=ListIdentifiers&from=2000-01-01T00:00:00Z&until=1995-01-01T00:00:00Z")); // Exception
@@ -108,7 +108,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateCreateRequestNoVerb() throws BadArgumentException {
+    void validateCreateRequestNoVerb() throws BadArgumentException {
         BadArgumentException ex1 = assertThrows(BadArgumentException.class, ()
                 ->         OaiPmhRequestFactory.createRequest(BASE_URL, NO_VERB_REQUEST, false)); // Exception
 
@@ -116,7 +116,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateCreateRequestNoVerbIgnoreErrors() {
+    void validateCreateRequestNoVerbIgnoreErrors() {
         OAIRequest request = OaiPmhRequestFactory.createRequest(BASE_URL, NO_VERB_REQUEST, true);
         assertNotNull(request);
         assertNull(request.getVerb());
@@ -124,7 +124,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateCreateRequestUnsupportedVerb() throws BadArgumentException {
+    void validateCreateRequestUnsupportedVerb() throws BadArgumentException {
         BadArgumentException ex1 = assertThrows(BadArgumentException.class, ()
                 -> OaiPmhRequestFactory.createRequest(BASE_URL, UNSUPPORTED_VERB_REQUEST, false)); // Exception
 
@@ -132,7 +132,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void validateCreateRequestUnsupportedVerbIgnoreErrors() {
+    void validateCreateRequestUnsupportedVerbIgnoreErrors() {
         OAIRequest request = OaiPmhRequestFactory.createRequest(BASE_URL, UNSUPPORTED_VERB_REQUEST, true);
         assertNotNull(request);
         assertTrue(UNSUPPORTED_VERB_REQUEST.endsWith(request.getVerb()));
@@ -140,7 +140,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void createRequestWithIdentify() {
+    void createRequestWithIdentify() {
         OAIRequest request = OaiPmhRequestFactory.createRequest(BASE_URL, IDENTIFY_REQUEST, false);
         assertIdentify(request);
     }
@@ -151,7 +151,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void createRequestWithListIdentifiersGeneral() {
+    void createRequestWithListIdentifiersGeneral() {
         OAIRequest request = OaiPmhRequestFactory.createRequest(BASE_URL, LIST_IDENTIFIERS_GENERAL_REQUEST, false);
         assertListIdentifiersGeneral(request);
 
@@ -166,7 +166,7 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void createRequestWithListIdentifiersResumptionToken() {
+    void createRequestWithListIdentifiersResumptionToken() {
         OAIRequest request = OaiPmhRequestFactory.createRequest(BASE_URL, VERB_LIST_IDENTIFIERS_RESUMPTION_TOKEN_REQUEST, false);
         assertListIdentifiersWithResumptionToken(request);
     }
@@ -182,19 +182,19 @@ public class OaiPmhRequestFactoryTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void createListIdentifiersRequestGeneral() {
+    void createListIdentifiersRequestGeneral() {
         OAIRequest request = OaiPmhRequestFactory.createListIdentifiersRequest(BASE_URL, EDM_FORMAT, SET_NAME, null, null);
         assertListIdentifiersGeneral(request);
     }
 
     @Test
-    public void createListIdentifiersRequestWithResumptionToken() {
+    void createListIdentifiersRequestWithResumptionToken() {
         OAIRequest request = OaiPmhRequestFactory.createListIdentifiersRequest(BASE_URL, RESUMPTION_TOKEN);
         assertListIdentifiersWithResumptionToken(request);
     }
 
     @Test
-    public void createIdentifyRequest() {
+    void createIdentifyRequest() {
         OAIRequest request = OaiPmhRequestFactory.createIdentifyRequest(BASE_URL);
         assertIdentify(request);
     }

@@ -20,7 +20,7 @@ import java.util.List;
 public class DBRecordProviderTest extends AbstractIntegrationIT {
 
     @Test
-    public void testGetRecord() throws OaiPmhException {
+    void testGetRecord() throws OaiPmhException {
         Record retrievedRecord = recordProvider.getRecord(RECORD_ID_2064125_1);
         Assertions.assertNotNull(retrievedRecord);
         Assertions.assertEquals(RECORD_ID_2064125_1, retrievedRecord.getHeader().getIdentifier());
@@ -28,13 +28,13 @@ public class DBRecordProviderTest extends AbstractIntegrationIT {
     }
 
     @Test
-    public void testCheckRecordExists() throws OaiPmhException {
+    void testCheckRecordExists() throws OaiPmhException {
         Record retrievedRecord = recordProvider.getRecord("test_invalid_id");
         Assertions.assertNull(retrievedRecord);
     }
 
     @Test
-    public void testListRecords() throws Exception {
+    void testListRecords() throws Exception {
         List<String> list = new ArrayList<String>();
         list.add(RECORD_ID_401_1);
         list.add(RECORD_ID_2064125_1);

@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * - {@code @Disabled}: Marks some tests as disabled as we need now real time apikey or token mechanisam.
  *                     as we don't use the RecordAPi to fetch records, few tests are disabled.
  */
-@Disabled
 @SpringBootTest
 public class RecordApiTest {
 
@@ -41,7 +40,7 @@ public class RecordApiTest {
     private static OaiPmhSettings settings;
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         recordApi  = new RecordApi(new ApikeyBasedAuthentication(""));
         settings = Mockito.mock(OaiPmhSettings.class);
         ReflectionTestUtils.setField(recordApi, "settings", settings);
@@ -62,6 +61,7 @@ public class RecordApiTest {
         assertEquals("API key is not valid", ex.getMessage());
     }
 
+    @Disabled
     @Test
     void shouldThrowInvalidIdException() {
         IdDoesNotExistException ex = assertThrows(IdDoesNotExistException.class, ()
@@ -78,7 +78,7 @@ public class RecordApiTest {
 
     @Disabled
     @Test
-    public void getRecord() throws OaiPmhException {
+    void getRecord() throws OaiPmhException {
         Record record = recordApi.getRecord(TEST_RECORD_ID);
         Assertions.assertNotNull(record);
         Assertions.assertEquals(TEST_RECORD_ID, record.getHeader().getIdentifier());
@@ -88,7 +88,7 @@ public class RecordApiTest {
 
     @Disabled
     @Test
-    public void getRecords() throws OaiPmhException {
+    void getRecords() throws OaiPmhException {
         ListRecords record = recordApi.listRecords(Arrays.asList(TEST_RECORD_ID), null);
         Assertions.assertNotNull(record);
         Assertions.assertEquals(record.stream().findFirst().get().getHeader().getIdentifier(), TEST_RECORD_ID);
