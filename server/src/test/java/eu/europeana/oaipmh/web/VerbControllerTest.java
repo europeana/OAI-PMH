@@ -392,5 +392,9 @@ public class VerbControllerTest extends AbstractIntegrationIT {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
 
+        this.mockMvc.perform(get("/oai?verb=ListSets&resumptionToken=" + LIST_IDENTIFIERS_TOKEN).accept(MediaType.parseMediaType("application/xml")))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MEDIA_TYPE_TEXT_XML));
+
     }
 }

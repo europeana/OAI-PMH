@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -60,6 +61,27 @@ public class RecordApiTest extends AbstractIntegrationIT {
                 -> recordApi.getRecord(TEST_RECORD_ID));
 
         assertEquals("API key is not valid", ex.getMessage());
+
+        ex = assertThrows(OaiPmhException.class, ()
+                -> recordApi.checkRecordExists(TEST_RECORD_ID));
+
+        assertEquals("API key is not valid", ex.getMessage());
+
+
+        ex = assertThrows(OaiPmhException.class, ()
+                -> recordApi.listRecords(List.of(TEST_RECORD_ID), null));
+
+        assertEquals("API key is not valid", ex.getMessage());
+
+
+    }
+
+    @Test
+    void shouldThrowException_ForInvalidURL() {
+        Mockito.when(settings.getRecordApiUrl()).thenReturn("https://api.europeana.eu/invalid_route");
+
+        assertThrows(OaiPmhException.class, ()
+                -> recordApi.getRecord(TEST_RECORD_ID));
     }
 
     @Disabled
@@ -94,5 +116,10 @@ public class RecordApiTest extends AbstractIntegrationIT {
         Assertions.assertNotNull(record);
         Assertions.assertEquals(record.stream().findFirst().get().getHeader().getIdentifier(), TEST_RECORD_ID);
         Assertions.assertNotNull(record.stream().findFirst().get().getMetadata().getMetadata());
+    }
+
+    @Test
+    void testClose() {
+        recordApi.close();
     }
 }
