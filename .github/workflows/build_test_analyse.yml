@@ -32,7 +32,13 @@ jobs:
         # projectKey should match the <groupId>:<artifactId> of the project (see pom.xml).
         # As jenkins artifactory job will push the project based on <groupId>:<artifactId>
         # and if GitHub actions will push a new project in sonar cloud if they don't match
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar -Pcoverage -Dsonar.projectKey=eu.europeana:oai-pmh
+        run: >
+          mvn -B verify
+          org.sonarsource.scanner.maven:sonar-maven-plugin:5.5.0.6356:sonar
+          -Pcoverage
+          -Dsonar.projectKey=eu.europeana:oai-pmh
+          -Dsonar.coverage.jacoco.xmlReportPaths=**/target/site/jacoco/jacoco.xml
+
         env:
           # Needed to get some information about the pull request, if any
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
