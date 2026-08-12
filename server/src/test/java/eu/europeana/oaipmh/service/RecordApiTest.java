@@ -1,6 +1,7 @@
 package eu.europeana.oaipmh.service;
 
 import eu.europeana.api.commons_sb3.auth.apikey.ApikeyBasedAuthentication;
+import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Record;
@@ -31,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  *                     as we don't use the RecordAPi to fetch records, few tests are disabled.
  */
 @SpringBootTest
-public class RecordApiTest {
+public class RecordApiTest extends AbstractIntegrationIT {
 
     private static final String TEST_RECORD_ID = "/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A";
 
