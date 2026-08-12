@@ -1,11 +1,15 @@
 package eu.europeana.oaipmh.config;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import eu.europeana.api.commons_sb3.auth.AuthenticationBuilder;
+import eu.europeana.api.commons_sb3.auth.AuthenticationConfig;
+import eu.europeana.api.commons_sb3.auth.AuthenticationHandler;
 import eu.europeana.oaipmh.model.metadata.MetadataFormatsService;
 import eu.europeana.oaipmh.model.serialize.DefaultSerializationProvider;
 import eu.europeana.oaipmh.model.serialize.SerializationHandler;
 import eu.europeana.oaipmh.model.serialize.ServerSerializationProvider;
 import eu.europeana.oaipmh.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Bean;
@@ -59,7 +63,15 @@ public class OaiPmhConfig {
 
         // return RecordApi when there are problems with the specified class
         LOG.info("Using default record provider: {}", RecordApi.class.getName());
-        return new RecordApi();
+        return new RecordApi(getOaiPmhAuthHandler());
+    }
+
+    @Bean(OAI_PMH_AUTH_HANDLER_BEAN)
+    public AuthenticationHandler getOaiPmhAuthHandler() {
+        if (StringUtils.isBlank(settings.getTokenEndpoint()) || StringUtils.isBlank(settings.getGrantParams())) {
+            return null;
+        }
+        return AuthenticationBuilder.newAuthentication(new AuthenticationConfig(settings.getTokenEndpoint(), settings.getGrantParams()));
     }
 
     /**

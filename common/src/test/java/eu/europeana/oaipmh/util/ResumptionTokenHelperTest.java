@@ -1,19 +1,18 @@
 package eu.europeana.oaipmh.util;
 
 import eu.europeana.oaipmh.model.ResumptionToken;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@RunWith(MockitoJUnitRunner.class)
-@SpringBootTest
 public class ResumptionTokenHelperTest {
+
     private static final String INCORRECT_TOKEN = "AHGVHFGYDUSJKSBDSBHSVDJSVDYUASAHJISAKBB767873213HVHGVGH";
 
     private static final String INCORRECT_DECODED_TOKEN = "2017-08-16T08:03:31Z|2017-08-16T08:03:31Z|34455|||";
@@ -36,14 +35,20 @@ public class ResumptionTokenHelperTest {
 
     private static final String FORMAT = "edm";
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testDecodeIncorrectToken() {
-        ResumptionTokenHelper.decodeResumptionToken(INCORRECT_TOKEN);
+    @Test
+    void testDecodeIncorrectToken() {
+      assertThrows(
+                IllegalArgumentException.class,
+                () -> ResumptionTokenHelper.decodeResumptionToken(INCORRECT_TOKEN)
+        );
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testGetPartFromIncorrectToken() {
-        ResumptionTokenHelper.getCompleteListSize(INCORRECT_DECODED_TOKEN);
+    @Test
+    void testGetPartFromIncorrectToken() {
+       assertThrows(
+                IllegalArgumentException.class,
+                () -> ResumptionTokenHelper.getCompleteListSize(INCORRECT_DECODED_TOKEN)
+        );
     }
 
     @Test

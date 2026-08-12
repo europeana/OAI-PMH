@@ -7,47 +7,32 @@ import eu.europeana.oaipmh.service.exception.OaiPmhException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrException;
-import javax.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import static eu.europeana.oaipmh.util.AppConfigConstants.OAI_PMH_SOLR_SERVICE;
+import static eu.europeana.oaipmh.util.AppConfigConstants.SOLR_CLIENT_BEAN;
 
 /**
- * A provider implementation that integrates with an Apache Solr cluster to
- * execute queries and manage connections for OAI-PMH operations. This provider
- * extends {@code BaseProvider} and implements {@code ClosableProvider} to
- * provide lifecycle management for the Solr client.
+ * Service class for interacting with a Solr client instance, facilitating queries and managing connections.
+ * It implements the ClosableProvider interface for proper resource cleanup.
  */
-public class SolrBasedProvider extends BaseProvider implements ClosableProvider {
-    private static final Logger LOG = LogManager.getLogger(SolrBasedProvider.class);
+@Service(OAI_PMH_SOLR_SERVICE)
+public class SolrService implements ClosableProvider {
+    private static final Logger LOG = LogManager.getLogger(SolrService.class);
 
-    private CloudSolrClient client;
+    private final SolrClient client;
 
-    /**
-     * Initialize connection to Solr instance.
-     */
-    @PostConstruct
-    private void init() {
-        LOG.info("Connecting to Solr cluster: {}...", settings.getSolrUrl());
-
-        List<String> solrHosts;
-        if (settings.getSolrUrl().contains(",")) {
-            solrHosts = Arrays.asList(settings.getSolrUrl().split(","));
-        } else {
-            solrHosts = new ArrayList<>();
-            solrHosts.add(settings.getSolrUrl());
-        }
-
-        client = new CloudSolrClient.Builder(solrHosts).build();
-        client.setDefaultCollection(settings.getSolrCore());
-        client.connect();
-        LOG.info("Connected to Solr {}", settings.getSolrUrl());
+    @Autowired
+    public SolrService(@Qualifier(SOLR_CLIENT_BEAN) SolrClient client) {
+        this.client = client;
     }
 
     protected QueryResponse executeQuery(SolrQuery query) throws OaiPmhException {

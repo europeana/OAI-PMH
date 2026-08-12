@@ -15,17 +15,22 @@ import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import static eu.europeana.oaipmh.util.AppConfigConstants.OAI_PMH_SOLR_SERVICE;
 import static eu.europeana.oaipmh.util.SolrConstants.*;
 
 /**
  * Retrieve information from Search API
  */
-public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
+public class SearchApi extends BaseProvider implements IdentifierProvider {
+
+    @Resource(name = OAI_PMH_SOLR_SERVICE)
+    SolrService solrService;
 
     private static final Logger LOG = LogManager.getLogger(SearchApi.class);
 
@@ -96,7 +101,7 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
      * @throws OaiPmhException
      */
     private ListIdentifiers listIdentifiers(String metadataPrefix, Date from, Date until, String set, long cursor, String previousCursorMark, int pageSize) throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, pageSize));
+        QueryResponse response = solrService.executeQuery(SolrQueryBuilder.listIdentifiers(from, until, set, previousCursorMark, pageSize));
         ListIdentifiersImpl result = responseToListIdentifiers(response);
         if (shouldCreateResumptionToken(response, cursor, previousCursorMark)) {
             ResumptionToken resumptionToken = ResumptionTokenHelper.createResumptionToken(DateConverter.toIsoDate(from),
@@ -171,4 +176,8 @@ public class SearchApi extends SolrBasedProvider implements IdentifierProvider {
         return new Header(prepareFullId((String) document.getFieldValue(EUROPEANA_ID)), timestampUpdate, sets);
     }
 
+    @Override
+    public void close() {
+        // nothing to close
+    }
 }
