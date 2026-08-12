@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -30,8 +31,8 @@
         <sonar.organization>europeana</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
-        <spring-boot.version>3.5.12</spring-boot.version>
-<!--        <spring-instrument.version>5.3.34</spring-instrument.version>-->
+        <spring-boot.version>3.5.16</spring-boot.version>
+        <!--        <spring-instrument.version>5.3.34</spring-instrument.version>-->
 
         <corelib.version>2.17.8-SNAPSHOT</corelib.version>
         <metis-schema.version>15-SNAPSHOT</metis-schema.version>
@@ -47,6 +48,10 @@
         <json-path.version>2.9.0</json-path.version>
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <mockito.version>3.3.3</mockito.version>
+
+        <!--        forcing a safe zookeeper version-->
+        <zookeeper.version>3.7.2</zookeeper.version>
+        <bcel.version>6.6.1</bcel.version>
     </properties>
 
     <repositories>
@@ -75,6 +80,31 @@
         </repository>
     </repositories>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- Import Spring Boot BOM to align all Spring 6.x / Spring Boot 3.x dependencies -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Upgrade ZooKeeper to a patched 3.7.x or 3.8.x version -->
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+            <!-- bcel is coming from metis-schema and is vulnerable. Hence overriding the version -->
+            <dependency>
+                <groupId>org.apache.bcel</groupId>
+                <artifactId>bcel</artifactId>
+                <version>${bcel.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <!-- TO Fix error No plugin found for prefix 'sonar' in the current project and in the plugin groups [org.apache.maven.plugins, org.codehaus.mojo]
     available from the repositories -->
     <build>
@@ -88,43 +118,44 @@
             </plugins>
         </pluginManagement>
         <plugins>
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jar-plugin</artifactId>
-    <version>3.4.2</version> <!-- Downgrading to 3.4.2 bypasses the m2e Guice scope bug -->
-</plugin>        </plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version> <!-- Downgrading to 3.4.2 bypasses the m2e Guice scope bug -->
+            </plugin>
+        </plugins>
     </build>
 
 
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            &lt;!&ndash; This will be active when running the verify or install goal-->
-<!--                 To skip (e.g. during debugging) use 'mvn clean package')&ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.owasp</groupId>-->
-<!--                <artifactId>dependency-check-maven</artifactId>-->
-<!--                <version>9.2.0</version>-->
-<!--                <configuration>-->
-<!--                    <nvdApiKeyEnvironmentVariable>NVD_APIKEY</nvdApiKeyEnvironmentVariable>-->
-<!--                    &lt;!&ndash; see EA-3505 why we host the known exploited vulnerabilties file ourselves &ndash;&gt;-->
-<!--                    <knownExploitedUrl>https://artifactory-prod.eanadev.org/artifactory/ext-release-local/gov/cisa/www/known_exploited_vulnerabilities.json</knownExploitedUrl>-->
-<!--                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>-->
-<!--                    <skipSystemScope>true</skipSystemScope>-->
-<!--                    <failBuildOnCVSS>8</failBuildOnCVSS>-->
-<!--                    <suppressionFiles>-->
-<!--                        <suppressionFile>owasp-suppress.xml</suppressionFile>-->
-<!--                    </suppressionFiles>-->
-<!--                </configuration>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
+    <!--    <build>-->
+    <!--        <plugins>-->
+    <!--            &lt;!&ndash; This will be active when running the verify or install goal-->
+    <!--                 To skip (e.g. during debugging) use 'mvn clean package')&ndash;&gt;-->
+    <!--            <plugin>-->
+    <!--                <groupId>org.owasp</groupId>-->
+    <!--                <artifactId>dependency-check-maven</artifactId>-->
+    <!--                <version>9.2.0</version>-->
+    <!--                <configuration>-->
+    <!--                    <nvdApiKeyEnvironmentVariable>NVD_APIKEY</nvdApiKeyEnvironmentVariable>-->
+    <!--                    &lt;!&ndash; see EA-3505 why we host the known exploited vulnerabilties file ourselves &ndash;&gt;-->
+    <!--                    <knownExploitedUrl>https://artifactory-prod.eanadev.org/artifactory/ext-release-local/gov/cisa/www/known_exploited_vulnerabilities.json</knownExploitedUrl>-->
+    <!--                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>-->
+    <!--                    <skipSystemScope>true</skipSystemScope>-->
+    <!--                    <failBuildOnCVSS>8</failBuildOnCVSS>-->
+    <!--                    <suppressionFiles>-->
+    <!--                        <suppressionFile>owasp-suppress.xml</suppressionFile>-->
+    <!--                    </suppressionFiles>-->
+    <!--                </configuration>-->
+    <!--                <executions>-->
+    <!--                    <execution>-->
+    <!--                        <goals>-->
+    <!--                            <goal>check</goal>-->
+    <!--                        </goals>-->
+    <!--                    </execution>-->
+    <!--                </executions>-->
+    <!--            </plugin>-->
+    <!--        </plugins>-->
+    <!--    </build>-->
 
 
 </project>
