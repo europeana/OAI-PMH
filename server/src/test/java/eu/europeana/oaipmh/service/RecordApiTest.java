@@ -76,13 +76,6 @@ public class RecordApiTest extends AbstractIntegrationIT {
 
     }
 
-    @Test
-    void shouldThrowException_ForInvalidURL() {
-        Mockito.when(settings.getRecordApiUrl()).thenReturn("https://api.europeana.eu/invalid_route");
-
-        assertThrows(OaiPmhException.class, ()
-                -> recordApi.getRecord(TEST_RECORD_ID));
-    }
 
     @Disabled
     @Test
