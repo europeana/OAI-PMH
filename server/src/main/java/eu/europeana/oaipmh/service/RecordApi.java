@@ -1,5 +1,7 @@
 package eu.europeana.oaipmh.service;
 
+import eu.europeana.api.commons_sb3.auth.AuthenticationHandler;
+import eu.europeana.api.commons_sb3.http.HttpConnection;
 import eu.europeana.oaipmh.model.Header;
 import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Metadata;
@@ -8,17 +10,21 @@ import eu.europeana.oaipmh.model.ResumptionToken;
 import eu.europeana.oaipmh.model.impl.ListRecordsImpl;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.net.URIBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,30 +37,67 @@ public class RecordApi extends BaseProvider implements RecordProvider {
 
     private static final Logger LOG = LogManager.getLogger(RecordApi.class);
 
+    private final HttpConnection connection;
+    protected AuthenticationHandler auth;
+
+
+    public RecordApi(AuthenticationHandler auth) {
+        this.connection = new HttpConnection(true);
+        this.auth = auth;
+
+    }
+
     /**
-     * @see RecordProvider#getRecord(String)
+     * Retrieves a record based on its unique identifier.
+     * The method interacts with the record API to fetch the corresponding response
+     * data and constructs a {@link java.lang.Record} object. If the response is null, a
+     * {@link java.lang.Record} containing header information is returned.
+     *
+     * @param id the unique identifier of the record to retrieve. Must not be null.
+     * @return the {@link java.lang.Record} object containing the metadata and header information,
+     *         or null if the record is not found.
+     * @throws OaiPmhException if an error occurs during the retrieval process,
+     *         such as API communication errors or unexpected response status.
      */
     @Override
     public Record getRecord(String id) throws OaiPmhException {
-        ResponseEntity<String> response = getResponseForRecord(id);
-        Metadata rdf = new Metadata(response.getBody());
-
-        Header header = new Header(id, new Date(), new ArrayList<>());
-        return new Record(header, rdf);
+        String response = getResponseForRecord(id);
+        if (response != null) {
+            Metadata rdf = new Metadata(response);
+            Header header = new Header(id, new Date(), new ArrayList<>());
+            return new Record(header, rdf);
+        }
+        return null;
     }
 
+    /**
+     * Validates the existence of a record based on its unique identifier.
+     * The method checks if a response for the given record identifier exists.
+     * If no record is found, an exception is thrown.
+     *
+     * @param id the unique identifier of the record to be validated. Must not be null.
+     * @throws OaiPmhException if an error occurs during the validation process.
+     * @throws IdDoesNotExistException if no record with the specified identifier exists.
+     */
     @Override
     public void checkRecordExists(String id) throws OaiPmhException {
-        ResponseEntity<String> response = getResponseForRecord(id);
-        if (response == null) {
+        if (getResponseForRecord(id) == null) {
             throw new IdDoesNotExistException("Record with id '" + id + "' not found");
         }
     }
 
+    /**
+     * Retrieves a list of records based on their unique identifiers and an optional resumption token.
+     * This method interacts with the record API to fetch the corresponding records and returns them
+     * in a {@code ListRecords} object.
+     *
+     * @param identifiers a {@code List<String>} containing the unique identifiers of the records to retrieve. Must not be null.
+     * @param token a {@link ResumptionToken} object representing the pagination token for continued retrieval, or null if not applicable.
+     * @return a {@link ListRecords} object containing the retrieved records and pagination details, if any.
+     * @throws OaiPmhException if an error occurs during the retrieval process, such as API communication errors or unexpected response status.
+     */
     @Override
-    public ListRecords listRecords(
-            List<String> identifiers, ResumptionToken token) 
-                throws OaiPmhException {
+    public ListRecords listRecords(List<String> identifiers, ResumptionToken token) throws OaiPmhException {
         List<Record> records = new ArrayList<>();
         for (String id : identifiers) {
             records.add(getRecord(id));
@@ -62,65 +105,62 @@ public class RecordApi extends BaseProvider implements RecordProvider {
         return new ListRecordsImpl(records, null);
     }
 
-    private ResponseEntity<String> getResponseForRecord(String id) throws OaiPmhException {
+    /**
+     * Retrieves the response for a record based on its unique identifier.
+     * This method connects to the record API, sends a request, and retrieves the response.
+     *
+     * @param id the unique identifier of the record. Must not be null.
+     * @return the response in JSON format as a String if the request is successful.
+     * @throws IdDoesNotExistException if the identifier is null or if no record with the specified identifier exists.
+     * @throws OaiPmhException if an error occurs during communication with the API or if the response status is unexpected.
+     */
+    private String getResponseForRecord(String id) throws OaiPmhException {
         if (id == null) {
             throw new IdDoesNotExistException(id);
         }
-
-        String recordId = prepareRecordId(id);
-
-        // construct url
-        String requestUrl = constructRequestUrl(recordId.substring(1));
-
-        LOG.debug("Request is {}", requestUrl);
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setErrorHandler(new ApiResponseErrorHandler());
-        ResponseEntity<String> response = restTemplate.getForEntity(requestUrl, String.class);
-        LOG.debug("Response = {}", response);
-
-        HttpStatusCode responseCode = response.getStatusCode();
-        if (HttpStatus.UNAUTHORIZED == responseCode) {
-            throw new OaiPmhException("API key is not valid");
-        } else if (HttpStatus.NOT_FOUND == responseCode) {
-            throw new IdDoesNotExistException("Record with id '"+id+"' not found");
-        } else if (HttpStatus.OK != responseCode) {
-            throw new OaiPmhException("Error retrieving record. Status = "+response.getStatusCodeValue());
+        try (CloseableHttpResponse httpResponse = connection.get(buildRecordApiUrl(id).toString(),
+                Collections.singletonMap(HttpHeaders.ACCEPT,"application/json") ,auth)) {
+            if (httpResponse.getCode() == HttpStatus.SC_OK) {
+                return EntityUtils.toString(httpResponse.getEntity());
+            }
+            if (httpResponse.getCode() == HttpStatus.SC_UNAUTHORIZED) {
+                throw new OaiPmhException("API key is not valid");
+            }
+            else if (httpResponse.getCode() == HttpStatus.SC_NOT_FOUND) {
+                throw new IdDoesNotExistException("Record with id '"+id+"' not found");
+            }
+            else {
+                LOG.error("Unable to get the valid response from the Search and Record API");
+                throw new OaiPmhException("Error retrieving record. Status = " + httpResponse.getCode());
+            }
+        } catch (IOException | ParseException e) {
+           throw new OaiPmhException("Error retrieving record = " +e.getMessage(), e);
         }
-        return response;
     }
 
-    private String constructRequestUrl(String id) {
-        StringBuilder url = new StringBuilder(settings.getRecordApiUrl());
-        url.append(id);
-        url.append(".rdf?");
-        url.append(appendWskey());
-        return url.toString();
-    }
-
-    private String appendWskey() {
-        return String.format("wskey=%s", settings.getWskey());
-    }
 
     /**
-     * @see RecordProvider#close()
+     * Constructs a record API URL using the provided record identifier.
+     *
+     * @param id the unique identifier of the record, which will be appended
+     *           to the base API URL with the ".rdf" suffix
+     * @return a constructed {@code URI} representing the complete record API URL
+     * @throws OaiPmhException if a {@code URISyntaxException} occurs while building the URL
      */
+    public URI buildRecordApiUrl(String id) throws OaiPmhException {
+        try {
+            return new URIBuilder(settings.getRecordApiUrl()).appendPath(id + ".rdf").build();
+        } catch (URISyntaxException e) {
+            throw  new OaiPmhException("Error creating recprd api Urls " +e.getMessage() + HttpStatus.SC_INTERNAL_SERVER_ERROR, e);
+        }
+    }
+
+    @Override
     public void close() {
-        // not needed in this case
-    }
-
-    /**
-     * Empty error handling to avoid the rest template throwing errors (we want to throw our own exceptions)
-     */
-    private static class ApiResponseErrorHandler implements ResponseErrorHandler {
-
-        @Override
-        public boolean hasError(ClientHttpResponse response) throws IOException {
-            return false;
-        }
-
-        @Override
-        public void handleError(ClientHttpResponse response) throws IOException {
-            // errors are handled elsewhere
+        try {
+            connection.close();
+        } catch (IOException e) {
+            throw new OaiPmhException("Error closing the httpconnection for RecordAPI ", e);
         }
     }
 }

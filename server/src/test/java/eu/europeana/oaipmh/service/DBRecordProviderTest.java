@@ -1,176 +1,49 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.corelib.definitions.edm.beans.FullBean;
-import eu.europeana.corelib.solr.bean.impl.FullBeanImpl;
-import eu.europeana.corelib.web.exception.EuropeanaException;
-import eu.europeana.metis.mongo.dao.RecordDao;
-import eu.europeana.metis.schema.jibx.CollectionName;
-import eu.europeana.metis.schema.jibx.EuropeanaAggregationType;
-import eu.europeana.metis.schema.jibx.RDF;
-import eu.europeana.oaipmh.model.Header;
+import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.ListRecords;
-import eu.europeana.oaipmh.model.Metadata;
 import eu.europeana.oaipmh.model.Record;
-import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
-import eu.europeana.oaipmh.util.DateConverter;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.jupiter.api.*;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import static junit.framework.TestCase.fail;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+/**
+ * Test class for verifying the functionality of the DBRecordProvider.
+ * DBRecordProvider is responsible for record management within the system,
+ * and this class validates its core behaviors in an integration test environment.
+ *
+ **/
+@SpringBootTest
+public class DBRecordProviderTest extends AbstractIntegrationIT {
 
-public class DBRecordProviderTest extends BaseApiTestCase {
-
-    private static final String TEST_RECORD_ID = "http://data.europeana.eu/item/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A";
-
-    private static final String TEST_RECORD_FILENAME = "getRecordFromDB";
-
-    private static final Date TEST_RECORD_CREATE_DATE = DateConverter.fromIsoDateTime("2017-04-05T15:04:03Z");
-
-    private static final String[] TEST_RECORD_SETS = new String[] {"2048432"};
-
-    private static final String IDENTIFIER_PREFIX_FIELD_NAME = "identifierPrefix";
-
-    private static final String DEFAULT_IDENTIFIER_PREFIX = "http://data.europeana.eu/item";
-
-    private RecordDao recordDao;
-
-    private DBRecordProvider recordProvider;
-
-    @Before
-    public void initTest() {
-
-        recordDao = mock(RecordDao.class);
-        recordProvider = spy(DBRecordProvider.class);
-
-        ReflectionTestUtils.setField(recordProvider, IDENTIFIER_PREFIX_FIELD_NAME, DEFAULT_IDENTIFIER_PREFIX);
-        ReflectionTestUtils.setField(recordProvider, "recordDao", recordDao);
+    @Test
+    void testGetRecord() throws OaiPmhException {
+        Record retrievedRecord = recordProvider.getRecord(RECORD_ID_2064125_1);
+        Assertions.assertNotNull(retrievedRecord);
+        Assertions.assertEquals(RECORD_ID_2064125_1, retrievedRecord.getHeader().getIdentifier());
+        Assertions.assertNotNull(retrievedRecord.getMetadata().getMetadata());
     }
 
     @Test
-    public void getRecord() throws IOException, EuropeanaException, OaiPmhException {
-        // given
-        String record = loadRecord();
-        prepareTest(record);
-
-        // when
-        Record preparedRecord = prepareRecord(record);
-
-        Record retrievedRecord = recordProvider.getRecord(TEST_RECORD_ID);
-
-        // then
-        Assert.assertNotNull(retrievedRecord);
-        assertRecordEquals(retrievedRecord, preparedRecord);
-    }
-
-    private void prepareTest(String record) throws EuropeanaException {
-        RDF rdf = mock(RDF.class);
-        EuropeanaAggregationType type = mock(EuropeanaAggregationType.class);
-        CollectionName name = mock(CollectionName.class);
-        FullBean bean = mock(FullBeanImpl.class);
-
-        List<EuropeanaAggregationType> types = new ArrayList<>();
-        types.add(type);
-
-        given(recordDao.getFullBean(anyString())).willReturn(bean);
-        given(rdf.getEuropeanaAggregationList()).willReturn(types);
-        given(type.getCollectionName()).willReturn(name);
-       // doReturn(record).when(recordProvider).getEDM(any(RDF.class));
-      //  doReturn(rdf).when(recordProvider).getRDF(any(FullBeanImpl.class));
-        given(name.getString()).willReturn(TEST_RECORD_SETS[0]);
-        given(bean.getTimestampCreated()).willReturn(TEST_RECORD_CREATE_DATE);
-        given(bean.getEuropeanaCollectionName()).willReturn(TEST_RECORD_SETS);
-
-        ReflectionTestUtils.setField(recordProvider, "threadsCount", 1);
-        ReflectionTestUtils.setField(recordProvider, "maxThreadsCount", 20);
-        ReflectionTestUtils.invokeMethod(recordProvider, "initThreadPool");
-    }
-
-    private void assertRecordEquals(Record retrievedRecord, Record preparedRecord) {
-        Header retrievedHeader = retrievedRecord.getHeader();
-        Header preparedHeader = preparedRecord.getHeader();
-
-        Assert.assertNotNull(retrievedHeader);
-        Assert.assertNotNull(preparedHeader);
-
-        Assert.assertEquals(retrievedHeader.getDatestamp(), preparedHeader.getDatestamp());
-        Assert.assertEquals(retrievedHeader.getIdentifier(), preparedHeader.getIdentifier());
-        Assert.assertEquals(retrievedHeader.getSetSpec(), preparedHeader.getSetSpec());
-
-        String metadata = retrievedRecord.getMetadata().toString();
-        int index = metadata.indexOf("metadata='");
-        if (index != -1) {
-            metadata = metadata.substring(index+"metadata='".length());
-        }
-        Assert.assertEquals(metadata, preparedRecord.getMetadata().getMetadata());
-    }
-
-    private Record prepareRecord(String record) {
-        Header header = new Header(
-            TEST_RECORD_ID, TEST_RECORD_CREATE_DATE, TEST_RECORD_SETS[0]);
-
-        Metadata metadata = new Metadata(record.substring(record.indexOf("<rdf:RDF")));
-        return new Record(header, metadata);
-    }
-
-    private String loadRecord() throws IOException {
-        Path path = Paths.get(resDir + "/" + TEST_RECORD_FILENAME);
-        return new String(Files.readAllBytes(path));
+    void testCheckRecordExists() throws OaiPmhException {
+        Record retrievedRecord = recordProvider.getRecord("test_invalid_id");
+        Assertions.assertNull(retrievedRecord);
     }
 
     @Test
-    public void listRecords() throws IOException, EuropeanaException, OaiPmhException {
-        // given
-        String record = loadRecord();
-        prepareTest(record);
+    void testListRecords() throws Exception {
+        List<String> list = new ArrayList<String>();
+        list.add(RECORD_ID_401_1);
+        list.add(RECORD_ID_2064125_1);
+        list.add(RECORD_ID_876_1);
+        list.add(RECORD_ID_08506_7);
 
-        // when
-        Record preparedRecord = prepareRecord(record);
-        List<String> ids = new ArrayList<>();
-        ids.add(preparedRecord.getHeader().getIdentifier());
-
-        ListRecords retrievedRecords = recordProvider.listRecords(ids, null);
-
-        // then
-        Assert.assertNotNull(retrievedRecords);
-        List<Record> records = retrievedRecords.stream().toList();
-        Assert.assertEquals(1, records.size());
-        assertRecordEquals(records.get(0), preparedRecord);
+        ListRecords records = recordProvider.listRecords(list, null);
+        Assertions.assertNotNull(records);
+        records.close(); // close the stream
     }
 
-    @Test
-    public void checkRecordExists() throws EuropeanaException, OaiPmhException {
-        // given
-        FullBeanImpl bean = mock(FullBeanImpl.class);
-        given(recordDao.getFullBean(anyString())).willReturn(bean);
-
-        // when
-        recordProvider.checkRecordExists(TEST_RECORD_ID);
-
-        // then if no error is thrown everything is fine
-    }
-
-    @Test(expected = IdDoesNotExistException.class)
-    public void checkRecordExistsWithWrongIdentifier() throws EuropeanaException, OaiPmhException {
-        // given
-        given(recordDao.getFullBean(anyString())).willReturn(null);
-
-        // when
-        recordProvider.checkRecordExists(TEST_RECORD_ID);
-
-        // then
-        fail();
-    }
 }

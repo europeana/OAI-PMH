@@ -1,120 +1,56 @@
 package eu.europeana.oaipmh.model.metadata;
 
+import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.model.ListMetadataFormats;
 import eu.europeana.oaipmh.model.MetadataFormat;
-import eu.europeana.oaipmh.model.MetadataFormatConverter;
-import eu.europeana.oaipmh.model.impl.ListMetadataFormatsImpl;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+public class MetadataFormatsTest extends AbstractIntegrationIT {
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+    @Test
+    void shouldLoadMetadataFormatFromProperties() {
+        assertNotNull(metadataFormatsService);
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+        assertNotNull(metadataFormatsService.getPrefixes());
+        assertTrue(metadataFormatsService.getPrefixes().contains(METADATA_FORMAT_PREFIX));
 
-public class MetadataFormatsTest {
-    private static final String METADATA_FORMAT_PREFIX = "format_prefix";
+        assertNotNull(metadataFormatsService.getSchemas());
+        assertTrue(metadataFormatsService.getSchemas().get(METADATA_FORMAT_PREFIX).equals(METADATA_FORMAT_SCHEMA));
 
-    private static final String METADATA_FORMAT_SCHEMA = "format_schema";
+        assertNotNull(metadataFormatsService.getNamespaces());
+        assertTrue(metadataFormatsService.getNamespaces().get(METADATA_FORMAT_PREFIX).equals(METADATA_FORMAT_NAMESPACE));
 
-    private static final String METADATA_FORMAT_NAMESPACE = "format_namespace";
-
-    private static final String EU_EUROPEANA_OAIPMH_MODEL_METADATA_XML2_EDMCONVERTER = "eu.europeana.oaipmh.model.metadata.XML2EDMConverter";
-
-    private List<String> prefixes = new ArrayList<>();
-
-    private Map<String, String> converters = new HashMap<>();
-
-    private Map<String, String> schemas = new HashMap<>();
-
-    private Map<String, String> namespaces = new HashMap<>();
-
-    private Map<String, MetadataFormat> metadataFormats = new HashMap<>();
-
-    private static MetadataFormatsService testedMetadataFormats = new MetadataFormatsService();
-
-    private static MetadataFormat metadataFormat;
-
-    private static MetadataFormatConverter metadataFormatConverter ;
-
-    @Before
-    public void init() {
-
-           prefixes.add(METADATA_FORMAT_PREFIX);
-           schemas.put(METADATA_FORMAT_PREFIX, METADATA_FORMAT_SCHEMA);
-           namespaces.put(METADATA_FORMAT_PREFIX, METADATA_FORMAT_NAMESPACE);
-           converters.put(METADATA_FORMAT_PREFIX, EU_EUROPEANA_OAIPMH_MODEL_METADATA_XML2_EDMCONVERTER);
-           metadataFormatConverter= new XML2EDMConverter();
-           metadataFormat = new MetadataFormat(METADATA_FORMAT_PREFIX, schemas.get(METADATA_FORMAT_PREFIX), namespaces.get(METADATA_FORMAT_PREFIX), metadataFormatConverter);
-           metadataFormats.put(METADATA_FORMAT_PREFIX,metadataFormat);
-
-        ReflectionTestUtils.setField(testedMetadataFormats, "prefixes", prefixes);
-        ReflectionTestUtils.setField(testedMetadataFormats, "converters", converters);
-        ReflectionTestUtils.setField(testedMetadataFormats, "schemas", schemas);
-        ReflectionTestUtils.setField(testedMetadataFormats, "namespaces", namespaces);
-        ReflectionTestUtils.setField(testedMetadataFormats, "metadataFormats", metadataFormats);
+        assertNotNull(metadataFormatsService.getConverter(METADATA_FORMAT_PREFIX));
+        assertTrue(metadataFormatsService.getConverter(METADATA_FORMAT_PREFIX).getClass().getName().equals(EU_EUROPEANA_OAIPMH_MODEL_METADATA_XML2_EDMCONVERTER));
     }
 
     @Test
-    public void getConverters() {
-        assertFalse(testedMetadataFormats.getConverters().isEmpty());
+    void shouldCreateMetadataFormats() {
+        var formats = metadataFormatsService.listMetadataFormats();
+        assertNotNull(formats);
     }
 
     @Test
-    public void getPrefixes() {
-        assertFalse(testedMetadataFormats.getPrefixes().isEmpty());
+    void shouldReturnConverterWhenFormatExists() {
+        assertTrue(metadataFormatsService.canDisseminate(METADATA_FORMAT_PREFIX));
     }
 
     @Test
-    public void getSchemas() {
-        assertFalse(testedMetadataFormats.getSchemas().isEmpty());
-    }
-
-    @Test
-    public void getNamespaces() {
-        assertFalse(testedMetadataFormats.getNamespaces().isEmpty());
-    }
-
-    @Test
-    public void canDisseminate() {
-        assertTrue(testedMetadataFormats.canDisseminate(METADATA_FORMAT_PREFIX));
-        assertFalse(testedMetadataFormats.canDisseminate("ANY"));
-    }
-
-    @Test
-    public void getConverter() {
-        assertNotNull(testedMetadataFormats.getConverter(METADATA_FORMAT_PREFIX));
+    void shouldReturnNullForUnknownFormat() {
+        assertFalse(metadataFormatsService.canDisseminate("unknown"));
+        assertNull(metadataFormatsService.getConverter("unknown"));
     }
 
     @Test
     public void listMetadataFormats() {
-        ListMetadataFormatsImpl formats = createListMetadataFormats();
-        ListMetadataFormats retrieved = testedMetadataFormats.listMetadataFormats();
+        ListMetadataFormats retrieved = metadataFormatsService.listMetadataFormats();
 
-        assertEquals(formats.getMetadataFormats().size(), retrieved.getMetadataFormats().size());
         assertEquals(1, retrieved.getMetadataFormats().size());
-
-        MetadataFormat f1 = formats.getMetadataFormats().stream().findFirst().get();
-        MetadataFormat f2 = retrieved.getMetadataFormats().stream().findFirst().get();
-        assertEquals(f1.getMetadataPrefix(), f2.getMetadataPrefix());
-        assertEquals(f1.getSchema(), f2.getSchema());
-        assertEquals(f1.getMetadataNamespace(), f2.getMetadataNamespace());
-        assertEquals(f1.getConverter().getClass(), f2.getConverter().getClass());
-    }
-
-    private ListMetadataFormatsImpl createListMetadataFormats() {
-        List<MetadataFormat> metadataFormats = new ArrayList<>();
-        MetadataFormat format = new MetadataFormat(
-                METADATA_FORMAT_PREFIX, METADATA_FORMAT_SCHEMA
-              , METADATA_FORMAT_NAMESPACE, new XML2EDMConverter());
-        metadataFormats.add(format);
-        return new ListMetadataFormatsImpl(metadataFormats);
+        MetadataFormat format = retrieved.getMetadataFormats().stream().findFirst().get();
+        assertEquals(METADATA_FORMAT_PREFIX, format.getMetadataPrefix());
+        assertEquals(METADATA_FORMAT_SCHEMA, format.getSchema());
+        assertEquals(METADATA_FORMAT_NAMESPACE, format.getMetadataNamespace());
+        assertEquals(EU_EUROPEANA_OAIPMH_MODEL_METADATA_XML2_EDMCONVERTER, format.getConverter().getClass().getName());
     }
 }

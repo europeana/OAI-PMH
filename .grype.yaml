@@ -1,0 +1,4 @@
+# .grype.yaml
+ignore:
+  - vulnerability: GHSA-7286-pgfv-vxvh
+    # Only applies to Zookeeper if SASL Quorum Peer authentication is enabled, which we don't have

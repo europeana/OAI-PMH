@@ -29,8 +29,7 @@ import java.io.OutputStream;
 import static eu.europeana.oaipmh.service.OaiPmhRequestFactory.*;
 import static eu.europeana.oaipmh.service.OaiPmhValidationService.*;
 import static eu.europeana.oaipmh.service.exception.ErrorConstants.*;
-import static eu.europeana.oaipmh.util.AppConfigConstants.MEDIA_TYPE_TEXT_XML;
-import static eu.europeana.oaipmh.util.AppConfigConstants.XML_SERVER_SERIALIZATION;
+import static eu.europeana.oaipmh.util.AppConfigConstants.*;
 
 /**
  * Rest controller that handles incoming OAI-PMH requests 
@@ -77,7 +76,7 @@ public class VerbController {
             HttpServletRequest request, HttpServletResponse response) 
                 throws OaiPmhException {
         validateParameterNames(request.getQueryString());
-        return respond(ops.getIdentify(createIdentifyRequest(settings.getBaseUrl())));
+        return respond(ops.getIdentify(createIdentifyRequest(settings.getBaseUrl())), request);
     }
 
     /**
@@ -104,7 +103,7 @@ public class VerbController {
             throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.getRecord(
-            createGetRecordRequest(settings.getBaseUrl(), metadataPrefix, identifier)));
+            createGetRecordRequest(settings.getBaseUrl(), metadataPrefix, identifier)), request);
     }
 
     /**
@@ -126,7 +125,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listIdentifiers(
-            createListIdentifiersRequest(settings.getBaseUrl(), resumptionToken)));
+            createListIdentifiersRequest(settings.getBaseUrl(), resumptionToken)), request);
     }
 
     /**
@@ -158,7 +157,7 @@ public class VerbController {
         validateParameterNames(request.getQueryString());
         return respond(ops.listIdentifiers(
             createListIdentifiersRequest(settings.getBaseUrl(), metadataPrefix, set
-                                       , from, until)));
+                                       , from, until)), request);
     }
 
     /**
@@ -191,7 +190,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listRecords(
-            createListRecordsRequest(settings.getBaseUrl(), metadataPrefix, set, from, until)));
+            createListRecordsRequest(settings.getBaseUrl(), metadataPrefix, set, from, until)), request);
     }
 
     /**
@@ -216,7 +215,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listRecords(
-            createListRecordsRequest(settings.getBaseUrl(), resumptionToken)));
+            createListRecordsRequest(settings.getBaseUrl(), resumptionToken)), request);
     }
 
     /**
@@ -240,7 +239,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listMetadataFormats(
-            createListMetadataFormatsRequest(settings.getBaseUrl(), identifier)));
+            createListMetadataFormatsRequest(settings.getBaseUrl(), identifier)), request);
     }
 
     /**
@@ -265,7 +264,7 @@ public class VerbController {
             HttpServletRequest request, 
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
-        return respond(ops.listSets(createListSetsRequest(settings.getBaseUrl(), from, until)));
+        return respond(ops.listSets(createListSetsRequest(settings.getBaseUrl(), from, until)), request );
     }
 
     /**
@@ -288,7 +287,7 @@ public class VerbController {
             HttpServletRequest request,
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
-        return respond(ops.listSets(createListSetsRequest(settings.getBaseUrl(), resumptionToken)));
+        return respond(ops.listSets(createListSetsRequest(settings.getBaseUrl(), resumptionToken)), request);
     }
 
     /**
@@ -345,9 +344,13 @@ public class VerbController {
      * @return a ResponseEntity containing the serialized data as a streaming response
      *         body with appropriate headers and HTTP status code.
      */
-    private ResponseEntity<StreamingResponseBody> respond(OAIResponse rsp) {
+    private ResponseEntity<StreamingResponseBody> respond(OAIResponse rsp, HttpServletRequest request) {
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
+        if (request.getHeader("Accept") != null && request.getHeader("Accept").contains("text/xml")) {
+            headers.setContentType(MediaType.valueOf(MEDIA_TYPE_TEXT_XML));
+        } else {
+            headers.setContentType(MediaType.valueOf(MEDIA_TYPE_APPLICATION_XML));
+        }
 
         return new ResponseEntity<StreamingResponseBody>(
             new StreamingResponseBody() {

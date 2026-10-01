@@ -15,6 +15,12 @@ public class OaiPmhSettings {
     @Value("${baseURL}")
     private String baseUrl;
 
+    @Value("${token_endpoint}")
+    private String tokenEndpoint;
+
+    @Value("${grant_params}")
+    private String grantParams;
+
     @Value("${identifierPrefix}")
     private String identifierPrefix;
 
@@ -58,12 +64,8 @@ public class OaiPmhSettings {
     @Value("${resumptionTokenTTL}")
     private int resumptionTokenTTL;
 
-
     @Value("${recordApiUrl}")
     private String recordApiUrl;
-
-    @Value("${wskey}")
-    private String wskey;
 
     @Value("${solr.url}")
     private String solrUrl;
@@ -74,6 +76,9 @@ public class OaiPmhSettings {
     @Value("${solr.core}")
     private String solrCore;
 
+    @Value("${solr.timeout:60000}")
+    private int solrTimeout;
+
     @Value("#{T(eu.europeana.oaipmh.util.DateConverter).fromIsoDateTime('${defaultIdentifierTimestamp}')}")
     private Date defaultIdentifierTimestamp;
 
@@ -83,6 +88,14 @@ public class OaiPmhSettings {
 
     public String getBaseUrl() {
         return baseUrl;
+    }
+
+    public String getTokenEndpoint() {
+        return tokenEndpoint;
+    }
+
+    public String getGrantParams() {
+        return grantParams;
     }
 
     public String getIdentifierPrefix() {
@@ -145,10 +158,6 @@ public class OaiPmhSettings {
         return recordApiUrl;
     }
 
-    public String getWskey() {
-        return wskey;
-    }
-
     public String getSolrUrl() {
         return solrUrl;
     }
@@ -159,6 +168,10 @@ public class OaiPmhSettings {
 
     public String getSolrCore() {
         return solrCore;
+    }
+
+    public int getSolrTimeout() {
+        return solrTimeout;
     }
 
     public Date getDefaultIdentifierTimestamp() {

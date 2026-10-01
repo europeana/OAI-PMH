@@ -1,6 +1,5 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.oaipmh.config.OaiPmhSettings;
 import eu.europeana.oaipmh.model.Identify;
 import eu.europeana.oaipmh.model.impl.IdentifyImpl;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
@@ -13,10 +12,15 @@ import org.apache.solr.common.SolrDocumentList;
 import javax.annotation.Resource;
 import java.util.Date;
 
+import static eu.europeana.oaipmh.util.AppConfigConstants.OAI_PMH_SOLR_SERVICE;
 import static eu.europeana.oaipmh.util.SolrConstants.TIMESTAMP_UPDATE;
 
 public class DefaultIdentifyProvider 
-        extends SolrBasedProvider implements IdentifyProvider {
+        extends BaseProvider implements IdentifyProvider {
+
+    @Resource(name = OAI_PMH_SOLR_SERVICE)
+    SolrService solrService;
+
 
     @Override
     public Identify provideIdentify() throws OaiPmhException {
@@ -28,7 +32,7 @@ public class DefaultIdentifyProvider
     }
 
     private String getEarliestTimestamp() throws OaiPmhException {
-        QueryResponse response = executeQuery(SolrQueryBuilder.earliestTimestamp());
+        QueryResponse response = solrService.executeQuery(SolrQueryBuilder.earliestTimestamp());
         SolrDocumentList results = response.getResults();
         for (SolrDocument doc : results) {
             Date value = (Date) doc.getFieldValue(TIMESTAMP_UPDATE);

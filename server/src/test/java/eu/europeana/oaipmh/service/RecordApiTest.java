@@ -1,90 +1,118 @@
 package eu.europeana.oaipmh.service;
 
-import eu.europeana.oaipmh.model.Metadata;
+import eu.europeana.api.commons_sb3.auth.apikey.ApikeyBasedAuthentication;
+import eu.europeana.oaipmh.AbstractIntegrationIT;
+import eu.europeana.oaipmh.config.OaiPmhSettings;
+import eu.europeana.oaipmh.model.ListRecords;
 import eu.europeana.oaipmh.model.Record;
 import eu.europeana.oaipmh.service.exception.IdDoesNotExistException;
 import eu.europeana.oaipmh.service.exception.OaiPmhException;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
+import java.util.Arrays;
+import java.util.List;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.junit.Assert.fail;
-import static org.mockito.BDDMockito.given;
 
 /**
- * Tests retrieving record information from the Europeana Record API
- * @author Patrick Ehlert
- * Created on 28-02-2018
+ * Unit tests for the {@link RecordApi} class.
+ * This test class is responsible for validating the behavior of the RecordApi in various scenarios.
+ * It includes tests for exception handling, null input validation, and API response validation.
+ *
+ * An API key-based authentication mechanism is used for interacting with the Record API,
+ * with a mock setup for dependent settings and serialization in some test cases.
+ * Annotations:
+ * - {@code @Disabled}: Marks some tests as disabled as we need now real time apikey or token mechanisam.
+ *                     as we don't use the RecordAPi to fetch records, few tests are disabled.
  */
-@RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
-public class RecordApiTest extends BaseApiTestCase {
+public class RecordApiTest extends AbstractIntegrationIT {
 
-    private static final String TEST_RECORD_ID = "90402/BK_1978_399";
+    private static final String TEST_RECORD_ID = "/00101/00180020C7AF376F0C82A5F47CAD7BED272DF62A";
 
-    private static final String TEST_RECORD_FILENAME = "getRecord.xml";
+    private static RecordApi recordApi;
 
-    @Mock
-    private RecordApi recordApi;
+    private static OaiPmhSettings settings;
 
-    /**
-     * Test retrieval of record xml from Europeana Record API
-     * @throws OaiPmhException
-     */
-    @Test
-    public void getRecord() throws OaiPmhException, IOException {
-        Record record = new Record(null, loadRecord());
-        given(recordApi.getRecord(TEST_RECORD_ID)).willReturn(record);
-
-        Record xml = recordApi.getRecord(TEST_RECORD_ID);
-        Assert.assertNotNull(xml);
-
-        // note that this check only works for records that do not redirect to a new record Id under water
-      //  Assert.assertTrue(xml.getMetadata().getMetadata().contains("about=\"http://data.europeana.eu/item/"+TEST_RECORD_ID));
-    }
-
-    private Metadata loadRecord() throws IOException {
-        Path path = Paths.get(resDir + "/" + TEST_RECORD_FILENAME);
-        String content = new String(Files.readAllBytes(path));
-        return new Metadata(content);
-    }
-
-    /**
-     * Test if the proper error is thrown if we provide an incorrect id
-     * @throws OaiPmhException
-     */
-    @Test(expected=IdDoesNotExistException.class)
-    public void getRecordNotExists() throws OaiPmhException {
-        given(recordApi.getRecord("INCORRECT/ID")).willThrow(new IdDoesNotExistException("INCORRECT/ID"));
-
-        recordApi.getRecord("INCORRECT/ID");
-
-        fail(); // should not reach this code
+    @BeforeAll
+    static void setup() {
+        recordApi  = new RecordApi(new ApikeyBasedAuthentication(""));
+        settings = Mockito.mock(OaiPmhSettings.class);
+        ReflectionTestUtils.setField(recordApi, "settings", settings);
+        Mockito.when(settings.getRecordApiUrl()).thenReturn("https://api.europeana.eu/record");
     }
 
     @Test
-    public void checkRecordExists() throws OaiPmhException {
-        Mockito.doNothing().when(recordApi).checkRecordExists(TEST_RECORD_ID);
+    void shouldThrowException() {
+        RecordApi recordApi = new RecordApi(new ApikeyBasedAuthentication("invalid_api_key"));
 
-        recordApi.checkRecordExists(TEST_RECORD_ID);
+        OaiPmhSettings settings = Mockito.mock(OaiPmhSettings.class);
+        ReflectionTestUtils.setField(recordApi, "settings", settings);
+        Mockito.when(settings.getRecordApiUrl()).thenReturn("https://api.europeana.eu/record");
+
+        OaiPmhException ex = assertThrows(OaiPmhException.class, ()
+                -> recordApi.getRecord(TEST_RECORD_ID));
+
+        assertEquals("API key is not valid", ex.getMessage());
+
+        ex = assertThrows(OaiPmhException.class, ()
+                -> recordApi.checkRecordExists(TEST_RECORD_ID));
+
+        assertEquals("API key is not valid", ex.getMessage());
+
+
+        ex = assertThrows(OaiPmhException.class, ()
+                -> recordApi.listRecords(List.of(TEST_RECORD_ID), null));
+
+        assertEquals("API key is not valid", ex.getMessage());
+
+
     }
 
 
-    @Test(expected = IdDoesNotExistException.class)
-    public void checkRecordExistsWithWrongIdentifier() throws OaiPmhException {
-        Mockito.doThrow(new IdDoesNotExistException("INCORRECT/ID")).when(recordApi).checkRecordExists("INCORRECT/ID");
+    @Disabled
+    @Test
+    void shouldThrowInvalidIdException() {
+        IdDoesNotExistException ex = assertThrows(IdDoesNotExistException.class, ()
+                -> recordApi.getRecord("non_exsiting_id"));
 
-        recordApi.checkRecordExists("INCORRECT/ID");
+        assertEquals("Record with id 'non_exsiting_id' not found", ex.getMessage());
+    }
 
-        fail(); // should not reach this code
+    @Test
+    void shouldThrowException_ForNullId() {
+        assertThrows(IdDoesNotExistException.class, ()
+                -> recordApi.getRecord(null));
+    }
+
+    @Disabled
+    @Test
+    void getRecord() throws OaiPmhException {
+        Record record = recordApi.getRecord(TEST_RECORD_ID);
+        Assertions.assertNotNull(record);
+        Assertions.assertEquals(TEST_RECORD_ID, record.getHeader().getIdentifier());
+        Assertions.assertNotNull(record.getMetadata().getMetadata());
+        Assertions.assertTrue(record.getMetadata().getMetadata().toString().contains("about=\"http://data.europeana.eu/item"+TEST_RECORD_ID));
+    }
+
+    @Disabled
+    @Test
+    void getRecords() throws OaiPmhException {
+        ListRecords record = recordApi.listRecords(Arrays.asList(TEST_RECORD_ID), null);
+        Assertions.assertNotNull(record);
+        Assertions.assertEquals(record.stream().findFirst().get().getHeader().getIdentifier(), TEST_RECORD_ID);
+        Assertions.assertNotNull(record.stream().findFirst().get().getMetadata().getMetadata());
+    }
+
+    @Test
+    void testClose() {
+        recordApi.close();
     }
 }
