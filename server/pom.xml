@@ -247,13 +247,6 @@
                 <configuration>
                     <mainClass>eu.europeana.oaipmh.OaiPmhApplication</mainClass>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

@@ -2,3 +2,9 @@
 ignore:
   - vulnerability: GHSA-7286-pgfv-vxvh
     # Only applies to Zookeeper if SASL Quorum Peer authentication is enabled, which we don't have
+  - vulnerability: GHSA-c4c3-7fpv-j4q5
+    # only applies if the application :
+    #  - is written in a language/framework that doesn't use Netty (such as PHP, Python, or standard Node.js).
+    #  - runs on a traditional Java servlet container like Apache Tomcat or Jetty instead of Netty.
+    #  - A reverse proxy (like Nginx, Apache HTTPD, or an AWS ALB) sits in front of
+    #  - your OAI-PMH application to terminate the TLS connection before passing the traffic onward.

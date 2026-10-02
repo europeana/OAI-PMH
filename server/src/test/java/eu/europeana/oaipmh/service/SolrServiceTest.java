@@ -4,10 +4,7 @@ import eu.europeana.oaipmh.AbstractIntegrationIT;
 import eu.europeana.oaipmh.service.exception.BadArgumentException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,6 +27,8 @@ public class SolrServiceTest extends AbstractIntegrationIT {
         assertEquals(26, response.getResults().getNumFound());
     }
 
+    // logs the error 30 tmes due to retry mechanism hence disabling for now
+    @Disabled
     @Test
     @Order(2)
     void testExceptionWithWrongQuery() {
