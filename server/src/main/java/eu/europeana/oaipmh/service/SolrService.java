@@ -46,7 +46,7 @@ public class SolrService implements ClosableProvider {
                 } catch (SolrServerException| IOException e) {
                     throw new RuntimeException(e);
                 }
-            });
+            }, null, 3, -1);
         } catch (SolrException e){
             throw new BadArgumentException(e.getMessage());
         } catch (RuntimeException e) {

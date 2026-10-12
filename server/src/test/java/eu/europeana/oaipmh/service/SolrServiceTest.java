@@ -27,8 +27,7 @@ public class SolrServiceTest extends AbstractIntegrationIT {
         assertEquals(26, response.getResults().getNumFound());
     }
 
-    // logs the error 30 tmes due to retry mechanism hence disabling for now
-    @Disabled
+
     @Test
     @Order(2)
     void testExceptionWithWrongQuery() {
