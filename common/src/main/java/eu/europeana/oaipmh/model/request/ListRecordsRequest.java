@@ -24,6 +24,9 @@ public class ListRecordsRequest extends OAIRequest {
     @XmlAttribute(name=SerializationConstants.until)
     private String until;
 
+    @XmlAttribute(name=SerializationConstants.recordsPerPage)
+    private String recordsPerPage;
+
     @XmlAttribute(name=SerializationConstants.resumptionToken)
     private String resumptionToken;
 
@@ -35,15 +38,17 @@ public class ListRecordsRequest extends OAIRequest {
         this.set = null;
         this.from = null;
         this.until = null;
+        this.recordsPerPage = null;
         this.resumptionToken = null;
     }
 
-    public ListRecordsRequest(String verb, String baseUrl, String metadataPrefix, String set, String from, String until) {
+    public ListRecordsRequest(String verb, String baseUrl, String metadataPrefix, String set, String from, String until, String recordsPerPage) {
         this(verb, baseUrl);
         this.metadataPrefix = metadataPrefix;
         this.set = set;
         this.from = from;
         this.until = until;
+        this.recordsPerPage = recordsPerPage;
     }
 
     public ListRecordsRequest(String verb, String baseUrl, String resumptionToken) {
@@ -81,6 +86,14 @@ public class ListRecordsRequest extends OAIRequest {
 
     public void setUntil(String until) {
         this.until = until;
+    }
+
+    public String getRecordsPerPage() {
+        return recordsPerPage;
+    }
+
+    public void setRecordsPerPage(String recordsPerPage) {
+        this.recordsPerPage = recordsPerPage;
     }
 
     public String getResumptionToken() {

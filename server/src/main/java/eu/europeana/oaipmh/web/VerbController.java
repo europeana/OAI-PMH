@@ -183,6 +183,7 @@ public class VerbController {
             @RequestParam(value = "metadataPrefix") String metadataPrefix,
             @RequestParam(value = "from", required = false) String from,
             @RequestParam(value = "until", required = false) String until,
+            @RequestParam(value = "recordsPerPage", required = false) String recordsPerPage,
             @RequestParam(value = "set", required = false ) 
                 @Pattern(regexp = REGEX_VALID_SET_ID,
                          message = INVALID_SET_ID_MSG) String set,
@@ -190,7 +191,7 @@ public class VerbController {
             HttpServletResponse response) throws OaiPmhException {
         validateParameterNames(request.getQueryString());
         return respond(ops.listRecords(
-            createListRecordsRequest(settings.getBaseUrl(), metadataPrefix, set, from, until)), request);
+            createListRecordsRequest(settings.getBaseUrl(), metadataPrefix, set, from, until, recordsPerPage)), request);
     }
 
     /**

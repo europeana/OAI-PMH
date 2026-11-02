@@ -133,13 +133,15 @@ public class OaiPmhRequestFactory {
     private static ListRecordsRequest createListRecordsRequest(
             String baseUrl, Map<OaiParameterName, String> parameters) {
         if (parameters.containsKey(RESUMPTION_TOKEN)) {
-            return createListRecordsRequest(baseUrl, parameters.get(RESUMPTION_TOKEN));
+            return createListRecordsRequest(baseUrl,
+                    parameters.get(RESUMPTION_TOKEN));
         }
         if (parameters.containsKey(METADATA_PREFIX)) {
             return createListRecordsRequest(baseUrl, parameters.get(METADATA_PREFIX),
                     parameters.get(SET),
                     parameters.get(FROM),
-                    parameters.get(UNTIL));
+                    parameters.get(UNTIL),
+                    parameters.get(RECORDS_PER_PAGE));
         }
         // when key parameters are missing return a basic list records request object
         return new ListRecordsRequest(parameters.get(VERB), baseUrl);
@@ -147,8 +149,8 @@ public class OaiPmhRequestFactory {
 
     public static ListRecordsRequest createListRecordsRequest(
             String baseUrl, String metadataPrefix, String set
-          , String from, String until) {
-        return new ListRecordsRequest(ListRecords.class.getSimpleName(), baseUrl, metadataPrefix, set, from, until);
+          , String from, String until, String recordsPerPage) {
+        return new ListRecordsRequest(ListRecords.class.getSimpleName(), baseUrl, metadataPrefix, set, from, until, recordsPerPage);
     }
 
     public static ListRecordsRequest createListRecordsRequest(
