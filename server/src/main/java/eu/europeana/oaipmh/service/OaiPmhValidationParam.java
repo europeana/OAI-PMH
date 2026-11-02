@@ -70,7 +70,7 @@ public class OaiPmhValidationParam {
                     EnumSet.of(RESUMPTION_TOKEN),
 
                     RESUMPTION_TOKEN,
-                    EnumSet.of(METADATA_PREFIX, FROM, IDENTIFIER, SET, UNTIL),
+                    EnumSet.of(METADATA_PREFIX, FROM, IDENTIFIER, SET, UNTIL, RECORDS_PER_PAGE),
 
                     FROM,
                     EnumSet.of(RESUMPTION_TOKEN, IDENTIFIER),
