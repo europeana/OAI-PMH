@@ -167,13 +167,14 @@ public class OaiPmhService {
      * @throws OaiPmhException
      */
     public OAIResponse listRecords(ListRecordsRequest req) throws OaiPmhException {
+        int recordsPerPage = req.getRecordsPerPage() != null ? Integer.parseInt(req.getRecordsPerPage()) : settings.getRecordsPerPage();
         ListIdentifiers identifiers = getListIdentifiersObject(
                 req.getMetadataPrefix(),
                 DateConverter.fromIsoDateTime(req.getFrom()),
                 DateConverter.fromIsoDateTime(req.getUntil()),
                 req.getSet(),
                 req.getResumptionToken(),
-                settings.getRecordsPerPage());
+                recordsPerPage);
         List<String> ids;
         try ( identifiers ) {
             ids = identifiers.stream().map(t -> t.getIdentifier())

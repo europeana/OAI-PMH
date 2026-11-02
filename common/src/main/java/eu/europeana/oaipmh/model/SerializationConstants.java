@@ -46,6 +46,7 @@ public interface SerializationConstants {
 
     public static final String from                = "from";
     public static final String until               = "until";
+    public static final String recordsPerPage      = "recordsPerPage";
     public static final String verb                = "verb";
     public static final String metadataPrefix      = "metadataPrefix";
     public static final String schema              = "schema";

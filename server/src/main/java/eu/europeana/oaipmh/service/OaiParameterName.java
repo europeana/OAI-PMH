@@ -7,7 +7,7 @@ public enum OaiParameterName {
 
     METADATA_PREFIX("metadataPrefix"), FROM("from"), UNTIL("until")
   , SET("set"), RESUMPTION_TOKEN("resumptionToken"), VERB("verb")
-  , IDENTIFIER("identifier");
+  , IDENTIFIER("identifier"), RECORDS_PER_PAGE("recordsPerPage");
 
     private final String parameterName;
 

@@ -4,12 +4,7 @@ import eu.europeana.oaipmh.model.*;
 import java.util.*;
 import java.util.Set;
 
-import static eu.europeana.oaipmh.service.OaiParameterName.FROM;
-import static eu.europeana.oaipmh.service.OaiParameterName.IDENTIFIER;
-import static eu.europeana.oaipmh.service.OaiParameterName.METADATA_PREFIX;
-import static eu.europeana.oaipmh.service.OaiParameterName.RESUMPTION_TOKEN;
-import static eu.europeana.oaipmh.service.OaiParameterName.SET;
-import static eu.europeana.oaipmh.service.OaiParameterName.UNTIL;
+import static eu.europeana.oaipmh.service.OaiParameterName.*;
 
 /**
  * This class provides constant definitions and parameter mapping logic for validating
@@ -66,7 +61,7 @@ public class OaiPmhValidationParam {
             EnumSet.of(IDENTIFIER),
 
             ListRecords.class.getSimpleName(),
-            EnumSet.of(METADATA_PREFIX, FROM, UNTIL, SET, RESUMPTION_TOKEN)
+            EnumSet.of(METADATA_PREFIX, FROM, UNTIL, SET, RECORDS_PER_PAGE, RESUMPTION_TOKEN)
     );
 
     public static final Map<OaiParameterName, Set<OaiParameterName>> EXCLUSIVE_PARAMETERS =
@@ -75,7 +70,7 @@ public class OaiPmhValidationParam {
                     EnumSet.of(RESUMPTION_TOKEN),
 
                     RESUMPTION_TOKEN,
-                    EnumSet.of(METADATA_PREFIX, FROM, IDENTIFIER, SET, UNTIL),
+                    EnumSet.of(METADATA_PREFIX, FROM, IDENTIFIER, SET, UNTIL, RECORDS_PER_PAGE),
 
                     FROM,
                     EnumSet.of(RESUMPTION_TOKEN, IDENTIFIER),
